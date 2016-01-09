@@ -4,11 +4,14 @@ package org.usfirst.frc.team4342.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
+ * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code 2016
+ * 
+ * @author Aodhan Gorman
+ * @author Ernie Wilson
+ * @author Katie Schuetz
+ * @author Magnus Murray
+ * @author Nick DiFilippo
+ * @author Payton DuLong
  */
 public class Robot extends IterativeRobot 
 {	
@@ -16,15 +19,16 @@ public class Robot extends IterativeRobot
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
+	@Override
     public void robotInit() 
     {
     	
     }
-    
+	
 	/**
-	 * You can add additional auto modes by adding additional comparisons to the switch structure below with additional strings.
-	 * If using the SendableChooser make sure to add them to the chooser code above as well.
+	 * This function is run when the robot is first starting autonomous
 	 */
+	@Override
     public void autonomousInit() 
     {
     	
@@ -33,7 +37,17 @@ public class Robot extends IterativeRobot
     /**
      * This function is called periodically during autonomous
      */
+	@Override
     public void autonomousPeriodic() 
+    {
+    	
+    }
+	
+	/**
+	 * This function is run when the robot is first starting operator control
+	 */
+	@Override
+    public void teleopInit()
     {
     	
     }
@@ -41,16 +55,27 @@ public class Robot extends IterativeRobot
     /**
      * This function is called periodically during operator control
      */
+	@Override
     public void teleopPeriodic() 
     {
         
     }
     
-    /**
-     * This function is called periodically during test mode
-     */
-    public void testPeriodic() 
+	/**
+	 * This function is called when the robot is first starting disabled
+	 */
+    @Override
+    public void disabledInit()
     {
+    	
+    }
     
+    /**
+     * This function is called periodically during disabled
+     */
+    @Override
+    public void disabledPeriodic()
+    {
+    	
     }
 }
