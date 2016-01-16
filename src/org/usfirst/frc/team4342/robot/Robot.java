@@ -8,10 +8,11 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * 
  * @author Aodhan Gorman
  * @author Ernie Wilson
+ * @author Jake Saltzberg
  * @author Katie Schuetz
  * @author Magnus Murray
- * @author Nick DiFilippo
  * @author Payton DuLong
+ * @author Shakti Das
  */
 public class Robot extends IterativeRobot 
 {	
