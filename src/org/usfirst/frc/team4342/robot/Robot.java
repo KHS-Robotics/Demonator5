@@ -1,6 +1,8 @@
 
 package org.usfirst.frc.team4342.robot;
 
+import org.usfirst.frc.team4342.robot.components.Repository;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 /**
@@ -23,7 +25,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void robotInit() 
     {
-    	
+		Repository.initializeAll();
     }
 	
 	/**

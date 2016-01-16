@@ -1,0 +1,134 @@
+package org.usfirst.frc.team4342.robot.api.logging;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Date;
+
+import org.usfirst.frc.team4342.robot.api.logging.ExceptionInfo;
+import org.usfirst.frc.team4342.robot.api.logging.FileHelper;
+import org.usfirst.frc.team4342.robot.api.pdp.PdpInfoExtractor;
+
+import ernie.logging.loggers.ILogger;
+import ernie.logging.loggers.MultiLogger;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+
+/**
+ * Logs the Power Distribution Panel's voltage and amperage to a CSV file
+ * 
+ * About the PDP: http://www.vexrobotics.com/217-4244.html
+ */
+public class PdpLogger 
+{
+	private static boolean started;
+	
+	private static final int LOG_SECONDS = 5;
+	
+	private static PDPLoggingThread logger;
+	
+	/**
+	 * Starts logging for 10 minutes
+	 */
+	public static void start(PdpInfoExtractor pdp, ILogger log, RobotConsoleLogger consoleLog) 
+	{
+		if(!started) 
+		{
+			logger = new PDPLoggingThread(pdp.getPdp(), new MultiLogger(new ILogger[] { log, consoleLog }));
+			logger.start();
+			started = true;
+		}
+	}
+	
+	/**
+	 * The magic behind this class...
+	 */
+	private static class PDPLoggingThread extends Thread implements Runnable 
+	{
+		private int numLogs = 0;
+		
+		File csvLogFile;
+		
+		private static final int MAX_LOGS = 100;
+		
+		private PowerDistributionPanel pdp;
+		private MultiLogger multiLog;
+		
+		/**
+		 * Constructs a PDP Logger to log PDP data
+		 * @param pdp the PDP to get data from
+		 * @param multiLog the loggers to log to
+		 */
+		public PDPLoggingThread(PowerDistributionPanel pdp, MultiLogger multiLog) 
+		{
+			this.pdp = pdp;
+			this.multiLog = multiLog;
+			
+			csvLogFile = FileHelper.getValidPdpLogFile();
+		}
+		
+		/**
+		 * Logs to the RoboRIO for 10 minutes
+		 */
+		@Override
+		public void run() 
+		{
+			FileWriter writer = null;
+			
+			try 
+			{
+				csvLogFile.createNewFile();
+				
+				writer = new FileWriter(csvLogFile);
+				
+				for(int channel = 0; channel < 16; channel++) 
+				{
+		        	writer.write("PDP-A" + channel);
+		        	writer.write(',');
+		        }
+				
+				writer.write("PDP-V");
+				writer.write(',');
+				
+				writer.write("Timestamp");
+				
+				writer.write('\r');
+	
+				while(numLogs < MAX_LOGS) 
+				{
+			        for(int channel = 0; channel < 16; channel++) {
+			        	writer.write("" + pdp.getCurrent(channel));
+			        	writer.write(',');
+			        }
+			        
+			        writer.write("" + pdp.getVoltage());
+			        writer.write(',');
+			        
+			        writer.write(new Date(System.currentTimeMillis()).toString());
+			        
+			        writer.write('\r');
+			        writer.flush();
+			        
+			        numLogs++;
+			        
+			        Thread.sleep(LOG_SECONDS*1000);
+				}
+				
+				writer.close();
+			} 
+			catch(Exception ex) 
+			{
+				multiLog.warning("Failed to write to CSV for PDP logger :: " + ExceptionInfo.getType(ex));
+			} 
+			finally 
+			{
+				try 
+				{
+					if(writer != null)
+						writer.close();
+				} 
+				catch (Exception ex) 
+				{
+					multiLog.warning("Failed to close writer to CSV for PDP logger");
+				}
+			}
+		}
+	}
+}
