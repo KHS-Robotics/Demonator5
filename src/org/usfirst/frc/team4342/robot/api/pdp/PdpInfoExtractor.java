@@ -16,6 +16,11 @@ public class PdpInfoExtractor
 		return pdp.getCurrent(channel);
 	}
 	
+	public double getAverageCurrent()
+	{
+		return pdp.getTotalCurrent() / 16;
+	}
+	
 	public double getTotalCurrent()
 	{
 		return pdp.getTotalCurrent();
