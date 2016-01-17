@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.drive;
+package org.usfirst.frc.team4342.api.drive;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
@@ -7,14 +7,21 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class TankDrive 
 {
-	private Joystick j1 = Repository.DriveStick;
+	private Joystick j1;
 	
-	private CANTalon fr = Repository.frontRight;
-	private CANTalon fl = Repository.frontLeft;
-	private CANTalon rr = Repository.rearRight;
-	private CANTalon rl = Repository.rearLeft;
+	private CANTalon fr, fl, rr, rl;
 	
-	public void drive ()
+	public TankDrive(Joystick j, CANTalon fr, CANTalon fl, CANTalon rr, CANTalon rl)
+	{
+		this.j1 = j;
+		
+		this.fr = fr;
+		this.fl = fl;
+		this.rr = rr;
+		this.rl = rl;
+	}
+	
+	public void drive()
 	{
 		double x = j1.getX();
 		double y = j1.getY();
