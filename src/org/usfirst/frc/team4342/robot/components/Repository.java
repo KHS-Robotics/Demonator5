@@ -15,15 +15,15 @@ public class Repository
 {
 	private static boolean initialized;
 	
-	protected static ILogger Log;
-	protected static RobotConsoleLogger ConsoleLog;
-	protected static MultiLogger logs;
+	public static ILogger Log;
+	public static RobotConsoleLogger ConsoleLog;
+	public static MultiLogger logs;
 	
-	protected static PdpInfoExtractor Pdp;
+	public static PdpInfoExtractor Pdp;
 	
-	protected static CANTalon frontRight, frontLeft, rearRight, rearLeft;
+	public static CANTalon frontRight, frontLeft, rearRight, rearLeft;
 	
-	protected static Joystick DriveStick;
+	public static Joystick DriveStick;
 	
 	public static void initializeAll()
 	{
