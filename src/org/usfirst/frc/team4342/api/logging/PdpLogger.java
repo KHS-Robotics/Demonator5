@@ -1,11 +1,11 @@
-package org.usfirst.frc.team4342.robot.api.logging;
+package org.usfirst.frc.team4342.api.logging;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
 
-import org.usfirst.frc.team4342.robot.api.logging.ExceptionInfo;
-import org.usfirst.frc.team4342.robot.api.logging.FileHelper;
-import org.usfirst.frc.team4342.robot.api.pdp.PdpInfoExtractor;
+import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
+import org.usfirst.frc.team4342.api.logging.FileHelper;
+import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 
 import ernie.logging.loggers.ILogger;
 import ernie.logging.loggers.MultiLogger;

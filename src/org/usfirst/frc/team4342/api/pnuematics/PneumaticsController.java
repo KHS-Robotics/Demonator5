@@ -8,7 +8,7 @@ public class PneumaticsController
 {
 	private Relay compressor;
 	private DoubleSolenoid solenoid;
-	private boolean compressorEnable;
+	private boolean compressorEnabled;
 	private boolean isLowGear;
 	
 	
@@ -32,28 +32,28 @@ public class PneumaticsController
 		isLowGear = false;
 	}
 	
-	public void turnOnCompressor()
+	public void enableCompressor()
 	{
 		compressor.set(Value.kOn);
 		
-		compressorEnable = true;
+		compressorEnabled = true;
 	}
 	
-	public void turnOffCompressor()
+	public void disableCompessor()
 	{
 		compressor.set(Value.kOff);
 		
-		compressorEnable = false;
+		compressorEnabled = false;
 	}
 	
 	public boolean isCompressorEnabled()
 	{
-		return (compressorEnable);
+		return (compressorEnabled);
 	}
 	
 	public boolean isCompressorDisabled()
 	{
-		return !(compressorEnable);
+		return !(compressorEnabled);
 	}
 	
 	public boolean isLowGear()

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.robot.api.logging;
+package org.usfirst.frc.team4342.api.logging;
 
 import ernie.logging.data.InfoLogData;
 import ernie.logging.loggers.BaseLogger;

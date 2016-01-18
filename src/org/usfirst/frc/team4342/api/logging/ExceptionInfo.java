@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.robot.api.logging;
+package org.usfirst.frc.team4342.api.logging;
 
 /**
  * This class is used to quickly get info out of an Exception. This is useful

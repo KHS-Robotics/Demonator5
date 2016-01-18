@@ -1,16 +1,22 @@
 package org.usfirst.frc.team4342.robot.components;
 
-import org.usfirst.frc.team4342.robot.api.logging.ExceptionInfo;
-import org.usfirst.frc.team4342.robot.api.logging.PdpLogger;
-import org.usfirst.frc.team4342.robot.api.logging.RobotConsoleLogger;
-import org.usfirst.frc.team4342.robot.api.logging.RobotLogFactory;
-import org.usfirst.frc.team4342.robot.api.pdp.PdpInfoExtractor;
+import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
+import org.usfirst.frc.team4342.api.logging.PdpLogger;
+import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
+import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
+import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import ernie.logging.loggers.ILogger;
 import ernie.logging.loggers.MultiLogger;
 
+/**
+ * Poor man's IoC. This code is the first thing that runs in Robot.robotInit() to initialize
+ * all of the objects the robot uses to make them all easily accessible. Of course though Java
+ * is dumb and doesn't have properties (getters and setters in one line) so we are lazy and just
+ * made the instance variables public. Yay Java and encapsulation! #DealWithIt
+ */
 public class Repository 
 {
 	private static boolean initialized;

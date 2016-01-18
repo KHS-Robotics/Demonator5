@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.robot.api.pdp;
+package org.usfirst.frc.team4342.api.pdp;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
