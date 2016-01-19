@@ -8,6 +8,9 @@ import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SPI;
+import com.kauailabs.navx.frc.AHRS;
+
 import ernie.logging.loggers.ILogger;
 import ernie.logging.loggers.MultiLogger;
 
@@ -30,6 +33,8 @@ public class Repository
 	public static CANTalon frontRight, frontLeft, rearRight, rearLeft;
 	
 	public static Joystick DriveStick;
+	
+	public static AHRS Navx;
 	
 	public static void initializeAll()
 	{
@@ -105,6 +110,8 @@ public class Repository
 			frontLeft.enable();
 			rearRight.enable();
 			rearLeft.enable();
+			
+			Navx = new AHRS(SPI.Port.kMXP, (byte)60);
 		}
 		catch(Exception ex)
 		{
