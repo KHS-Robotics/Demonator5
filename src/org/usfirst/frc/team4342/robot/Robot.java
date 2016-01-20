@@ -6,7 +6,7 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 /**
- * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code 2016
+ * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
  * 
  * @author Brice Chapman
  * @author Ernie Wilson
