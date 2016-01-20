@@ -8,12 +8,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code 2016
  * 
- * @author Aodhan Gorman
  * @author Brice Chapman
  * @author Ernie Wilson
- * @author Jake Saltzberg
  * @author Katie Schuetz
- * @author Magnus Murray
  * @author Payton DuLong
  * @author Shakti Das
  */
