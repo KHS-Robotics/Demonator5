@@ -4,6 +4,7 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * @author Katie Schuetz
  * @author Payton DuLong
  * @author Shakti Das
+ * @author Jake Saltzberg
  */
 public class Robot extends IterativeRobot 
 {	
@@ -77,6 +79,25 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledPeriodic()
     {
-    	
+    	NavxSmartDashboradTest();
     }
+    /**
+     * 
+     */
+    public void NavxSmartDashboradTest()
+    {
+    	SmartDashboard.putNumber("Navx Yaw", Repository.Navx.getYaw());
+    	SmartDashboard.putNumber("Navx Pitch", Repository.Navx.getPitch());
+    	SmartDashboard.putNumber("Navx Roll", Repository.Navx.getRoll());
+    	SmartDashboard.putNumber("Navx Accelerometer X", Repository.Navx.getRawAccelX());
+    	SmartDashboard.putNumber("Navx Accelerometer Y", Repository.Navx.getRawAccelY());
+    	SmartDashboard.putNumber("Navx Accelerometer Z", Repository.Navx.getRawAccelZ());
+    	SmartDashboard.putNumber("Navx Mag X", Repository.Navx.getRawMagX());
+    	SmartDashboard.putNumber("Navx Mag Y", Repository.Navx.getRawMagY());
+    	SmartDashboard.putNumber("Navx Mag Z", Repository.Navx.getRawMagZ());
+    	SmartDashboard.putBoolean("Connected", Repository.Navx.isConnected());
+    	SmartDashboard.putBoolean("Calibrating", Repository.Navx.isCalibrating());
+    }
+   
 }
+
