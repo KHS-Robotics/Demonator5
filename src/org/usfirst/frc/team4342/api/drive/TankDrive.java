@@ -9,16 +9,20 @@ public class TankDrive
 {
 	private Joystick j1;
 	
-	private CANTalon fr, fl, rr, rl;
+	private CANTalon fr, fl, mr, ml, rr, rl;
 	
-	public TankDrive(Joystick j, CANTalon fr, CANTalon fl, CANTalon rr, CANTalon rl)
+	public TankDrive(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr, CANTalon ml,
+			CANTalon rr, CANTalon rl)
 	{
 		this.j1 = j;
 		
 		this.fr = fr;
 		this.fl = fl;
+		this.mr = mr;
+		this.ml = ml;
 		this.rr = rr;
 		this.rl = rl;
+		
 	}
 	
 	public void drive()
@@ -53,6 +57,8 @@ public class TankDrive
 		{
 			fr.set(right);
 			fl.set(left);
+			mr.set(right);
+			ml.set(left);
 			rr.set(right);
 			rl.set(left);
 		}

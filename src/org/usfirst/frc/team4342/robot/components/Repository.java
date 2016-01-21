@@ -30,7 +30,8 @@ public class Repository
 	
 	public static PdpInfoExtractor Pdp;
 	
-	public static CANTalon frontRight, frontLeft, rearRight, rearLeft;
+	public static CANTalon frontRight, frontLeft, middleRight, middleLeft, 
+						   rearRight, rearLeft;
 	
 	public static Joystick DriveStick;
 	
@@ -90,9 +91,12 @@ public class Repository
 		try
 		{
 			frontRight = new CANTalon(0);
-			frontLeft = new CANTalon(1);
+			middleRight = new CANTalon(1);
 			rearRight = new CANTalon(2);
-			rearLeft = new CANTalon(3);
+			
+			frontLeft = new CANTalon(15);
+			middleLeft = new CANTalon(14);
+			rearLeft = new CANTalon(13);
 			
 			frontRight.configEncoderCodesPerRev(512);
 			frontRight.enableBrakeMode(true);
@@ -100,18 +104,26 @@ public class Repository
 			frontLeft.configEncoderCodesPerRev(512);
 			frontLeft.enableBrakeMode(true);
 			
+			middleRight.configEncoderCodesPerRev(512);
+			middleRight.enableBrakeMode(true);
+			
+			middleLeft.configEncoderCodesPerRev(512);
+			middleLeft.enableBrakeMode(true);
+			
 			rearRight.configEncoderCodesPerRev(512);
 			rearRight.enableBrakeMode(true);
 			
 			rearLeft.configEncoderCodesPerRev(512);
-			rearRight.enableBrakeMode(true);
+			rearLeft.enableBrakeMode(true);
 			
 			frontRight.enable();
 			frontLeft.enable();
+			middleRight.enable();
+			middleLeft.enable();
 			rearRight.enable();
 			rearLeft.enable();
 			
-			Navx = new AHRS(SPI.Port.kMXP, (byte)60);
+			Navx = new AHRS(SPI.Port.kMXP, (byte)50);
 		}
 		catch(Exception ex)
 		{
