@@ -6,6 +6,8 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
+
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
  * 
@@ -79,24 +81,22 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledPeriodic()
     {
-    	NavxSmartDashboradTest();
+    	navxSmartDashboradTest();
     }
-    /**
-     * 
-     */
-    public void NavxSmartDashboradTest()
+    
+    public void navxSmartDashboradTest()
     {
-    	SmartDashboard.putNumber("Navx Yaw", Repository.Navx.getYaw());
-    	SmartDashboard.putNumber("Navx Pitch", Repository.Navx.getPitch());
-    	SmartDashboard.putNumber("Navx Roll", Repository.Navx.getRoll());
-    	SmartDashboard.putNumber("Navx Accelerometer X", Repository.Navx.getRawAccelX());
-    	SmartDashboard.putNumber("Navx Accelerometer Y", Repository.Navx.getRawAccelY());
-    	SmartDashboard.putNumber("Navx Accelerometer Z", Repository.Navx.getRawAccelZ());
-    	SmartDashboard.putNumber("Navx Mag X", Repository.Navx.getRawMagX());
-    	SmartDashboard.putNumber("Navx Mag Y", Repository.Navx.getRawMagY());
-    	SmartDashboard.putNumber("Navx Mag Z", Repository.Navx.getRawMagZ());
-    	SmartDashboard.putBoolean("Connected", Repository.Navx.isConnected());
-    	SmartDashboard.putBoolean("Calibrating", Repository.Navx.isCalibrating());
+    	SmartDashboard.putNumber("Navx-Yaw", Navx.getYaw());
+    	SmartDashboard.putNumber("Navx-Pitch", Navx.getPitch());
+    	SmartDashboard.putNumber("Navx-Roll", Navx.getRoll());
+    	SmartDashboard.putNumber("Navx-Accel=X", Navx.getRawAccelX());
+    	SmartDashboard.putNumber("Navx-Accel-Y", Navx.getRawAccelY());
+    	SmartDashboard.putNumber("Navx-Accel-Z", Navx.getRawAccelZ());
+    	SmartDashboard.putNumber("Navx-Mag-X", Navx.getRawMagX());
+    	SmartDashboard.putNumber("Navx-Mag-Y", Navx.getRawMagY());
+    	SmartDashboard.putNumber("Navx-Mag-Z", Navx.getRawMagZ());
+    	SmartDashboard.putBoolean("Connected", Navx.isConnected());
+    	SmartDashboard.putBoolean("Calibrating", Navx.isCalibrating());
     }
    
 }
