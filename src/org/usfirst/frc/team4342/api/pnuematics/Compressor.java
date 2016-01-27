@@ -34,7 +34,12 @@ public class Compressor
 				{
 					try
 					{
-						if(pSwitch.get())
+						double velocity = Math.sqrt(Math.pow(Repository.Navx.getVelocityX(), 2) + Math.pow(Repository.Navx.getVelocityY(), 2));
+						double throttle = Math.sqrt(Math.pow(Repository.DriveStick.getX(), 2) + Math.pow(Repository.DriveStick.getY(), 2));
+						double ratio = (velocity/throttle);
+						double PUSH_VALUE = 20;
+						
+						if(pSwitch.get() || (ratio < PUSH_VALUE)
 						{
 							relay.set(Value.kOff);
 							enabled = false;
