@@ -2,19 +2,21 @@ package org.usfirst.frc.team4342.api.drive;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class TankDrive 
 {
-	private Joystick j1;
-	
+	private Joystick j;
 	private CANTalon fr, fl, mr, ml, rr, rl;
+	private AHRS navX;
 	
-	public TankDrive(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr, CANTalon ml,
-			CANTalon rr, CANTalon rl)
+	public TankDrive(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr,
+					CANTalon ml, CANTalon rr, CANTalon rl, AHRS navX)
 	{
-		this.j1 = j;
+		this.j = j;
 		
 		this.fr = fr;
 		this.fl = fl;
@@ -23,13 +25,14 @@ public class TankDrive
 		this.rr = rr;
 		this.rl = rl;
 		
+		this.navX = navX;
 	}
 	
 	public void drive()
 	{
-		double x = j1.getX();
-		double y = j1.getY();
-		double z = j1.getZ();
+		double x = j.getX();
+		double y = j.getY();
+		double z = j.getZ();
 		
 		double a;
 		
@@ -64,8 +67,7 @@ public class TankDrive
 		}
 		catch (Exception ex)
 		{
-			Repository.logs.error("Failed to set drive motors", ex);
+			Repository.Logs.error("Failed to set drive motors", ex);
 		}
 	}
-	
 }

@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 
+import org.usfirst.frc.team4342.api.drive.TankDrive;
+
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
  * 
@@ -16,10 +18,11 @@ import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
  * @author Katie Schuetz
  * @author Payton DuLong
  * @author Shakti Das
- * @author Jake Saltzberg
  */
 public class Robot extends IterativeRobot 
-{	
+{
+	private TankDrive drive;
+	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -28,6 +31,17 @@ public class Robot extends IterativeRobot
     public void robotInit() 
     {
 		Repository.initializeAll();
+		
+		drive = new TankDrive(
+			Repository.DriveStick,
+			Repository.FrontRight,
+			Repository.FrontLeft,
+			Repository.MiddleRight,
+			Repository.MiddleLeft,
+			Repository.RearRight,
+			Repository.RearLeft,
+			Navx
+		);
     }
 	
 	/**
@@ -63,7 +77,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-        
+        drive.drive();
     }
     
 	/**

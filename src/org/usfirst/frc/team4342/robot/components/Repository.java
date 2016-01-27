@@ -26,12 +26,12 @@ public class Repository
 	
 	public static ILogger Log;
 	public static RobotConsoleLogger ConsoleLog;
-	public static MultiLogger logs;
+	public static MultiLogger Logs;
 	
 	public static PdpInfoExtractor Pdp;
 	
-	public static CANTalon frontRight, frontLeft, middleRight, middleLeft, 
-						   rearRight, rearLeft;
+	public static CANTalon FrontRight, FrontLeft, MiddleRight, MiddleLeft, 
+						   RearRight, RearLeft;
 	
 	public static Joystick DriveStick;
 	
@@ -55,12 +55,12 @@ public class Repository
 		{
 			ConsoleLog = RobotLogFactory.createRobotConsoleLogger();
 			Log = RobotLogFactory.createLocalLog();
-			logs = new MultiLogger(new ILogger[] { ConsoleLog, Log });
+			Logs = new MultiLogger(new ILogger[] { ConsoleLog, Log });
 		}
 		catch(Exception ex)
 		{
 			ConsoleLog.warning("Failed to initialize log due to a " + ExceptionInfo.getType(ex));
-			logs = new MultiLogger(new ILogger[] { ConsoleLog });
+			Logs = new MultiLogger(new ILogger[] { ConsoleLog });
 		}
 		
 		try
@@ -70,7 +70,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			logs.warning("Failed to start PDP Logger due to a " + ExceptionInfo.getType(ex));
+			Logs.warning("Failed to start PDP Logger due to a " + ExceptionInfo.getType(ex));
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			logs.error("Failed to initialize joysticks due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize joysticks due to a " + ExceptionInfo.getType(ex), ex);
 		}
 	}
 	
@@ -90,44 +90,44 @@ public class Repository
 	{
 		try
 		{
-			frontRight = new CANTalon(0);
-			middleRight = new CANTalon(1);
-			rearRight = new CANTalon(2);
+			FrontRight = new CANTalon(0);
+			MiddleRight = new CANTalon(1);
+			RearRight = new CANTalon(2);
 			
-			frontLeft = new CANTalon(15);
-			middleLeft = new CANTalon(14);
-			rearLeft = new CANTalon(13);
+			FrontLeft = new CANTalon(15);
+			MiddleLeft = new CANTalon(14);
+			RearLeft = new CANTalon(13);
 			
-			frontRight.configEncoderCodesPerRev(512);
-			frontRight.enableBrakeMode(true);
+			FrontRight.configEncoderCodesPerRev(512);
+			FrontRight.enableBrakeMode(true);
 			
-			frontLeft.configEncoderCodesPerRev(512);
-			frontLeft.enableBrakeMode(true);
+			FrontLeft.configEncoderCodesPerRev(512);
+			FrontLeft.enableBrakeMode(true);
 			
-			middleRight.configEncoderCodesPerRev(512);
-			middleRight.enableBrakeMode(true);
+			MiddleRight.configEncoderCodesPerRev(512);
+			MiddleRight.enableBrakeMode(true);
 			
-			middleLeft.configEncoderCodesPerRev(512);
-			middleLeft.enableBrakeMode(true);
+			MiddleLeft.configEncoderCodesPerRev(512);
+			MiddleLeft.enableBrakeMode(true);
 			
-			rearRight.configEncoderCodesPerRev(512);
-			rearRight.enableBrakeMode(true);
+			RearRight.configEncoderCodesPerRev(512);
+			RearRight.enableBrakeMode(true);
 			
-			rearLeft.configEncoderCodesPerRev(512);
-			rearLeft.enableBrakeMode(true);
+			RearLeft.configEncoderCodesPerRev(512);
+			RearLeft.enableBrakeMode(true);
 			
-			frontRight.enable();
-			frontLeft.enable();
-			middleRight.enable();
-			middleLeft.enable();
-			rearRight.enable();
-			rearLeft.enable();
+			FrontRight.enable();
+			FrontLeft.enable();
+			MiddleRight.enable();
+			MiddleLeft.enable();
+			RearRight.enable();
+			RearLeft.enable();
 			
 			Navx = new AHRS(SPI.Port.kMXP, (byte)50);
 		}
 		catch(Exception ex)
 		{
-			logs.error("Failed to initialize drive due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize drive due to a " + ExceptionInfo.getType(ex), ex);
 		}
 	}
 }
