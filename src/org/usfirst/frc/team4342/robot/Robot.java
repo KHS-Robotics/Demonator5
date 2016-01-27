@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 
 import org.usfirst.frc.team4342.api.drive.TankDrive;
+import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -21,6 +22,7 @@ import org.usfirst.frc.team4342.api.drive.TankDrive;
  */
 public class Robot extends IterativeRobot 
 {
+	private Compressor compressor;
 	private TankDrive drive;
 	
     /**
@@ -32,16 +34,20 @@ public class Robot extends IterativeRobot
     {
 		Repository.initializeAll();
 		
+		compressor = new Compressor(
+			Repository.Compressor,
+			Repository.PressureSwitch
+		);
+		compressor.setAutomaticMode();
+		
 		drive = new TankDrive(
 			Repository.DriveStick,
-			Repository.FrontRight,
-			Repository.FrontLeft,
-			Repository.MiddleRight,
-			Repository.MiddleLeft,
-			Repository.RearRight,
-			Repository.RearLeft,
-			Navx
+			Repository.DriveTrain,
+			Navx,
+			Repository.Shifter,
+			Repository.Cylinder
 		);
+		TankDrive.setAutomaticMode(drive, 1, 2);
     }
 	
 	/**
@@ -68,7 +74,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
-    	
+    	drive.setBrakeMode();
     }
 
     /**
@@ -77,7 +83,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-        drive.drive();
+		
     }
     
 	/**
@@ -86,7 +92,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
-    	
+    	drive.setCoastMode();
     }
     
     /**
@@ -100,17 +106,17 @@ public class Robot extends IterativeRobot
     
     public void navxSmartDashboradTest()
     {
-    	SmartDashboard.putNumber("Navx-Yaw", Navx.getYaw());
-    	SmartDashboard.putNumber("Navx-Pitch", Navx.getPitch());
-    	SmartDashboard.putNumber("Navx-Roll", Navx.getRoll());
-    	SmartDashboard.putNumber("Navx-Accel=X", Navx.getRawAccelX());
-    	SmartDashboard.putNumber("Navx-Accel-Y", Navx.getRawAccelY());
-    	SmartDashboard.putNumber("Navx-Accel-Z", Navx.getRawAccelZ());
-    	SmartDashboard.putNumber("Navx-Mag-X", Navx.getRawMagX());
-    	SmartDashboard.putNumber("Navx-Mag-Y", Navx.getRawMagY());
-    	SmartDashboard.putNumber("Navx-Mag-Z", Navx.getRawMagZ());
-    	SmartDashboard.putBoolean("Connected", Navx.isConnected());
-    	SmartDashboard.putBoolean("Calibrating", Navx.isCalibrating());
+    	SmartDashboard.putNumber("NavX-Yaw", Navx.getYaw());
+    	SmartDashboard.putNumber("NavX-Pitch", Navx.getPitch());
+    	SmartDashboard.putNumber("NavX-Roll", Navx.getRoll());
+    	SmartDashboard.putNumber("NavX-Accel-X", Navx.getRawAccelX());
+    	SmartDashboard.putNumber("NavX-Accel-Y", Navx.getRawAccelY());
+    	SmartDashboard.putNumber("NavX-Accel-Z", Navx.getRawAccelZ());
+    	SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
+    	SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
+    	SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());
+    	SmartDashboard.putBoolean("NavX-Connected", Navx.isConnected());
+    	SmartDashboard.putBoolean("NavX-Calibrating", Navx.isCalibrating());
     }
    
 }
