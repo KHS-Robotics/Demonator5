@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Shooter 
-	{
+{
 
 	public Shooter(Joystick j, CANTalon a, CANTalon b)
 	{
@@ -13,13 +13,11 @@ public class Shooter
 	
 	public void accumulate() 
 	{
-	
 		
 	}
 	
 	public void shoot() 
 	{
-		 
 		
 	}
 }

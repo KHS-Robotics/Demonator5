@@ -4,11 +4,11 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 
 import org.usfirst.frc.team4342.api.drive.TankDrive;
+import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 
 /**
@@ -33,6 +33,8 @@ public class Robot extends IterativeRobot
     public void robotInit() 
     {
 		Repository.initializeAll();
+		
+		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
 		
 		compressor = new Compressor(
 			Repository.Compressor,
@@ -101,23 +103,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledPeriodic()
     {
-    	navxSmartDashboradTest();
+    	
     }
-    
-    public void navxSmartDashboradTest()
-    {
-    	SmartDashboard.putNumber("NavX-Yaw", Navx.getYaw());
-    	SmartDashboard.putNumber("NavX-Pitch", Navx.getPitch());
-    	SmartDashboard.putNumber("NavX-Roll", Navx.getRoll());
-    	SmartDashboard.putNumber("NavX-Accel-X", Navx.getRawAccelX());
-    	SmartDashboard.putNumber("NavX-Accel-Y", Navx.getRawAccelY());
-    	SmartDashboard.putNumber("NavX-Accel-Z", Navx.getRawAccelZ());
-    	SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
-    	SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
-    	SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());
-    	SmartDashboard.putBoolean("NavX-Connected", Navx.isConnected());
-    	SmartDashboard.putBoolean("NavX-Calibrating", Navx.isCalibrating());
-    }
-   
 }
 
