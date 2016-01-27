@@ -12,7 +12,9 @@ public class Shooter
 {
 	private static boolean run;
 	
-	public static void startAutomaticMode(Joystick j, CANTalon rightMotor, CANTalon leftMotor, Solenoid cylinder, int extendButton)
+	public static void startAutomaticMode(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
+										  CANTalon leftMotor, Solenoid loaderX, Solenoid loaderY, 
+										  int extendButton)
 	{
 		if(run)
 			return;
@@ -21,6 +23,8 @@ public class Shooter
 		
 		Thread t = new Thread(new Runnable()
 		{
+			ShooterState state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
+			
 			@Override
 			public void run()
 			{
@@ -30,7 +34,50 @@ public class Shooter
 					{
 						if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 						{
+							if (state == ShooterState.LOADED)
+							{
+								if (j.getRawButton(0))
+								{
+									loaderY.set(true);
+									rightMotor.set(1);
+									leftMotor.set(1);
+									
+									if (j.getRawButton(1) && (rightMotor.getEncVelocity() > 30 && leftMotor.getEncVelocity() > 30))
+										state = ShooterState.FIRING;
+								}
+								else
+								{
+									loaderY.set(false);
+									rightMotor.set(0);
+									leftMotor.set(0);
+								}
+							}
+							else if (state == ShooterState.FIRING)
+							{
+								loaderX.set(true);
+								Thread.sleep(250);
+								rightMotor.set(0);
+								leftMotor.set(0);
+								state = ShooterState.FIRED;
+							}
+							else if (state == ShooterState.FIRED)
+							{
+								if (!j.getRawButton(0))
+								{
+									state = ShooterState.RELOADING;
+								}
+							}
+							else if (state == ShooterState.RELOADING)
+							{
+								loaderY.set(false);
+								loaderX.set(false);
+								state = ShooterState.LOADED;
+							}
 							
+							if(j.getRawButton(3))
+								accumulator.set(-1);
+							else
+								accumulator.set(0);
 						}
 						
 						Thread.sleep(50);

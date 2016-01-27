@@ -39,7 +39,7 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static CANTalon RightShooter, LeftShooter;
+	public static CANTalon RightShooter, LeftShooter, Accumulator;
 	public static DriveTrain DriveTrain;
 	
 	public static Joystick DriveStick, ShooterStick;
@@ -49,7 +49,7 @@ public class Repository
 	public static DigitalInput PressureSwitch;
 	public static Relay Compressor;
 	public static DoubleSolenoid Shifter;
-	public static Solenoid Cylinder;
+	public static Solenoid LoaderX, LoaderY;
 	
 	public static void initializeAll()
 	{
@@ -145,15 +145,19 @@ public class Repository
 		{
 			RightShooter = new CANTalon(-1);
 			LeftShooter = new CANTalon(-2);
+			Accumulator = new CANTalon(-3);
 			
 			RightShooter.changeControlMode(TalonControlMode.Speed);
 			LeftShooter.changeControlMode(TalonControlMode.Speed);
+			Accumulator.changeControlMode(TalonControlMode.Speed);
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
+			Accumulator.enableBrakeMode(false);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
+			Accumulator.enable();
 		}
 		catch(Exception ex)
 		{
@@ -168,7 +172,8 @@ public class Repository
 			PressureSwitch = new DigitalInput(1);
 			Compressor = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(1, 2);
-			Cylinder = new Solenoid(3);
+			LoaderX = new Solenoid(3);
+			LoaderY = new Solenoid(4);
 		}
 		catch(Exception ex)
 		{

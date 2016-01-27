@@ -34,14 +34,6 @@ public class Robot extends IterativeRobot
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
 		
 		Compressor.startAutomaticMode(Repository.Compressor, Repository.PressureSwitch);
-		
-		Shooter.startAutomaticMode(
-			Repository.ShooterStick, 
-			Repository.RightShooter, 
-			Repository.LeftShooter, 
-			Repository.Cylinder,
-			1
-		);
     }
 	
 	/**
@@ -79,12 +71,14 @@ public class Robot extends IterativeRobot
     	);
     	
     	Shooter.startAutomaticMode(
-    		Repository.ShooterStick,
-    		Repository.RightShooter,
-    		Repository.LeftShooter,
-    		Repository.Cylinder,
-    		1
-    	);
+			Repository.ShooterStick, 
+			Repository.Accumulator,
+			Repository.RightShooter, 
+			Repository.LeftShooter, 
+			Repository.LoaderX,
+			Repository.LoaderY,
+			1
+		);
     }
 
     /**
