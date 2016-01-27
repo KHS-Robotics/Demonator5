@@ -5,8 +5,10 @@ import org.usfirst.frc.team4342.api.logging.PdpLogger;
 import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
 import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
 import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
+import org.usfirst.frc.team4342.api.drive.DriveTrain;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
@@ -37,9 +39,10 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static CANTalon[] DriveTrain;
+	public static CANTalon RightShooter, LeftShooter;
+	public static DriveTrain DriveTrain;
 	
-	public static Joystick DriveStick;
+	public static Joystick DriveStick, ShooterStick;
 	
 	public static AHRS Navx;
 	
@@ -55,6 +58,7 @@ public class Repository
 			initializeLogs();
 			initializeJoysticks();
 			initializeDrive();
+			initializeShooter();
 			initializePneumatics();
 		}
 		
@@ -91,6 +95,7 @@ public class Repository
 		try
 		{
 			DriveStick = new Joystick(0);
+			ShooterStick = new Joystick(1);
 		}
 		catch(Exception ex)
 		{
@@ -109,17 +114,18 @@ public class Repository
 			RearRight = new CANTalon(2);
 			RearLeft = new CANTalon(13);
 			
-			DriveTrain = new CANTalon[] {
+			DriveTrain = new DriveTrain(
 				FrontRight,
 				FrontLeft,
 				MiddleRight,
 				MiddleLeft,
 				RearRight,
 				RearLeft
-			};
+			);
 			
-			for(CANTalon talon : DriveTrain)
+			for(CANTalon talon : DriveTrain.getDriveTrain())
 			{
+				talon.changeControlMode(TalonControlMode.Speed);
 				talon.configEncoderCodesPerRev(512);
 				talon.enableBrakeMode(true);
 				talon.enable();
@@ -130,6 +136,28 @@ public class Repository
 		catch(Exception ex)
 		{
 			Logs.error("Failed to initialize drive due to a " + ExceptionInfo.getType(ex), ex);
+		}
+	}
+	
+	private static void initializeShooter()
+	{
+		try
+		{
+			RightShooter = new CANTalon(-1);
+			LeftShooter = new CANTalon(-2);
+			
+			RightShooter.changeControlMode(TalonControlMode.Speed);
+			LeftShooter.changeControlMode(TalonControlMode.Speed);
+			
+			RightShooter.enableBrakeMode(false);
+			LeftShooter.enableBrakeMode(false);
+			
+			RightShooter.enable();
+			LeftShooter.enable();
+		}
+		catch(Exception ex)
+		{
+			Logs.error("Failed to initialize shooter due to a " + ExceptionInfo.getType(ex), ex);
 		}
 	}
 	

@@ -5,11 +5,10 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 
-import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
-
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
+import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -22,8 +21,6 @@ import org.usfirst.frc.team4342.api.pnuematics.Compressor;
  */
 public class Robot extends IterativeRobot 
 {
-	private Compressor compressor;
-	private TankDrive drive;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -36,20 +33,15 @@ public class Robot extends IterativeRobot
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
 		
-		compressor = new Compressor(
-			Repository.Compressor,
-			Repository.PressureSwitch
-		);
-		compressor.setAutomaticMode();
+		Compressor.startAutomaticMode(Repository.Compressor, Repository.PressureSwitch);
 		
-		drive = new TankDrive(
-			Repository.DriveStick,
-			Repository.DriveTrain,
-			Navx,
-			Repository.Shifter,
-			Repository.Cylinder
+		Shooter.startAutomaticMode(
+			Repository.ShooterStick, 
+			Repository.RightShooter, 
+			Repository.LeftShooter, 
+			Repository.Cylinder,
+			1
 		);
-		TankDrive.setAutomaticMode(drive, 1, 2);
     }
 	
 	/**
@@ -58,7 +50,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void autonomousInit() 
     {
-    	
+    	Repository.DriveTrain.setBrakeMode();
     }
 
     /**
@@ -76,7 +68,23 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
-    	drive.setBrakeMode();
+		Repository.DriveTrain.setBrakeMode();
+		
+    	TankDrive.startAutomaticMode(
+    		Repository.DriveStick,
+    		Repository.DriveTrain,
+    		Repository.Navx,
+    		Repository.Shifter,
+    		1
+    	);
+    	
+    	Shooter.startAutomaticMode(
+    		Repository.ShooterStick,
+    		Repository.RightShooter,
+    		Repository.LeftShooter,
+    		Repository.Cylinder,
+    		1
+    	);
     }
 
     /**
@@ -94,7 +102,9 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
-    	drive.setCoastMode();
+    	Repository.DriveTrain.setCoastMode();
+    	TankDrive.stopAutomaticMode();
+    	Shooter.stopAutomaticMode();
     }
     
     /**

@@ -9,48 +9,53 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class TankDrive 
 {
-	private Joystick j;
-	private CANTalon fr, fl, mr, ml, rr, rl;
-	private AHRS navX;
-	private DoubleSolenoid shifter;
-	private Solenoid cylinder;
+	private static Joystick j;
+	private static CANTalon fr, fl, mr, ml, rr, rl;
+	private static AHRS navX;
+	private static DoubleSolenoid shifter;
 	
-	public TankDrive(Joystick j, CANTalon[] talons, AHRS navX, 
-					DoubleSolenoid shifter, Solenoid cylinder)
+	private static boolean run;
+	
+	private TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
-		this.j = j;
+		TankDrive.j = j;
 		
-		this.fr = talons[0];
-		this.fl = talons[1];
-		this.mr = talons[2];
-		this.ml = talons[3];
-		this.rr = talons[4];
-		this.rl = talons[5];
+		TankDrive.fr = talons.getFrontRight();
+		TankDrive.fl = talons.getFrontLeft();
+		TankDrive.mr = talons.getMiddleRight();
+		TankDrive.ml = talons.getMiddleLeft();
+		TankDrive.rr = talons.getRearRight();
+		TankDrive.rl = talons.getRearLeft();
 		
-		this.navX = navX;
+		TankDrive.navX = navX;
 		
-		this.shifter = shifter;
-		this.cylinder = cylinder;
+		TankDrive.shifter = shifter;
 	}
 	
-	public static void setAutomaticMode(TankDrive drive, int shiftButton, int extendButton)
+	public static void startAutomaticMode(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, int shiftButton)
 	{
+		if(run)
+			return;
+		
+		TankDrive drive = new TankDrive(j, talons, navX, shifter);
+		
+		run = true;
+		
 		Thread t = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				while(true)
+				while(run)
 				{
 					try
 					{
 						if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 						{
-							drive.drive(shiftButton, extendButton);
+							drive.drive(shiftButton);
 						}
 						
 						Thread.sleep(50);
@@ -69,10 +74,14 @@ public class TankDrive
 		t.start();
 	}
 	
-	public void drive(int shiftButton, int extendButton)
+	public static void stopAutomaticMode()
+	{
+		run = false;
+	}
+	
+	private void drive(int shiftButton)
 	{
 		checkUserShift(shiftButton);
-		checkUserExtend(extendButton);
 		
 		double x = j.getX();
 		double y = j.getY();
@@ -115,26 +124,6 @@ public class TankDrive
 		}
 	}
 	
-	public void setCoastMode()
-	{
-		fr.enableBrakeMode(false);
-		fl.enableBrakeMode(false);
-		mr.enableBrakeMode(false);
-		ml.enableBrakeMode(false);
-		rr.enableBrakeMode(false);
-		rl.enableBrakeMode(false);
-	}
-	
-	public void setBrakeMode()
-	{
-		fr.enableBrakeMode(true);
-		fl.enableBrakeMode(true);
-		mr.enableBrakeMode(true);
-		ml.enableBrakeMode(true);
-		rr.enableBrakeMode(true);
-		rl.enableBrakeMode(true);
-	}
-	
 	private void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
@@ -146,21 +135,6 @@ public class TankDrive
 			else
 			{
 				shifter.set(DoubleSolenoid.Value.kForward);
-			}
-		}
-	}
-	
-	private void checkUserExtend(int button)
-	{
-		if(j.getRawButton(button))
-		{
-			if(cylinder.get())
-			{
-				cylinder.set(false);
-			}
-			else
-			{
-				cylinder.set(true);
 			}
 		}
 	}

@@ -12,33 +12,25 @@ import edu.wpi.first.wpilibj.Relay.Value;
  */
 public class Compressor 
 {
-	private volatile Relay relay;
-	private volatile DigitalInput pSwitch;
-	
-	private volatile boolean enabled;
-	
-	/**
-	 * Constructs a normal compressor with a relay and digital pressure switch
-	 * @param relay the relay that turns the compressor on and off
-	 * @param pSwitch the digital sensor that determines if the air tank is full
-	 */
-	public Compressor(Relay relay, DigitalInput pSwitch)
-	{
-		this.relay = relay;
-		this.pSwitch = pSwitch;
-	}
+	private static boolean enabled;
+	private static boolean run;
 	
 	/**
 	 * Spawns a thread that automatically checks if the compressor should be on
 	 */
-	public void setAutomaticMode()
+	public static void startAutomaticMode(Relay relay, DigitalInput pSwitch)
 	{
+		if(run)
+			return;
+		
+		run = true;
+		
 		Thread t = new Thread(new Runnable() 
 		{
 			@Override
 			public void run()
 			{
-				while(true)
+				while(run)
 				{
 					try
 					{
@@ -71,22 +63,9 @@ public class Compressor
 		t.start();
 	}
 	
-	/**
-	 * Turns off the compressor
-	 */
-	public synchronized void disable()
+	public static void stopAutomaticMode()
 	{
-		relay.set(Value.kOff);
-		enabled = false;
-	}
-	
-	/**
-	 * Turns on the compressor
-	 */
-	public synchronized void enable()
-	{
-		relay.set(Value.kForward);
-		enabled = true;
+		run = false;
 	}
 	
 	/**
