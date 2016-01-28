@@ -88,6 +88,9 @@ public class Shooter
 							"Unexpected error in shooter (" + ExceptionInfo.getType(ex) + ")", 
 							ex
 						);
+						
+						run = false;
+						break;
 					}
 				}
 			}

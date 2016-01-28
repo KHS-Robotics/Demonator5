@@ -59,6 +59,7 @@ public class Compressor
 							ex
 						);
 						
+						run = false;
 						break;
 					}
 				}

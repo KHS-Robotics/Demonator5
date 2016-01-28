@@ -66,6 +66,9 @@ public class TankDrive
 							"Unexpected error in DriveTrain (" + ExceptionInfo.getType(ex) + ")", 
 							ex
 						);
+						
+						run = false;
+						break;
 					}
 				}
 			}
