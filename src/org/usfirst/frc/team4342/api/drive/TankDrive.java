@@ -1,13 +1,11 @@
 package org.usfirst.frc.team4342.api.drive;
 
-import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class TankDrive 
@@ -17,9 +15,7 @@ public class TankDrive
 	private static AHRS navX;
 	private static DoubleSolenoid shifter;
 	
-	private static boolean run;
-	
-	private TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
+	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
 		TankDrive.j = j;
 		
@@ -35,54 +31,7 @@ public class TankDrive
 		TankDrive.shifter = shifter;
 	}
 	
-	public static void startAutomaticMode(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, int shiftButton)
-	{
-		if(run)
-			return;
-		
-		TankDrive drive = new TankDrive(j, talons, navX, shifter);
-		
-		run = true;
-		
-		Thread t = new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				while(run)
-				{
-					try
-					{
-						if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
-						{
-							drive.drive(shiftButton);
-						}
-						
-						Thread.sleep(50);
-					}
-					catch(Exception ex)
-					{
-						Repository.Logs.error(
-							"Unexpected error in DriveTrain (" + ExceptionInfo.getType(ex) + ")", 
-							ex
-						);
-						
-						run = false;
-						break;
-					}
-				}
-			}
-		});
-		
-		t.start();
-	}
-	
-	public static void stopAutomaticMode()
-	{
-		run = false;
-	}
-	
-	private void drive(int shiftButton)
+	public void drive(int shiftButton)
 	{
 		checkUserShift(shiftButton);
 		

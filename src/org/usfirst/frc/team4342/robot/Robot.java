@@ -5,10 +5,11 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 
-import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
-import org.usfirst.frc.team4342.api.pnuematics.Compressor;
-import org.usfirst.frc.team4342.api.shooter.Shooter;
+import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
+import org.usfirst.frc.team4342.api.multithreading.CompressorComponent;
+import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
+import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -21,6 +22,10 @@ import org.usfirst.frc.team4342.api.shooter.Shooter;
  */
 public class Robot extends IterativeRobot 
 {
+	private CompressorComponent cc;
+	private TankDriveComponent tdc;
+	private ShootingComponent sc;
+	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -32,7 +37,12 @@ public class Robot extends IterativeRobot
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
 		
-		Compressor.startAutomaticMode(Repository.Compressor, Repository.PressureSwitch);
+		cc = new CompressorComponent(Repository.Compressor);
+		ComponentRunner.startAutomaticMode(cc);
+		
+		tdc = new TankDriveComponent(Repository.TankDrive, 1);
+		
+		sc = new ShootingComponent(Repository.Shooter);
     }
 	
 	/**
@@ -61,23 +71,8 @@ public class Robot extends IterativeRobot
     {
 		Repository.DriveTrain.setBrakeMode();
 		
-    	TankDrive.startAutomaticMode(
-    		Repository.DriveStick,
-    		Repository.DriveTrain,
-    		Repository.Navx,
-    		Repository.Shifter,
-    		1
-    	);
-    	
-    	Shooter.startAutomaticMode(
-			Repository.ShooterStick, 
-			Repository.Accumulator,
-			Repository.RightShooter, 
-			Repository.LeftShooter, 
-			Repository.LoaderX,
-			Repository.LoaderY,
-			1
-		);
+    	ComponentRunner.startAutomaticMode(tdc);
+    	ComponentRunner.startAutomaticMode(sc);
     }
 
     /**
@@ -86,7 +81,10 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-		
+		if(Repository.SwitchBox.getRawButton(3))
+		{
+			ComponentRunner.stopAutomaticMode(cc);
+		}
     }
     
 	/**
@@ -96,8 +94,8 @@ public class Robot extends IterativeRobot
     public void disabledInit()
     {
     	Repository.DriveTrain.setCoastMode();
-    	TankDrive.stopAutomaticMode();
-    	Shooter.stopAutomaticMode();
+    	ComponentRunner.stopAutomaticMode(tdc);
+    	ComponentRunner.stopAutomaticMode(sc);
     }
     
     /**

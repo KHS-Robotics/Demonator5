@@ -2,12 +2,13 @@ package org.usfirst.frc.team4342.api.drive;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
+import edu.wpi.first.wpilibj.Joystick;
 
 public class DriveTrain 
 {
 	private CANTalon fr, fl, mr, ml, rr, rl;
 	
-	public DriveTrain(CANTalon fr, CANTalon fl, CANTalon mr,
+	public DriveTrain(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr,
 					  CANTalon ml, CANTalon rr, CANTalon rl)
 	{
 		this.fr = fr;

@@ -1,94 +1,29 @@
 package org.usfirst.frc.team4342.api.pnuematics;
 
-import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
-import org.usfirst.frc.team4342.robot.components.Repository;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Relay.Value;
 
 /**
  * This class is for controlling a compressor
  */
 public class Compressor 
 {
-	private static boolean enabled;
-	private static boolean run;
+	private Relay relay;
+	private DigitalInput pSwitch;
 	
-	/**
-	 * Spawns a thread that automatically checks if the compressor should be on
-	 */
-	public static void startAutomaticMode(Relay relay, DigitalInput pSwitch)
+	public Compressor(Relay relay, DigitalInput pSwitch)
 	{
-		if(run)
-			return;
-		
-		run = true;
-		
-		Thread t = new Thread(new Runnable() 
-		{
-			@Override
-			public void run()
-			{
-				while(run)
-				{
-					try
-					{
-						final double velocity = Math.sqrt(Math.pow(Repository.Navx.getVelocityX(), 2) + Math.pow(Repository.Navx.getVelocityY(), 2));
-						final double throttle = Math.sqrt(Math.pow(Repository.DriveStick.getX(), 2) + Math.pow(Repository.DriveStick.getY(), 2));
-						final double ratio = (velocity/throttle);
-						final double PUSH_VALUE = 20.0;
-						
-						if(pSwitch.get() || (ratio < PUSH_VALUE))
-						{
-							relay.set(Value.kOff);
-							enabled = false;
-						}
-						else
-						{
-							relay.set(Value.kForward);
-							enabled = true;
-						}
-						
-						Thread.sleep(100);
-					}
-					catch(Exception ex)
-					{
-						Repository.Logs.error(
-							"Unexpected error with compressor (" + ExceptionInfo.getType(ex) + ")", 
-							ex
-						);
-						
-						run = false;
-						break;
-					}
-				}
-			}
-		});
-		
-		t.start();
+		this.relay = relay;
+		this.pSwitch = pSwitch;
 	}
 	
-	public static void stopAutomaticMode()
+	public Relay getRelay()
 	{
-		run = false;
+		return relay;
 	}
 	
-	/**
-	 * Determine if the compressor is disabled
-	 * @return true if the compressor is off, false otherwise
-	 */
-	public synchronized boolean isDisabled()
+	public DigitalInput getPressureSwitch()
 	{
-		return !enabled;
-	}
-	
-	/**
-	 * Determine if the compressor is enabled
-	 * @return true if the compressor is on, false otherwise
-	 */
-	public synchronized boolean isEnabled()
-	{
-		return enabled;
+		return pSwitch;
 	}
 }

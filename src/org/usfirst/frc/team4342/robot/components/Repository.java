@@ -6,6 +6,9 @@ import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
 import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
 import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
+import org.usfirst.frc.team4342.api.pnuematics.Compressor;
+import org.usfirst.frc.team4342.api.drive.TankDrive;
+import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
@@ -35,6 +38,8 @@ public class Repository
 	public static RobotConsoleLogger ConsoleLog;
 	public static MultiLogger Logs;
 	
+	public static Joystick DriveStick, ShooterStick, SwitchBox;
+	
 	public static PdpInfoExtractor Pdp;
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
@@ -42,14 +47,16 @@ public class Repository
 	public static CANTalon RightShooter, LeftShooter, Accumulator;
 	public static DriveTrain DriveTrain;
 	
-	public static Joystick DriveStick, ShooterStick;
-	
 	public static AHRS Navx;
 	
 	public static DigitalInput PressureSwitch;
-	public static Relay Compressor;
+	public static Relay CompressorRelay;
 	public static DoubleSolenoid Shifter;
 	public static Solenoid LoaderX, LoaderY;
+	
+	public static Compressor Compressor;
+	public static TankDrive TankDrive;
+	public static Shooter Shooter;
 	
 	public static void initializeAll()
 	{
@@ -60,6 +67,7 @@ public class Repository
 			initializeDrive();
 			initializeShooter();
 			initializePneumatics();
+			initializeComponents();
 		}
 		
 		initialized = true;
@@ -96,6 +104,7 @@ public class Repository
 		{
 			DriveStick = new Joystick(0);
 			ShooterStick = new Joystick(1);
+			SwitchBox = new Joystick(2);
 		}
 		catch(Exception ex)
 		{
@@ -115,6 +124,7 @@ public class Repository
 			RearLeft = new CANTalon(13);
 			
 			DriveTrain = new DriveTrain(
+				DriveStick,
 				FrontRight,
 				FrontLeft,
 				MiddleRight,
@@ -170,7 +180,7 @@ public class Repository
 		try
 		{
 			PressureSwitch = new DigitalInput(1);
-			Compressor = new Relay(1, Relay.Direction.kForward);
+			CompressorRelay = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(1, 2);
 			LoaderX = new Solenoid(3);
 			LoaderY = new Solenoid(4);
@@ -178,6 +188,20 @@ public class Repository
 		catch(Exception ex)
 		{
 			Logs.error("Failed to initialize pneumatics due to a " + ExceptionInfo.getType(ex), ex);
+		}
+	}
+	
+	private static void initializeComponents()
+	{
+		try
+		{
+			Compressor = new Compressor(CompressorRelay, PressureSwitch);
+			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, LoaderY);
+		}
+		catch(Exception ex)
+		{
+			Logs.error("Failed to initialize main components of the robot (" + ExceptionInfo.getType(ex) + ")", ex);
 		}
 	}
 }
