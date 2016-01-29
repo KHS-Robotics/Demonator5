@@ -4,26 +4,26 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 
-/**
- * Shooter DTO. I hate how Java doesn't have properties like C#...
- */
+
 public class Shooter 
 {
 	public static final int MIN_ENC_VELOCITY = 30;
 	
 	private Joystick j;
-	private CANTalon accumulator, rightMotor, leftMotor;
+	private CANTalon accumulator, rightMotor, leftMotor, verticalMotor;
 	private Solenoid loaderX, loaderY;
 	
 	private ShooterState state;
 	
 	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
-							  CANTalon leftMotor, Solenoid loaderX, Solenoid loaderY)
+							  CANTalon leftMotor, Solenoid loaderX, Solenoid loaderY,
+							  CANTalon verticalMotor)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
+		this.verticalMotor = verticalMotor;
 		this.loaderX = loaderX;
 		this.loaderY = loaderY;
 		
@@ -31,6 +31,13 @@ public class Shooter
 	}
 	
 	public void handle()
+	{
+		checkShooter();
+		checkAccumulator();
+		checkVertical();
+	}
+	
+	private void checkShooter()
 	{
 		if (state == ShooterState.LOADED)
 		{
@@ -70,11 +77,19 @@ public class Shooter
 			loaderX.set(false);
 			state = ShooterState.LOADED;
 		}
-		
+	}
+	
+	private void checkAccumulator()
+	{
 		if(j.getRawButton(3))
 			accumulator.set(-1);
 		else
 			accumulator.set(0);
+	}
+	
+	private void checkVertical()
+	{
+		verticalMotor.set(j.getY());
 	}
 	
 	public ShooterState getState()
@@ -100,6 +115,11 @@ public class Shooter
 	public CANTalon getLeftMotor()
 	{
 		return leftMotor;
+	}
+	
+	public CANTalon getVerticalMotor()
+	{
+		return verticalMotor;
 	}
 	
 	public Solenoid getLoaderX()

@@ -44,7 +44,7 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static CANTalon RightShooter, LeftShooter, Accumulator;
+	public static CANTalon RightShooter, LeftShooter, Accumulator, VerticalMotor;
 	public static DriveTrain DriveTrain;
 	
 	public static AHRS Navx;
