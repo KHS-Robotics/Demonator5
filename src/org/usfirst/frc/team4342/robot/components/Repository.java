@@ -196,7 +196,7 @@ public class Repository
 		{
 			Compressor = new Compressor(CompressorRelay, PressureSwitch);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, LoaderY);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, LoaderY, VerticalMotor);
 		}
 		catch(Exception ex)
 		{
