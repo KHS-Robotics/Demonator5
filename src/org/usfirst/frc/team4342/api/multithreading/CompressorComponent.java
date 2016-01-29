@@ -5,18 +5,17 @@ import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
 
 public class CompressorComponent extends Component 
 {
-	private Relay relay;
-	private DigitalInput pSwitch;
+	private Compressor compressor;
 	
 	public CompressorComponent(Compressor compressor)
 	{
-		this.relay = compressor.getRelay();
-		this.pSwitch = compressor.getPressureSwitch();
+		this.compressor = compressor;
 	}
 
 	@Override
@@ -26,18 +25,9 @@ public class CompressorComponent extends Component
 		{
 			try
 			{
-				final double velocity = Math.sqrt(Math.pow(Repository.Navx.getVelocityX(), 2) + Math.pow(Repository.Navx.getVelocityY(), 2));
-				final double throttle = Math.sqrt(Math.pow(Repository.DriveStick.getX(), 2) + Math.pow(Repository.DriveStick.getY(), 2));
-				final double ratio = (velocity/throttle);
-				final double PushValue = 20.0;
-				
-				if(pSwitch.get() || (ratio < PushValue))
+				if(!DriverStation.getInstance().isBrownedOut())
 				{
-					relay.set(Value.kOff);
-				}
-				else
-				{
-					relay.set(Value.kForward);
+					compressor.handle();
 				}
 				
 				Thread.sleep(100);

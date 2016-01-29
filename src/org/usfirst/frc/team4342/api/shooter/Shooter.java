@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.Solenoid;
  */
 public class Shooter 
 {
+	public static final int MIN_ENC_VELOCITY = 30;
+	
 	private Joystick j;
 	private CANTalon accumulator, rightMotor, leftMotor;
 	private Solenoid loaderX, loaderY;
@@ -22,6 +24,55 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.loaderX = loaderX;
 		this.loaderY = loaderY;
+	}
+	
+	public void handle()
+	{
+		ShooterState state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
+		
+		if (state == ShooterState.LOADED)
+		{
+			if (j.getRawButton(1))
+			{
+				loaderY.set(true);
+				rightMotor.set(1);
+				leftMotor.set(1);
+				
+				if (j.getRawButton(1) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
+					state = ShooterState.FIRING;
+			}
+			else
+			{
+				loaderY.set(false);
+				rightMotor.set(0);
+				leftMotor.set(0);
+			}
+		}
+		else if (state == ShooterState.FIRING)
+		{
+			loaderX.set(true);
+			rightMotor.set(0);
+			leftMotor.set(0);
+			state = ShooterState.FIRED;
+		}
+		else if (state == ShooterState.FIRED)
+		{
+			if (!j.getRawButton(1))
+			{
+				state = ShooterState.RELOADING;
+			}
+		}
+		else if (state == ShooterState.RELOADING)
+		{
+			loaderY.set(false);
+			loaderX.set(false);
+			state = ShooterState.LOADED;
+		}
+		
+		if(j.getRawButton(3))
+			accumulator.set(-1);
+		else
+			accumulator.set(0);
 	}
 	
 	public Joystick getJoystick()
