@@ -4,8 +4,6 @@ import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
-import edu.wpi.first.wpilibj.DriverStation;
-
 public class CompressorComponent extends Component 
 {
 	private Compressor compressor;
@@ -22,10 +20,7 @@ public class CompressorComponent extends Component
 		{
 			try
 			{
-				if(!DriverStation.getInstance().isBrownedOut())
-				{
-					compressor.handle();
-				}
+				compressor.handle();
 				
 				Thread.sleep(100);
 			}

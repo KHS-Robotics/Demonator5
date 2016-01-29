@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.api.pnuematics;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
 
@@ -27,7 +28,7 @@ public class Compressor
 		final double ratio = (velocity/throttle);
 		final double PushValue = 20.0;
 		
-		if(pSwitch.get() || (ratio < PushValue))
+		if(pSwitch.get() || (ratio < PushValue) || DriverStation.getInstance().isBrownedOut())
 		{
 			relay.set(Value.kOff);
 		}

@@ -4,7 +4,6 @@ import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.logging.PdpLogger;
 import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
 import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
-import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -40,7 +40,7 @@ public class Repository
 	
 	public static Joystick DriveStick, ShooterStick, SwitchBox;
 	
-	public static PdpInfoExtractor Pdp;
+	public static PowerDistributionPanel Pdp;
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
@@ -89,7 +89,6 @@ public class Repository
 		
 		try
 		{
-			Pdp = new PdpInfoExtractor();
 			PdpLogger.start(Pdp, Log, ConsoleLog);
 		}
 		catch(Exception ex)

@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.logging.FileHelper;
-import org.usfirst.frc.team4342.api.pdp.PdpInfoExtractor;
 
 import ernie.logging.loggers.ILogger;
 import ernie.logging.loggers.MultiLogger;
@@ -27,11 +26,11 @@ public class PdpLogger
 	/**
 	 * Starts logging for 10 minutes
 	 */
-	public static void start(PdpInfoExtractor pdp, ILogger log, RobotConsoleLogger consoleLog) 
+	public static void start(PowerDistributionPanel pdp, ILogger log, RobotConsoleLogger consoleLog) 
 	{
 		if(!started) 
 		{
-			logger = new PDPLoggingThread(pdp.getPdp(), new MultiLogger(new ILogger[] { log, consoleLog }));
+			logger = new PDPLoggingThread(pdp, new MultiLogger(new ILogger[] { log, consoleLog }));
 			logger.start();
 			started = true;
 		}
