@@ -4,10 +4,7 @@ import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Relay.Value;
 
 public class CompressorComponent extends Component 
 {
