@@ -105,6 +105,8 @@ public class SmartDashboardUpdater
 				putLimitSwitchData();
 				putNavXData();
 				
+				SmartDashboard.putString("Shooter-State", Repository.Shooter.getState().toString());
+				
 				try
 				{
 					Thread.sleep(100);

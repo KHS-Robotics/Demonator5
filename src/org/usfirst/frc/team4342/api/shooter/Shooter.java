@@ -15,6 +15,8 @@ public class Shooter
 	private CANTalon accumulator, rightMotor, leftMotor;
 	private Solenoid loaderX, loaderY;
 	
+	private ShooterState state;
+	
 	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
 							  CANTalon leftMotor, Solenoid loaderX, Solenoid loaderY)
 	{
@@ -28,7 +30,7 @@ public class Shooter
 	
 	public void handle()
 	{
-		ShooterState state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
+		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
 		
 		if (state == ShooterState.LOADED)
 		{
@@ -73,6 +75,11 @@ public class Shooter
 			accumulator.set(-1);
 		else
 			accumulator.set(0);
+	}
+	
+	public ShooterState getState()
+	{
+		return state;
 	}
 	
 	public Joystick getJoystick()
