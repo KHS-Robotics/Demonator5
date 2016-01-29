@@ -26,12 +26,12 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.loaderX = loaderX;
 		this.loaderY = loaderY;
+		
+		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
 	
 	public void handle()
 	{
-		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
-		
 		if (state == ShooterState.LOADED)
 		{
 			if (j.getRawButton(1))
