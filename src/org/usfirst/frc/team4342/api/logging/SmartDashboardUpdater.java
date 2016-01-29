@@ -109,7 +109,7 @@ public class SmartDashboardUpdater
 				
 				try
 				{
-					Thread.sleep(100);
+					Thread.sleep(50);
 				} 
 				catch(Exception ex)
 				{
@@ -214,7 +214,7 @@ public class SmartDashboardUpdater
 		}
 		
 		/**
-		 * Puts Gyro data to the Smart Dashboard
+		 * Puts NavX data to the Smart Dashboard
 		 */
 		private void putNavXData() 
 		{
@@ -224,12 +224,15 @@ public class SmartDashboardUpdater
 				SmartDashboard.putNumber("NavX-Yaw", Navx.getYaw());
 		    	SmartDashboard.putNumber("NavX-Pitch", Navx.getPitch());
 		    	SmartDashboard.putNumber("NavX-Roll", Navx.getRoll());
-		    	SmartDashboard.putNumber("NavX-Accel-X", Navx.getRawAccelX());
-		    	SmartDashboard.putNumber("NavX-Accel-Y", Navx.getRawAccelY());
-		    	SmartDashboard.putNumber("NavX-Accel-Z", Navx.getRawAccelZ());
+		    	SmartDashboard.putNumber("NavX-Accel-X", Navx.getWorldLinearAccelX());
+		    	SmartDashboard.putNumber("NavX-Accel-Y", Navx.getWorldLinearAccelY());
+		    	SmartDashboard.putNumber("NavX-Accel-Z", Navx.getWorldLinearAccelZ());
 		    	SmartDashboard.putNumber("NavX-Vel-X", Navx.getVelocityX());
 		    	SmartDashboard.putNumber("NavX-Vel-Y", Navx.getVelocityY());
 		    	SmartDashboard.putNumber("NavX-Vel-Z", Navx.getVelocityZ());
+		    	SmartDashboard.putNumber("NavX-Disp-X", Navx.getDisplacementX());
+		    	SmartDashboard.putNumber("NavX-Disp-Y", Navx.getDisplacementY());
+		    	SmartDashboard.putNumber("NavX-Disp-Z", Navx.getDisplacementZ());
 		    	SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
 		    	SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
 		    	SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());

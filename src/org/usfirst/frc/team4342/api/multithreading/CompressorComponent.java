@@ -22,7 +22,7 @@ public class CompressorComponent extends Component
 			{
 				compressor.handle();
 				
-				Thread.sleep(100);
+				Thread.sleep(Component.SLEEP_MILLIS);
 			}
 			catch(Exception ex)
 			{

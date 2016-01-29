@@ -28,7 +28,7 @@ public class TankDriveComponent extends Component
 					td.drive(shiftButton);
 				}
 				
-				Thread.sleep(50);
+				Thread.sleep(Component.SLEEP_MILLIS);
 			}
 			catch(Exception ex)
 			{

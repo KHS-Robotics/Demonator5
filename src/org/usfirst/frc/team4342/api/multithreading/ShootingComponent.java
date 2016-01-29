@@ -26,7 +26,7 @@ public class ShootingComponent extends Component
 					shooter.handle();
 				}
 				
-				Thread.sleep(50);
+				Thread.sleep(Component.SLEEP_MILLIS);
 			}
 			catch(Exception ex)
 			{
