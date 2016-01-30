@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 
-
 public class Shooter 
 {
 	public static final int MIN_ENC_VELOCITY = 30;
@@ -12,6 +11,8 @@ public class Shooter
 	private Joystick j;
 	private CANTalon accumulator, rightMotor, leftMotor, verticalMotor;
 	private Solenoid loaderX, loaderY;
+	
+	private boolean sendShootCANMssg, sendShootCancelCANMssg, sendAccumCANMssg, sendAccumStopMssg;
 	
 	private ShooterState state;
 	
@@ -41,20 +42,27 @@ public class Shooter
 	{
 		if (state == ShooterState.LOADED)
 		{
-			if (j.getRawButton(1))
+			if (sendShootCANMssg && j.getRawButton(5))
 			{
 				loaderY.set(true);
 				rightMotor.set(1);
 				leftMotor.set(1);
 				
-				if (j.getRawButton(1) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
+				if (j.getRawButton(10) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY)) {
 					state = ShooterState.FIRING;
+				}
+				
+				sendShootCANMssg = false;
+				sendShootCancelCANMssg = true;
 			}
-			else
+			else if(sendShootCancelCANMssg)
 			{
 				loaderY.set(false);
 				rightMotor.set(0);
 				leftMotor.set(0);
+				
+				sendShootCANMssg = true;
+				sendShootCancelCANMssg = false;
 			}
 		}
 		else if (state == ShooterState.FIRING)
@@ -66,7 +74,7 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRED)
 		{
-			if (!j.getRawButton(1))
+			if (!j.getRawButton(5))
 			{
 				state = ShooterState.RELOADING;
 			}
@@ -81,10 +89,18 @@ public class Shooter
 	
 	private void checkAccumulator()
 	{
-		if(j.getRawButton(3))
+		if(sendAccumCANMssg && j.getRawButton(2))
+		{
 			accumulator.set(-1);
-		else
+			sendAccumStopMssg = true;
+			sendAccumCANMssg = false;
+		}
+		else if(sendAccumStopMssg)
+		{
 			accumulator.set(0);
+			sendAccumCANMssg = true;
+			sendAccumStopMssg = false;
+		}
 	}
 	
 	private void checkVertical()

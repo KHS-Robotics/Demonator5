@@ -40,7 +40,7 @@ public class Robot extends IterativeRobot
 		cc = new CompressorComponent(Repository.Compressor);
 		ComponentRunner.startAutomaticMode(cc);
 		
-		tdc = new TankDriveComponent(Repository.TankDrive, 1);
+		tdc = new TankDriveComponent(Repository.TankDrive, 2);
 		
 		sc = new ShootingComponent(Repository.Shooter);
     }
@@ -81,10 +81,17 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-		if(Repository.SwitchBox.getRawButton(3) && cc.isRunning())
+		if(Repository.SwitchBox.getRawButton(2) && cc.isRunning())
 				ComponentRunner.stopAutomaticMode(cc);
 		else if(!cc.isRunning())
 				ComponentRunner.startAutomaticMode(cc);
+		
+		if(Repository.SwitchBox.getRawButton(9))
+		{
+			ComponentRunner.stopAutomaticMode(tdc);
+			ComponentRunner.stopAutomaticMode(sc);
+			ComponentRunner.stopAutomaticMode(cc);
+		}
     }
     
 	/**

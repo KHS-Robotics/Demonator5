@@ -133,8 +133,6 @@ public class SmartDashboardUpdater
 				SmartDashboardUpdater.addTalon("ML", Repository.MiddleLeft);
 				SmartDashboardUpdater.addTalon("RR", Repository.RearRight);
 				SmartDashboardUpdater.addTalon("RL", Repository.RearLeft);
-				
-				SmartDashboardUpdater.addDigitalInput("PSwitch", Repository.PressureSwitch);
 			} 
 			catch(Exception ex) 
 			{

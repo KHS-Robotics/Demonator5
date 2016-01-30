@@ -11,7 +11,6 @@ import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -49,7 +48,6 @@ public class Repository
 	
 	public static AHRS Navx;
 	
-	public static DigitalInput PressureSwitch;
 	public static Relay CompressorRelay;
 	public static DoubleSolenoid Shifter;
 	public static Solenoid LoaderX, LoaderY;
@@ -89,6 +87,7 @@ public class Repository
 		
 		try
 		{
+			Pdp = new PowerDistributionPanel();
 			PdpLogger.start(Pdp, Log, ConsoleLog);
 		}
 		catch(Exception ex)
@@ -115,12 +114,12 @@ public class Repository
 	{
 		try
 		{
-			FrontRight = new CANTalon(0);
-			FrontLeft = new CANTalon(15);
-			MiddleRight = new CANTalon(1);
-			MiddleLeft = new CANTalon(14);
-			RearRight = new CANTalon(2);
-			RearLeft = new CANTalon(13);
+			FrontRight = new CANTalon(11);
+			FrontLeft = new CANTalon(4);
+			MiddleRight = new CANTalon(12);
+			MiddleLeft = new CANTalon(3);
+			RearRight = new CANTalon(13);
+			RearLeft = new CANTalon(2);
 			
 			DriveTrain = new DriveTrain(
 				DriveStick,
@@ -152,21 +151,25 @@ public class Repository
 	{
 		try
 		{
-			RightShooter = new CANTalon(-1);
-			LeftShooter = new CANTalon(-2);
-			Accumulator = new CANTalon(-3);
+			RightShooter = new CANTalon(14);
+			LeftShooter = new CANTalon(1);
+			Accumulator = new CANTalon(0);
+			VerticalMotor = new CANTalon(15);
 			
 			RightShooter.changeControlMode(TalonControlMode.Speed);
 			LeftShooter.changeControlMode(TalonControlMode.Speed);
 			Accumulator.changeControlMode(TalonControlMode.Speed);
+			VerticalMotor.changeControlMode(TalonControlMode.Speed);
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
 			Accumulator.enableBrakeMode(false);
+			VerticalMotor.enableBrakeMode(true);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
 			Accumulator.enable();
+			VerticalMotor.enable();
 		}
 		catch(Exception ex)
 		{
@@ -178,7 +181,6 @@ public class Repository
 	{
 		try
 		{
-			PressureSwitch = new DigitalInput(1);
 			CompressorRelay = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(1, 2);
 			LoaderX = new Solenoid(3);
@@ -194,7 +196,7 @@ public class Repository
 	{
 		try
 		{
-			Compressor = new Compressor(CompressorRelay, PressureSwitch);
+			Compressor = new Compressor(CompressorRelay);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
 			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, LoaderY, VerticalMotor);
 		}

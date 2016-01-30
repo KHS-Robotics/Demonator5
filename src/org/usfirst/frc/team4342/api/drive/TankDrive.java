@@ -36,7 +36,7 @@ public class TankDrive
 		checkUserShift(shiftButton);
 		
 		double x = j.getX();
-		double y = j.getY();
+		double y = -j.getY();
 		double z = j.getZ();
 		
 		double a;
