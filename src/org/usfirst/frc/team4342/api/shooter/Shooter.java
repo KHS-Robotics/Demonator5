@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter;
 
+import org.usfirst.frc.team4342.robot.components.Repository;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -12,7 +14,9 @@ public class Shooter
 	private CANTalon accumulator, rightMotor, leftMotor, verticalMotor;
 	private Solenoid loaderX, loaderY;
 	
-	private boolean sendShootCANMssg, sendShootCancelCANMssg, sendAccumCANMssg, sendAccumStopMssg;
+	private boolean sendShootCANMssg, sendShootCancelCANMssg;
+	private boolean sendAccumCANMssg, sendAccumStopMssg;
+	private boolean sendLoaderYMssg, sendLoaderYStopMssg;
 	
 	private ShooterState state;
 	
@@ -33,12 +37,12 @@ public class Shooter
 	
 	public void handle()
 	{
-		checkShooter();
-		checkAccumulator();
-		checkVertical();
+		checkUserShooter();
+		checkUserAccumulator();
+		checkUserAngleMotor();
 	}
 	
-	private void checkShooter()
+	private void checkUserShooter()
 	{
 		if (state == ShooterState.LOADED)
 		{
@@ -87,7 +91,7 @@ public class Shooter
 		}
 	}
 	
-	private void checkAccumulator()
+	private void checkUserAccumulator()
 	{
 		if(sendAccumCANMssg && j.getRawButton(2))
 		{
@@ -101,9 +105,22 @@ public class Shooter
 			sendAccumCANMssg = true;
 			sendAccumStopMssg = false;
 		}
+		
+		if(sendLoaderYMssg && (j.getRawButton(3) || Repository.SwitchBox.getRawButton(2)))
+		{
+			loaderY.set(true);
+			sendLoaderYMssg = false;
+			sendLoaderYStopMssg = true;
+		}
+		else if(sendLoaderYStopMssg)
+		{
+			loaderY.set(false);
+			sendLoaderYMssg = true;
+			sendLoaderYStopMssg = false;
+		}
 	}
 	
-	private void checkVertical()
+	private void checkUserAngleMotor()
 	{
 		verticalMotor.set(j.getY());
 	}

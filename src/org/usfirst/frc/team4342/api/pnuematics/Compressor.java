@@ -24,7 +24,7 @@ public class Compressor
 		final double throttle = Math.sqrt(Math.pow(Repository.DriveStick.getX(), 2) + Math.pow(Repository.DriveStick.getY(), 2));
 		
 		final double ratio;
-		if (Math.abs(throttle - 0.0) >= 0.0001)
+		if (Math.abs(throttle) >= 0.0001)
 			ratio = (velocity/throttle);
 		else
 			ratio = 1;

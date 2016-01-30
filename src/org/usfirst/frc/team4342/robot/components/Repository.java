@@ -114,10 +114,10 @@ public class Repository
 	{
 		try
 		{
-			FrontRight = new CANTalon(11);
-			FrontLeft = new CANTalon(4);
-			MiddleRight = new CANTalon(12);
-			MiddleLeft = new CANTalon(3);
+			FrontRight = new CANTalon(15);
+			FrontLeft = new CANTalon(0);
+			MiddleRight = new CANTalon(14);
+			MiddleLeft = new CANTalon(1);
 			RearRight = new CANTalon(13);
 			RearLeft = new CANTalon(2);
 			
@@ -182,7 +182,7 @@ public class Repository
 		try
 		{
 			CompressorRelay = new Relay(1, Relay.Direction.kForward);
-			Shifter = new DoubleSolenoid(1, 2);
+			Shifter = new DoubleSolenoid(0, 1);
 			LoaderX = new Solenoid(3);
 			LoaderY = new Solenoid(4);
 		}
