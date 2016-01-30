@@ -14,6 +14,7 @@ public class TankDriveComponent extends Component
 	public TankDriveComponent(TankDrive td, int shiftButton)
 	{
 		this.td = td;
+		this.shiftButton = shiftButton;
 	}
 
 	@Override
