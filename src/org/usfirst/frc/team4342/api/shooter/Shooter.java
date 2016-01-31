@@ -178,8 +178,8 @@ public class Shooter
 	{
 		if (Repository.SwitchBox.getRawButton(3) && !Repository.SwitchBox.getRawButton(7))
 		{
-			rightMotor.set(-1);
-			leftMotor.set(1);
+			rightMotor.set(0.75);
+			leftMotor.set(0.75);
 		}
 		else if (!Repository.SwitchBox.getRawButton(3) && !Repository.SwitchBox.getRawButton(7))
 		{
@@ -193,8 +193,8 @@ public class Shooter
 		if (Repository.SwitchBox.getRawButton(7) && !(Repository.SwitchBox.getRawButton(3)))
 		{
 			accumulator.set(-0.5);
-			rightMotor.set(-0.75);
-			leftMotor.set(-0.75);
+			rightMotor.set(-0.5);
+			leftMotor.set(-0.5);
 		}
 		else
 		{
