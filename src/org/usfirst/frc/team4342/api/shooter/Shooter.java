@@ -21,8 +21,8 @@ public class Shooter
 	private ShooterState state;
 	
 	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
-							  CANTalon leftMotor, Solenoid loaderX, Solenoid loaderY,
-							  CANTalon verticalMotor)
+							   CANTalon leftMotor, Solenoid loaderX,
+							   CANTalon verticalMotor)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
@@ -30,16 +30,18 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.verticalMotor = verticalMotor;
 		this.loaderX = loaderX;
-		this.loaderY = loaderY;
 		
 		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
 	
 	public void handle()
 	{
-		checkUserShooter();
-		checkUserAccumulator();
-		checkUserAngleMotor();
+//		checkUserShooter();
+//		checkUserAccumulator();
+//		checkUserAngleMotor();
+		
+		basicFire();
+		basicAccum();
 	}
 	
 	private void checkUserShooter()
@@ -48,7 +50,6 @@ public class Shooter
 		{
 			if (sendShootCANMssg && j.getRawButton(5))
 			{
-				loaderY.set(true);
 				rightMotor.set(1);
 				leftMotor.set(1);
 				
@@ -61,7 +62,6 @@ public class Shooter
 			}
 			else if(sendShootCancelCANMssg)
 			{
-				loaderY.set(false);
 				rightMotor.set(0);
 				leftMotor.set(0);
 				
@@ -85,7 +85,6 @@ public class Shooter
 		}
 		else if (state == ShooterState.RELOADING)
 		{
-			loaderY.set(false);
 			loaderX.set(false);
 			state = ShooterState.LOADED;
 		}
@@ -163,5 +162,34 @@ public class Shooter
 	public Solenoid getLoaderY()
 	{
 		return loaderY;
+	}
+	
+	public void basicFire()
+	{
+		if (Repository.SwitchBox.getRawButton(3) && !Repository.SwitchBox.getRawButton(7))
+		{
+			rightMotor.set(-1);
+			leftMotor.set(1);
+		}
+		else if (!Repository.SwitchBox.getRawButton(3) && !Repository.SwitchBox.getRawButton(7))
+		{
+			rightMotor.set(0);
+			leftMotor.set(0);
+		}
+	}
+	
+	public void basicAccum()
+	{
+		if (Repository.SwitchBox.getRawButton(7) && !(Repository.SwitchBox.getRawButton(3)))
+		{
+			accumulator.set(-0.5);
+			rightMotor.set(-0.75);
+			leftMotor.set(-0.75);
+		}
+		else
+		{
+			accumulator.set(0);
+		}
+		
 	}
 }

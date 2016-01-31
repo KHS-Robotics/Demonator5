@@ -10,7 +10,6 @@ import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -133,8 +132,8 @@ public class Repository
 			
 			for(CANTalon talon : DriveTrain.getDriveTrain())
 			{
-				talon.changeControlMode(TalonControlMode.Speed);
-				talon.configEncoderCodesPerRev(512);
+				//talon.changeControlMode(TalonControlMode.Speed);
+				//talon.configEncoderCodesPerRev(512);
 				talon.enableBrakeMode(true);
 				talon.enable();
 			}
@@ -151,15 +150,15 @@ public class Repository
 	{
 		try
 		{
-			RightShooter = new CANTalon(14);
-			LeftShooter = new CANTalon(1);
-			Accumulator = new CANTalon(0);
-			VerticalMotor = new CANTalon(15);
+			RightShooter = new CANTalon(12);
+			LeftShooter = new CANTalon(3);
+			Accumulator = new CANTalon(4);
+			VerticalMotor = new CANTalon(11);
 			
-			RightShooter.changeControlMode(TalonControlMode.Speed);
-			LeftShooter.changeControlMode(TalonControlMode.Speed);
-			Accumulator.changeControlMode(TalonControlMode.Speed);
-			VerticalMotor.changeControlMode(TalonControlMode.Speed);
+//			RightShooter.changeControlMode(TalonControlMode.Speed);
+//			LeftShooter.changeControlMode(TalonControlMode.Speed);
+//			Accumulator.changeControlMode(TalonControlMode.Speed);
+//			VerticalMotor.changeControlMode(TalonControlMode.Speed);
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
@@ -184,7 +183,6 @@ public class Repository
 			CompressorRelay = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(0, 1);
 			LoaderX = new Solenoid(3);
-			LoaderY = new Solenoid(4);
 		}
 		catch(Exception ex)
 		{
@@ -198,7 +196,7 @@ public class Repository
 		{
 			Compressor = new Compressor(CompressorRelay);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, LoaderY, VerticalMotor);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, VerticalMotor);
 		}
 		catch(Exception ex)
 		{

@@ -36,7 +36,7 @@ public class TankDrive
 		checkUserShift(shiftButton);
 		
 		double x = j.getX();
-		double y = -j.getY();
+		double y = j.getY();
 		double z = j.getZ();
 		
 		double a;
@@ -46,10 +46,10 @@ public class TankDrive
 		else if (x == 0)
 			a = z;
 		else
-			a = (x+y) / 2;
+			a = (x+z) / 2.0;
 		
-		double left = (x-a);
-		double right = (x+a);
+		double left = (y-a);
+		double right = (y+a);
 		
 		if (left > 1.0)
             left = 1.0;
@@ -69,6 +69,7 @@ public class TankDrive
 			ml.set(left);
 			rr.set(right);
 			rl.set(left);
+			
 		}
 		catch (Exception ex)
 		{
@@ -79,15 +80,8 @@ public class TankDrive
 	private void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
-		{
-			if(shifter.get() == DoubleSolenoid.Value.kForward)
-			{
-				shifter.set(DoubleSolenoid.Value.kReverse);
-			}
-			else
-			{
-				shifter.set(DoubleSolenoid.Value.kForward);
-			}
-		}
+			shifter.set(DoubleSolenoid.Value.kReverse);
+		else
+			shifter.set(DoubleSolenoid.Value.kForward);	
 	}
 }

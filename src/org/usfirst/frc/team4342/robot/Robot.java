@@ -26,6 +26,7 @@ public class Robot extends IterativeRobot
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
 	
+	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -69,7 +70,9 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
+		
 		Repository.DriveTrain.setBrakeMode();
+		Repository.DriveTrain.enable();
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
@@ -104,6 +107,7 @@ public class Robot extends IterativeRobot
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);
     }
+
     
     /**
      * This function is called periodically during disabled
