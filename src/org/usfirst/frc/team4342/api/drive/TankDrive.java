@@ -10,17 +10,17 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class TankDrive 
 {
-	private static Joystick j;
+	private Joystick j;
 	private DriveTrain driveTrain;
-	private static CANTalon fr, fl, mr, ml, rr, rl;
-	private static AHRS navX;
-	private static DoubleSolenoid shifter;
+	private CANTalon fr, fl, mr, ml, rr, rl;
+	private AHRS navX;
+	private DoubleSolenoid shifter;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
-		TankDrive.j = j;
+		this.j = j;
 		
-		driveTrain = talons;
+		this.driveTrain = talons;
 		fr = driveTrain.getFrontRight();
 		fl = driveTrain.getFrontLeft();
 		mr = driveTrain.getMiddleRight();
@@ -28,9 +28,19 @@ public class TankDrive
 		rr = driveTrain.getRearRight();
 		rl = driveTrain.getRearLeft();
 		
-		TankDrive.navX = navX;
+		this.navX = navX;
 		
-		TankDrive.shifter = shifter;
+		this.shifter = shifter;
+	}
+	
+	public void pidWrite(double output) 
+	{
+		fr.set(-output);
+		fl.set(output);
+		mr.set(-output);
+		ml.set(output);
+		rr.set(-output);
+		rl.set(output);
 	}
 	
 	public void drive(int shiftButton)
@@ -90,5 +100,10 @@ public class TankDrive
 			shifter.set(DoubleSolenoid.Value.kReverse);
 		else
 			shifter.set(DoubleSolenoid.Value.kForward);	
+	}
+	
+	public void goToSetpoint(double setpointAngle)
+	{
+		
 	}
 }
