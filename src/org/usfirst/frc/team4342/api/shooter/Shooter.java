@@ -4,6 +4,8 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter 
@@ -11,7 +13,8 @@ public class Shooter
 	public static final int MIN_ENC_VELOCITY = 30;
 	
 	private Joystick j;
-	private CANTalon accumulator, rightMotor, leftMotor, verticalMotor;
+	private Relay accumulator;
+	private CANTalon rightMotor, leftMotor, verticalMotor;
 	private Solenoid loaderX, loaderY;
 	
 	private boolean sendShootCANMssg, sendShootCancelCANMssg;
@@ -20,7 +23,7 @@ public class Shooter
 	
 	private ShooterState state;
 	
-	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
+	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
 							   CANTalon leftMotor, Solenoid loaderX,
 							   CANTalon verticalMotor)
 	{
@@ -94,13 +97,13 @@ public class Shooter
 	{
 		if(sendAccumCANMssg && j.getRawButton(2))
 		{
-			accumulator.set(-1);
+			accumulator.set(Value.kForward);
 			sendAccumStopMssg = true;
 			sendAccumCANMssg = false;
 		}
 		else if(sendAccumStopMssg)
 		{
-			accumulator.set(0);
+			accumulator.set(Value.kOff);
 			sendAccumCANMssg = true;
 			sendAccumStopMssg = false;
 		}
@@ -126,7 +129,7 @@ public class Shooter
 	
 	public void stopAll()
 	{
-		accumulator.set(0);
+		accumulator.set(Value.kOff);
 		rightMotor.set(0);
 		leftMotor.set(0);
 		verticalMotor.set(0);
@@ -144,7 +147,7 @@ public class Shooter
 		return j;
 	}
 	
-	public CANTalon getAccumulator()
+	public Relay getAccumulator()
 	{
 		return accumulator;
 	}
@@ -192,13 +195,13 @@ public class Shooter
 	{
 		if (Repository.SwitchBox.getRawButton(7) && !(Repository.SwitchBox.getRawButton(3)))
 		{
-			accumulator.set(-0.5);
+			accumulator.set(Value.kOn);
 			rightMotor.set(-0.75);
 			leftMotor.set(-0.75);
 		}
 		else
 		{
-			accumulator.set(0);
+			accumulator.set(Value.kOff);
 		}
 		
 	}

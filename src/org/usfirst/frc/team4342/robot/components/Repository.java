@@ -42,7 +42,8 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static CANTalon RightShooter, LeftShooter, Accumulator, VerticalMotor;
+	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
+	private static Relay Accumulator;
 	public static DriveTrain DriveTrain;
 	
 	public static AHRS Navx;
@@ -152,22 +153,20 @@ public class Repository
 		{
 			RightShooter = new CANTalon(12);
 			LeftShooter = new CANTalon(3);
-			Accumulator = new CANTalon(4);
 			VerticalMotor = new CANTalon(11);
+			
+			Accumulator = new Relay(0, Relay.Direction.kForward);
 			
 //			RightShooter.changeControlMode(TalonControlMode.Speed);
 //			LeftShooter.changeControlMode(TalonControlMode.Speed);
-//			Accumulator.changeControlMode(TalonControlMode.Speed);
 //			VerticalMotor.changeControlMode(TalonControlMode.Speed);
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
-			Accumulator.enableBrakeMode(false);
 			VerticalMotor.enableBrakeMode(true);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
-			Accumulator.enable();
 			VerticalMotor.enable();
 		}
 		catch(Exception ex)
