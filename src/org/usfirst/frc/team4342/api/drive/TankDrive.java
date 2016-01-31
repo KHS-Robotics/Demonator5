@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class TankDrive 
 {
 	private static Joystick j;
+	private DriveTrain driveTrain;
 	private static CANTalon fr, fl, mr, ml, rr, rl;
 	private static AHRS navX;
 	private static DoubleSolenoid shifter;
@@ -19,12 +20,13 @@ public class TankDrive
 	{
 		TankDrive.j = j;
 		
-		TankDrive.fr = talons.getFrontRight();
-		TankDrive.fl = talons.getFrontLeft();
-		TankDrive.mr = talons.getMiddleRight();
-		TankDrive.ml = talons.getMiddleLeft();
-		TankDrive.rr = talons.getRearRight();
-		TankDrive.rl = talons.getRearLeft();
+		driveTrain = talons;
+		fr = driveTrain.getFrontRight();
+		fl = driveTrain.getFrontLeft();
+		mr = driveTrain.getMiddleRight();
+		ml = driveTrain.getMiddleLeft();
+		rr = driveTrain.getRearRight();
+		rl = driveTrain.getRearLeft();
 		
 		TankDrive.navX = navX;
 		
@@ -75,6 +77,11 @@ public class TankDrive
 		{
 			Repository.Logs.error("Failed to set drive motors", ex);
 		}
+	}
+	
+	public void stopAll()
+	{
+		driveTrain.stopAll();
 	}
 	
 	private void checkUserShift(int button)

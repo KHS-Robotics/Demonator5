@@ -12,6 +12,12 @@ public class CompressorComponent extends Component
 	{
 		this.compressor = compressor;
 	}
+	
+	@Override
+	public void stopAll()
+	{
+		compressor.stop();
+	}
 
 	@Override
 	public void run() 

@@ -41,6 +41,11 @@ public class Compressor
 		}
 	}
 	
+	public void stop()
+	{
+		relay.set(Value.kOff);
+	}
+	
 	public Relay getRelay()
 	{
 		return relay;

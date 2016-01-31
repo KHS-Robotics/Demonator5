@@ -15,6 +15,12 @@ public class ShootingComponent extends Component
 	}
 	
 	@Override
+	public void stopAll()
+	{
+		shooter.stopAll();
+	}
+	
+	@Override
 	public void run()
 	{
 		while(this.run)

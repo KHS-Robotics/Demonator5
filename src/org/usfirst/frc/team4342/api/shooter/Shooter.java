@@ -124,6 +124,16 @@ public class Shooter
 		verticalMotor.set(j.getY());
 	}
 	
+	public void stopAll()
+	{
+		accumulator.set(0);
+		rightMotor.set(0);
+		leftMotor.set(0);
+		verticalMotor.set(0);
+		loaderX.set(false);
+		loaderY.set(false);
+	}
+	
 	public ShooterState getState()
 	{
 		return state;

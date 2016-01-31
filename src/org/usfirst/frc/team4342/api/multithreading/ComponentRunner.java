@@ -18,6 +18,7 @@ public class ComponentRunner
 	
 	public static void stopAutomaticMode(Component comp)
 	{
+		comp.stopAll();
 		comp.run = false;
 	}
 }

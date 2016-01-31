@@ -16,6 +16,12 @@ public class TankDriveComponent extends Component
 		this.td = td;
 		this.shiftButton = shiftButton;
 	}
+	
+	@Override
+	public void stopAll()
+	{
+		td.stopAll();
+	}
 
 	@Override
 	public void run()

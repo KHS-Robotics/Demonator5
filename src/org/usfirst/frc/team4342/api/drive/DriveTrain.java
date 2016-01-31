@@ -53,6 +53,14 @@ public class DriveTrain
 		}
 	}
 	
+	public void stopAll()
+	{
+		for(CANTalon talon : getDriveTrain())
+		{
+			talon.set(0);
+		}
+	}
+	
 	public CANTalon getFrontRight()
 	{
 		return fr;
