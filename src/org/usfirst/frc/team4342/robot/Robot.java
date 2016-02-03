@@ -10,6 +10,7 @@ import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.api.multithreading.CompressorComponent;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
 import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
+import org.usfirst.frc.team4342.api.pid.PID;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -25,6 +26,7 @@ public class Robot extends IterativeRobot
 	private CompressorComponent cc;
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
+	private PID pid;
 	
 	
     /**
@@ -44,6 +46,8 @@ public class Robot extends IterativeRobot
 		tdc = new TankDriveComponent(Repository.TankDrive, 2);
 		
 		sc = new ShootingComponent(Repository.Shooter);
+		
+		pid = new PID();
     }
 	
 	/**
@@ -76,6 +80,7 @@ public class Robot extends IterativeRobot
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
+    	
     }
 
     /**
@@ -95,6 +100,14 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(sc);
 			ComponentRunner.stopAutomaticMode(cc);
 		}
+		
+		if (Repository.SwitchBox.getRawButton(1))
+		{
+			pid.setSetpoint(0.0);
+			pid.pidOn();
+		}
+		else
+			pid.pidOff();
     }
     
 	/**
