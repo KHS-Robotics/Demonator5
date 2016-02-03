@@ -4,6 +4,8 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
@@ -28,6 +30,8 @@ public class Robot extends IterativeRobot
 	private ShootingComponent sc;
 	private PID pid;
 	
+	private SendableChooser pChooser, iChooser, dChooser;
+	private long numLoops;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -48,6 +52,16 @@ public class Robot extends IterativeRobot
 		sc = new ShootingComponent(Repository.Shooter);
 		
 		pid = new PID();
+		
+		pChooser = new SendableChooser();
+		pChooser.addObject("P-Drive", 0.0);
+		SmartDashboard.putData("Drive P Value", pChooser);
+		iChooser = new SendableChooser();
+		iChooser.addObject("I-Drive", 0.0);
+		SmartDashboard.putData("Drive I Value", iChooser);
+		dChooser = new SendableChooser();
+		dChooser.addObject("D-Drive", 0.0);
+		SmartDashboard.putData("Drive D Value", dChooser);
     }
 	
 	/**
@@ -104,10 +118,21 @@ public class Robot extends IterativeRobot
 		if (Repository.SwitchBox.getRawButton(1))
 		{
 			pid.setSetpoint(0.0);
-			pid.pidOn();
+			pid.turnOn();
 		}
 		else
-			pid.pidOff();
+		{
+			pid.turnOff();
+		}
+		
+		if(numLoops % 10 == 0)
+		{
+			pid.setP(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
+			pid.setI(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
+			pid.setD(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
+		}
+		
+		numLoops++;
     }
     
 	/**
@@ -116,6 +141,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
+    	numLoops = 0L;
     	Repository.DriveTrain.setCoastMode();
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);
