@@ -7,8 +7,9 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDOutput;
 
-public class TankDrive 
+public class TankDrive implements PIDOutput
 {
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -33,6 +34,7 @@ public class TankDrive
 		this.shifter = shifter;
 	}
 	
+	@Override
 	public void pidWrite(double output) 
 	{
 		fr.set(-output);
