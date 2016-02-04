@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -51,6 +52,7 @@ public class Repository
 	public static Relay CompressorRelay;
 	public static DoubleSolenoid Shifter;
 	public static Solenoid LoaderX, LoaderY;
+	public static Ultrasonic ultra;
 	
 	public static Compressor Compressor;
 	public static TankDrive TankDrive;
@@ -151,6 +153,9 @@ public class Repository
 	{
 		try
 		{
+			ultra = new Ultrasonic(1, 2);
+			ultra.setAutomaticMode(true);
+			
 			RightShooter = new CANTalon(12);
 			LeftShooter = new CANTalon(3);
 			VerticalMotor = new CANTalon(11);
@@ -195,7 +200,7 @@ public class Repository
 		{
 			Compressor = new Compressor(CompressorRelay);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, LoaderX, VerticalMotor);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra);
 		}
 		catch(Exception ex)
 		{

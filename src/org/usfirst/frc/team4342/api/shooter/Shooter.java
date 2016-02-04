@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class Shooter 
 {
@@ -15,17 +16,14 @@ public class Shooter
 	private Joystick j;
 	private Relay accumulator;
 	private CANTalon rightMotor, leftMotor, verticalMotor;
-	private Solenoid loaderX, loaderY;
-	
-	private boolean sendShootCANMssg, sendShootCancelCANMssg;
-	private boolean sendAccumCANMssg, sendAccumStopMssg;
-	private boolean sendLoaderYMssg, sendLoaderYStopMssg;
+	private Solenoid loaderX, accumulatorLifter;
+	private Ultrasonic ultra;
 	
 	private ShooterState state;
 	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
-							   CANTalon leftMotor, Solenoid loaderX,
-							   CANTalon verticalMotor)
+							   CANTalon leftMotor, CANTalon verticalMotor, 
+							   Solenoid loaderX, Ultrasonic ultra)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
@@ -33,6 +31,7 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.verticalMotor = verticalMotor;
 		this.loaderX = loaderX;
+		this.ultra = ultra;
 		
 		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
@@ -51,33 +50,35 @@ public class Shooter
 	{
 		if (state == ShooterState.LOADED)
 		{
-			if (sendShootCANMssg && j.getRawButton(5))
+			if (j.getRawButton(5))
 			{
 				rightMotor.set(1);
 				leftMotor.set(1);
 				
-				if (j.getRawButton(10) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY)) {
-					state = ShooterState.FIRING;
-				}
+				accumulatorLifter.set(true);
 				
-				sendShootCANMssg = false;
-				sendShootCancelCANMssg = true;
+				if (j.getRawButton(10) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
+					state = ShooterState.FIRING;
 			}
-			else if(sendShootCancelCANMssg)
+			else
 			{
 				rightMotor.set(0);
 				leftMotor.set(0);
-				
-				sendShootCANMssg = true;
-				sendShootCancelCANMssg = false;
 			}
 		}
 		else if (state == ShooterState.FIRING)
 		{
 			loaderX.set(true);
-			rightMotor.set(0);
-			leftMotor.set(0);
-			state = ShooterState.FIRED;
+			
+			if(ultra.getRangeInches() > 18)
+			{
+				rightMotor.set(0);
+				leftMotor.set(0);
+				
+				accumulatorLifter.set(false);
+				
+				state = ShooterState.FIRED;
+			}
 		}
 		else if (state == ShooterState.FIRED)
 		{
@@ -95,30 +96,22 @@ public class Shooter
 	
 	private void checkUserAccumulator()
 	{
-		if(sendAccumCANMssg && j.getRawButton(2))
+		if(j.getRawButton(2))
 		{
 			accumulator.set(Value.kForward);
-			sendAccumStopMssg = true;
-			sendAccumCANMssg = false;
 		}
-		else if(sendAccumStopMssg)
+		else
 		{
 			accumulator.set(Value.kOff);
-			sendAccumCANMssg = true;
-			sendAccumStopMssg = false;
 		}
 		
-		if(sendLoaderYMssg && (j.getRawButton(3) || Repository.SwitchBox.getRawButton(2)))
+		if(j.getRawButton(3) || Repository.SwitchBox.getRawButton(2))
 		{
-			loaderY.set(true);
-			sendLoaderYMssg = false;
-			sendLoaderYStopMssg = true;
+			accumulatorLifter.set(true);
 		}
-		else if(sendLoaderYStopMssg)
+		else
 		{
-			loaderY.set(false);
-			sendLoaderYMssg = true;
-			sendLoaderYStopMssg = false;
+			accumulatorLifter.set(false);
 		}
 	}
 	
@@ -134,7 +127,7 @@ public class Shooter
 		leftMotor.set(0);
 		verticalMotor.set(0);
 		loaderX.set(false);
-		loaderY.set(false);
+		accumulatorLifter.set(false);
 	}
 	
 	public ShooterState getState()
@@ -174,7 +167,7 @@ public class Shooter
 	
 	public Solenoid getLoaderY()
 	{
-		return loaderY;
+		return accumulatorLifter;
 	}
 	
 	public void basicFire()
