@@ -117,13 +117,13 @@ public class TankDrive implements PIDOutput
 			shifter.set(DoubleSolenoid.Value.kForward);	
 	}
 	
-	public synchronized void turnOn()
+	public synchronized void turnPIDOn()
 	{
 		angleControl.enable();
 		Repository.TankDrive.pidWrite(angleControl.get());
 	}
 	
-	public synchronized void turnOff()
+	public synchronized void turnPIDOff()
 	{
 		angleControl.disable();
 	}

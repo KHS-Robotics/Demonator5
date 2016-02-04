@@ -3,12 +3,10 @@ package org.usfirst.frc.team4342.api.drive;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDController;
 
 public class DriveTrain 
 {
 	private CANTalon fr, fl, mr, ml, rr, rl;
-	public PIDController angleControl;
 	
 	public DriveTrain(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr,
 					  CANTalon ml, CANTalon rr, CANTalon rl)

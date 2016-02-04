@@ -12,7 +12,6 @@ import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.api.multithreading.CompressorComponent;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
 import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
-import org.usfirst.frc.team4342.api.pid.PID;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -28,7 +27,6 @@ public class Robot extends IterativeRobot
 	private CompressorComponent cc;
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
-	private PID pid;
 	
 	private SendableChooser pChooser, iChooser, dChooser;
 	private long numLoops;
@@ -50,8 +48,6 @@ public class Robot extends IterativeRobot
 		tdc = new TankDriveComponent(Repository.TankDrive, 2);
 		
 		sc = new ShootingComponent(Repository.Shooter);
-		
-		pid = new PID();
 		
 		pChooser = new SendableChooser();
 		pChooser.addObject("P-Drive", 0.0);
@@ -117,19 +113,21 @@ public class Robot extends IterativeRobot
 		
 		if (Repository.SwitchBox.getRawButton(1))
 		{
-			pid.setSetpoint(0.0);
-			pid.turnOn();
+			Repository.TankDrive.goToSetpoint(0.0);
+			Repository.TankDrive.turnPIDOn();
 		}
 		else
 		{
-			pid.turnOff();
+			Repository.TankDrive.turnPIDOff();
 		}
 		
 		if(numLoops % 10 == 0)
 		{
-			pid.setP(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
-			pid.setI(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
-			pid.setD(Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()));
+			Repository.TankDrive.setPID(
+				Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()),
+				Integer.parseInt(SmartDashboard.getData("Drive I Value").toString()),
+				Integer.parseInt(SmartDashboard.getData("Drive D Value").toString())
+			);
 		}
 		
 		numLoops++;
