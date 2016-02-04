@@ -19,6 +19,7 @@ public class TankDrive implements PIDOutput
 	private AHRS navX;
 	private DoubleSolenoid shifter;
 	private PIDController angleControl;
+	private double direction;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
@@ -50,12 +51,17 @@ public class TankDrive implements PIDOutput
 	@Override
 	public void pidWrite(double output) 
 	{
-		fr.set(-output);
-		fl.set(output);
-		mr.set(-output);
-		ml.set(output);
-		rr.set(-output);
-		rl.set(output);
+		fr.set(direction-output);
+		fl.set(direction+output);
+		mr.set(direction-output);
+		ml.set(direction+output);
+		rr.set(direction-output);
+		rl.set(direction+output);
+	}
+	
+	public void direction(double power)
+	{
+		direction = power;
 	}
 	
 	public synchronized void drive(int shiftButton)
@@ -120,7 +126,6 @@ public class TankDrive implements PIDOutput
 	public synchronized void turnPIDOn()
 	{
 		angleControl.enable();
-		Repository.TankDrive.pidWrite(angleControl.get());
 	}
 	
 	public synchronized void turnPIDOff()
