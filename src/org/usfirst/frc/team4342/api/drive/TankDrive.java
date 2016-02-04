@@ -7,7 +7,9 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDrive implements PIDOutput
 {
@@ -16,6 +18,7 @@ public class TankDrive implements PIDOutput
 	private CANTalon fr, fl, mr, ml, rr, rl;
 	private AHRS navX;
 	private DoubleSolenoid shifter;
+	private PIDController angleControl;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
@@ -32,6 +35,16 @@ public class TankDrive implements PIDOutput
 		this.navX = navX;
 		
 		this.shifter = shifter;
+		
+		int pGain = Integer.parseInt(SmartDashboard.getData("Drive P Value").toString());
+		int iGain = Integer.parseInt(SmartDashboard.getData("Drive I Value").toString());
+		int dGain = Integer.parseInt(SmartDashboard.getData("Drive D Value").toString());
+		angleControl = new PIDController(pGain, iGain, dGain, navX, Repository.TankDrive);
+		
+		angleControl.setContinuous();
+		angleControl.setInputRange(0.0, 360.0);
+		angleControl.setOutputRange(-1.0, 1.0);
+		angleControl.enable();
 	}
 	
 	@Override
@@ -45,7 +58,7 @@ public class TankDrive implements PIDOutput
 		rl.set(output);
 	}
 	
-	public void drive(int shiftButton)
+	public synchronized void drive(int shiftButton)
 	{
 		checkUserShift(shiftButton);
 		
@@ -91,12 +104,12 @@ public class TankDrive implements PIDOutput
 		}
 	}
 	
-	public void stopAll()
+	public synchronized void stopAll()
 	{
 		driveTrain.stopAll();
 	}
 	
-	private void checkUserShift(int button)
+	private synchronized void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
 			shifter.set(DoubleSolenoid.Value.kReverse);
@@ -104,8 +117,24 @@ public class TankDrive implements PIDOutput
 			shifter.set(DoubleSolenoid.Value.kForward);	
 	}
 	
-	public void goToSetpoint(double setpointAngle)
+	public synchronized void turnOn()
 	{
-		
+		angleControl.enable();
+		Repository.TankDrive.pidWrite(angleControl.get());
+	}
+	
+	public synchronized void turnOff()
+	{
+		angleControl.disable();
+	}
+	
+	public synchronized void goToSetpoint(double setpointAngle)
+	{
+		angleControl.setSetpoint(setpointAngle);
+	}
+	
+	public synchronized void setPID(double p, double i, double d)
+	{
+		angleControl.setPID(p, i, d);
 	}
 }
