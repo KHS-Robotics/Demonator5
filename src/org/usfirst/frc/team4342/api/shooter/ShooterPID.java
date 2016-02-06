@@ -4,13 +4,13 @@ public final class ShooterPID
 {
 	private ShooterPID() {}
 	
-	// Values for going up (higher to fight gravity)
-	public static final double kP = 0.007;
+	// Up values
+	public static final double kP = 0.0;
 	public static final double kI = 0.0;
-	public static final double kD = 0.10;
+	public static final double kD = 0.0;
 	
-	// Values for going down (lower because of gravity)
-	public static final double kPd = 0.001;
+	// Down values
+	public static final double kPd = 0.0;
 	public static final double kId = 0.0;
-	public static final double kDd = 0.008;
+	public static final double kDd = 0.0;
 }
