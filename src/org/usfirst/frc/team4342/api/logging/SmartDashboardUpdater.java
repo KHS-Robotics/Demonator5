@@ -18,19 +18,19 @@ import ernie.logging.loggers.MultiLogger;
 public class SmartDashboardUpdater 
 {
 	private SmartDashboardUpdater() {}
-	
+
 	private static boolean started;
-	
+
 	private static ArrayList<String> joystickKeys = new ArrayList<String>();
 	private static ArrayList<String> talonKeys = new ArrayList<String>();
 	private static ArrayList<String> limitSwitchKeys = new ArrayList<String>();
 	private static ArrayList<String> encoderKeys = new ArrayList<String>();
-	
+
 	private static Map<String, Joystick> joysticks = new HashMap<String, Joystick>();
 	private static Map<String, CANTalon> talons = new HashMap<String, CANTalon>();
 	private static Map<String, DigitalInput> limitSwitches = new HashMap<String, DigitalInput>();
 	private static Map<String, Encoder> encoders = new HashMap<String, Encoder>();
-	
+
 	/**
 	 * Adds a joystick to put on the Smart Dashboard
 	 * @param key the key to use when putting to the Smart Dashboard
@@ -41,7 +41,7 @@ public class SmartDashboardUpdater
 		joystickKeys.add(key);
 		joysticks.put(key, joystick);
 	}
-	
+
 	/**
 	 * Adds a Jagaur to put on the Smart Dashboard
 	 * @param key the key to use when putting to the Smart Dashboard
@@ -52,7 +52,7 @@ public class SmartDashboardUpdater
 		talonKeys.add(key);
 		talons.put(key, jaguar);
 	}
-	
+
 	/**
 	 * Adds a limit switch to put on the Smart Dashboard
 	 * @param key the key to use when putting to the Smart Dashboard
@@ -63,13 +63,13 @@ public class SmartDashboardUpdater
 		limitSwitchKeys.add(key);
 		limitSwitches.put(key, limitSwitch);
 	}
-	
+
 	public static void addEncoder(String key, Encoder encoder)
 	{
 		encoderKeys.add(key);
 		encoders.put(key, encoder);
 	}
-	
+
 	/**
 	 * Starts updating the Smart Dashboard
 	 */
@@ -81,7 +81,7 @@ public class SmartDashboardUpdater
 			started = true;
 		}
 	}
-	
+
 	/**
 	 * The magic behind this class...
 	 */
@@ -92,14 +92,14 @@ public class SmartDashboardUpdater
 		private boolean loggedDigitalInput;
 		private boolean loggedNavx;
 		private boolean loggedEncoders;
-		
+
 		private MultiLogger multiLog;
-		
+
 		public SmartDashboardUpdaterThread(ILogger log, RobotConsoleLogger consoleLog) 
 		{
 			this.multiLog = new MultiLogger(new ILogger[] { log, consoleLog });
 		}
-		
+
 		/**
 		 * Puts data to the Smart Dashboard
 		 */
@@ -107,7 +107,7 @@ public class SmartDashboardUpdater
 		public void run() 
 		{
 			init();
-			
+
 			while(true) 
 			{
 				putJoystickData();
@@ -115,9 +115,9 @@ public class SmartDashboardUpdater
 				putLimitSwitchData();
 				putNavXData();
 				putEncoderData();
-				
+
 				SmartDashboard.putString("Shooter-State", Repository.Shooter.getState().toString());
-				
+
 				try
 				{
 					Thread.sleep(50);
@@ -128,7 +128,7 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-		
+
 		/**
 		 * Initializes all the data to the Smart Dashboard
 		 */
@@ -137,7 +137,7 @@ public class SmartDashboardUpdater
 			try 
 			{
 				SmartDashboardUpdater.addJoystick("Joy-Drive", Repository.DriveStick);
-				
+
 				SmartDashboardUpdater.addTalon("FR", Repository.FrontRight);
 				SmartDashboardUpdater.addTalon("FL", Repository.FrontLeft);
 				SmartDashboardUpdater.addTalon("MR", Repository.MiddleRight);
@@ -150,7 +150,7 @@ public class SmartDashboardUpdater
 				multiLog.error("Failed to put data to SDBU", ex);
 			}
 		}
-		
+
 		/**
 		 * Puts Joystick data to the Smart Dashboard
 		 */
@@ -175,7 +175,7 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-		
+
 		/**
 		 * Puts Jagaur data to the Smart Dashboard
 		 */
@@ -198,7 +198,7 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-		
+
 		/**
 		 * Puts Limit Switch data to the Smart Dashboard
 		 */
@@ -221,7 +221,7 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-		
+
 		/**
 		 * Puts NavX data to the Smart Dashboard
 		 */
@@ -231,22 +231,22 @@ public class SmartDashboardUpdater
 			{
 				SmartDashboard.putNumber("NavX-Angle", Navx.getAngle());
 				SmartDashboard.putNumber("NavX-Yaw", Navx.getYaw());
-		    	SmartDashboard.putNumber("NavX-Pitch", Navx.getPitch());
-		    	SmartDashboard.putNumber("NavX-Roll", Navx.getRoll());
-		    	SmartDashboard.putNumber("NavX-Accel-X", Navx.getWorldLinearAccelX());
-		    	SmartDashboard.putNumber("NavX-Accel-Y", Navx.getWorldLinearAccelY());
-		    	SmartDashboard.putNumber("NavX-Accel-Z", Navx.getWorldLinearAccelZ());
-		    	SmartDashboard.putNumber("NavX-Vel-X", Navx.getVelocityX());
-		    	SmartDashboard.putNumber("NavX-Vel-Y", Navx.getVelocityY());
-		    	SmartDashboard.putNumber("NavX-Vel-Z", Navx.getVelocityZ());
-		    	SmartDashboard.putNumber("NavX-Disp-X", Navx.getDisplacementX());
-		    	SmartDashboard.putNumber("NavX-Disp-Y", Navx.getDisplacementY());
-		    	SmartDashboard.putNumber("NavX-Disp-Z", Navx.getDisplacementZ());
-		    	SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
-		    	SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
-		    	SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());
-		    	SmartDashboard.putBoolean("NavX-Connected", Navx.isConnected());
-		    	SmartDashboard.putBoolean("NavX-Calibrating", Navx.isCalibrating());
+				SmartDashboard.putNumber("NavX-Pitch", Navx.getPitch());
+				SmartDashboard.putNumber("NavX-Roll", Navx.getRoll());
+				SmartDashboard.putNumber("NavX-Accel-X", Navx.getWorldLinearAccelX());
+				SmartDashboard.putNumber("NavX-Accel-Y", Navx.getWorldLinearAccelY());
+				SmartDashboard.putNumber("NavX-Accel-Z", Navx.getWorldLinearAccelZ());
+				SmartDashboard.putNumber("NavX-Vel-X", Navx.getVelocityX());
+				SmartDashboard.putNumber("NavX-Vel-Y", Navx.getVelocityY());
+				SmartDashboard.putNumber("NavX-Vel-Z", Navx.getVelocityZ());
+				SmartDashboard.putNumber("NavX-Disp-X", Navx.getDisplacementX());
+				SmartDashboard.putNumber("NavX-Disp-Y", Navx.getDisplacementY());
+				SmartDashboard.putNumber("NavX-Disp-Z", Navx.getDisplacementZ());
+				SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
+				SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
+				SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());
+				SmartDashboard.putBoolean("NavX-Connected", Navx.isConnected());
+				SmartDashboard.putBoolean("NavX-Calibrating", Navx.isCalibrating());
 			} 
 			catch(Exception ex) 
 			{
@@ -257,7 +257,7 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-		
+
 		private void putEncoderData() 
 		{
 			try 
@@ -273,5 +273,6 @@ public class SmartDashboardUpdater
 					loggedEncoders = true;
 				}
 			}
+		}
 	}
 }
