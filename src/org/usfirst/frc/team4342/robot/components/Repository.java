@@ -7,6 +7,8 @@ import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
+import org.usfirst.frc.team4342.api.shooter.Setpoint;
+import org.usfirst.frc.team4342.api.shooter.SetpointMapWrapper;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -44,17 +46,20 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
-	private static Relay Accumulator;
+	public static Relay Accumulator;
 	public static DriveTrain DriveTrain;
+	public static DoubleSolenoid Shifter;
 	public static Encoder DriveLeftEncoder, DriveRightEncoder;
 	
 	public static AHRS Navx;
 	
 	public static Relay CompressorRelay;
-	public static DoubleSolenoid Shifter;
+	
+	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
 	public static Solenoid LoaderX, LoaderY;
 	public static Ultrasonic ultra;
+	public static Encoder ArmEncoder;
+	public static SetpointMapWrapper setpoints;
 	
 	public static Compressor Compressor;
 	public static TankDrive TankDrive;
@@ -176,6 +181,14 @@ public class Repository
 			RightShooter.enable();
 			LeftShooter.enable();
 			VerticalMotor.enable();
+			
+			ArmEncoder = new Encoder(1, 2);
+			
+			setpoints = new SetpointMapWrapper(
+				new Setpoint[] {
+					new Setpoint(0, 0)
+				}
+			);
 		}
 		catch(Exception ex)
 		{
@@ -203,7 +216,7 @@ public class Repository
 		{
 			Compressor = new Compressor(CompressorRelay);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra, ArmEncoder, setpoints);
 		}
 		catch(Exception ex)
 		{

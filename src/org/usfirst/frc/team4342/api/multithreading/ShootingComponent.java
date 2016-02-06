@@ -29,7 +29,11 @@ public class ShootingComponent extends Component
 			{
 				if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{
-					shooter.handle();
+					shooter.handleTeleop();
+				}
+				else if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
+				{
+					shooter.handleAuto();
 				}
 				
 				Thread.sleep(Component.SLEEP_MILLIS);

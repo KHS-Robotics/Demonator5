@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.api.shooter;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
@@ -12,38 +13,119 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 public class Shooter 
 {
 	public static final int MIN_ENC_VELOCITY = 30;
+	public static final double JOYSTICK_DEADBAND = 0.05;
 	
 	private Joystick j;
 	private Relay accumulator;
-	private CANTalon rightMotor, leftMotor, verticalMotor;
-	private Solenoid loaderX, accumulatorLifter;
+	private CANTalon rightMotor, leftMotor, arm;
+	private Solenoid ballPusher, accumulatorLifter;
 	private Ultrasonic ultra;
+	private Encoder enc;
+	private SetpointMapWrapper setpoints;
+	
+	private boolean hold, buttonPressed;
+	private int buttonSelected, holdSetpoint;
 	
 	private ShooterState state;
 	
+	private int error, prevError, accumulatedError;
+	private double prevPidOut;
+	
+	private int autoSetpoint;
+	private boolean isAtAutoSetpoint;
+	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
-							   CANTalon leftMotor, CANTalon verticalMotor, 
-							   Solenoid loaderX, Ultrasonic ultra)
+							   CANTalon leftMotor, CANTalon armMotor, 
+							   Solenoid ballPusher, Ultrasonic ultra,
+							   Encoder enc, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
-		this.verticalMotor = verticalMotor;
-		this.loaderX = loaderX;
+		this.arm = armMotor;
+		this.ballPusher = ballPusher;
 		this.ultra = ultra;
+		this.enc = enc;
+		this.setpoints = setpoints;
 		
-		state = loaderX.get() ? ShooterState.FIRED : ShooterState.LOADED;
+		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
 	
-	public void handle()
+	public void handleTeleop()
 	{
-//		checkUserShooter();
-//		checkUserAccumulator();
-//		checkUserAngleMotor();
+		checkUserShooter();
+		checkUserAccumulator();
+		checkButtonStatus();
+		checkUserAngleMotor();
 		
-		basicFire();
-		basicAccum();
+		//basicFire();
+		//basicAccum();
+	}
+	
+	public void handleAuto()
+	{
+		autoMove(autoSetpoint);
+	}
+	
+	public void stopAll()
+	{
+		accumulator.set(Value.kOff);
+		rightMotor.set(0);
+		leftMotor.set(0);
+		arm.set(0);
+		ballPusher.set(false);
+		accumulatorLifter.set(false);
+	}
+	
+	public ShooterState getState()
+	{
+		return state;
+	}
+	
+	public boolean isAtAutoSetpoint()
+	{
+		return isAtAutoSetpoint;
+	}
+	
+	public Joystick getJoystick()
+	{
+		return j;
+	}
+	
+	public Relay getAccumulator()
+	{
+		return accumulator;
+	}
+	
+	public CANTalon getRightMotor()
+	{
+		return rightMotor;
+	}
+	
+	public CANTalon getLeftMotor()
+	{
+		return leftMotor;
+	}
+	
+	public CANTalon getArm()
+	{
+		return arm;
+	}
+	
+	public Solenoid getBallPusher()
+	{
+		return ballPusher;
+	}
+	
+	public Solenoid getAccumLifter()
+	{
+		return accumulatorLifter;
+	}
+	
+	public void setAutoSetpoint(int setpoint)
+	{
+		this.autoSetpoint = setpoint;
 	}
 	
 	private void checkUserShooter()
@@ -68,7 +150,7 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRING)
 		{
-			loaderX.set(true);
+			ballPusher.set(true);
 			
 			if(ultra.getRangeInches() > 18)
 			{
@@ -89,7 +171,7 @@ public class Shooter
 		}
 		else if (state == ShooterState.RELOADING)
 		{
-			loaderX.set(false);
+			ballPusher.set(false);
 			state = ShooterState.LOADED;
 		}
 	}
@@ -117,57 +199,121 @@ public class Shooter
 	
 	private void checkUserAngleMotor()
 	{
-		verticalMotor.set(j.getY());
+		if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
+		{
+			if(buttonPressed) 
+			{
+				if(hold) 
+				{
+					autoMove(holdSetpoint);
+				} 
+				else 
+				{
+					autoMove(setpoints.getSetpoint(buttonSelected));
+				}
+			} 
+			else
+			{
+				arm.set(0.0);
+			}
+		} 
+		else 
+		{
+			stopOperatorAutoMove();
+			arm.set(j.getY());
+		}
 	}
 	
-	public void stopAll()
+	private void autoMove(int setpoint)
 	{
-		accumulator.set(Value.kOff);
-		rightMotor.set(0);
-		leftMotor.set(0);
-		verticalMotor.set(0);
-		loaderX.set(false);
-		accumulatorLifter.set(false);
+		error = setpoint - enc.get();
+		
+		if (Math.abs(error) <= 20) 
+		{
+			isAtAutoSetpoint = true;
+			return;
+		}
+		
+		isAtAutoSetpoint = false;
+		
+		double out;
+		
+		if (error > 0)
+			out = pid(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, error);
+		else
+			out = pid(ShooterPID.kPd, ShooterPID.kId, ShooterPID.kDd, error);
+		
+		arm.set(out);
 	}
 	
-	public ShooterState getState()
+	private void checkButtonStatus()
 	{
-		return state;
+		for(int i = 1; i < j.getButtonCount(); i++) 
+		{
+			if(j.getRawButton(i) && setpoints.containsButton(i)) 
+			{
+				hold = false;
+				buttonPressed = true;
+				buttonSelected = i;
+			}
+		}
+		
+		if(j.getRawButton(3)) 
+		{
+			buttonPressed = true;
+			hold = true;
+			buttonSelected = -1;
+			holdSetpoint = enc.get();
+		}
 	}
 	
-	public Joystick getJoystick()
+	private void stopOperatorAutoMove() 
 	{
-		return j;
+		buttonPressed = false;
+		buttonSelected = -1;
 	}
 	
-	public Relay getAccumulator()
+	private synchronized double pid(double p, double i, double d, int err) 
 	{
-		return accumulator;
-	}
-	
-	public CANTalon getRightMotor()
-	{
-		return rightMotor;
-	}
-	
-	public CANTalon getLeftMotor()
-	{
-		return leftMotor;
-	}
-	
-	public CANTalon getVerticalMotor()
-	{
-		return verticalMotor;
-	}
-	
-	public Solenoid getLoaderX()
-	{
-		return loaderX;
-	}
-	
-	public Solenoid getLoaderY()
-	{
-		return accumulatorLifter;
+		double out = 0;
+		if (Math.abs(err) <= 5) 
+		{
+			accumulatedError = 0;
+			return 0;
+		} 
+		else if (Math.abs(prevError - err) > Math.abs(err + prevError)) 
+		{
+			accumulatedError = 0;
+		}
+
+		accumulatedError += err;
+
+		double P = p * err;
+		double I = i * accumulatedError;
+		double D = (err - prevError) * d;
+		
+		prevError = err;
+		out = P + I + D;
+		
+		if (out > 1)
+			out = 1;
+		else if (out < -.5)
+			out = -.5;
+		
+		if (out - prevPidOut > .1)
+			out = prevPidOut + .1;
+		else if (out - prevPidOut < -.1)
+			out = prevPidOut - .1;
+		
+		
+		prevPidOut = out;
+		
+		if(out < 0.1 && out > 0.0)
+			out = 0.1;
+		else if(out > -0.1 && out < 0.0)
+			out = -0.1;
+		
+		return out;
 	}
 	
 	public void basicFire()
@@ -196,6 +342,5 @@ public class Shooter
 		{
 			accumulator.set(Value.kOff);
 		}
-		
 	}
 }
