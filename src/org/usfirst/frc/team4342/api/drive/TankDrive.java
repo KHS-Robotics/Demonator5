@@ -6,6 +6,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -20,8 +21,12 @@ public class TankDrive implements PIDOutput
 	private DoubleSolenoid shifter;
 	private PIDController angleControl;
 	private double direction = 0;
+	private boolean autoStepFinished;
+	private Encoder encLeft, encRight;
 	
-	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
+	
+	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, Encoder encLeft,
+					 Encoder encRight)
 	{
 		this.j = j;
 		
@@ -37,15 +42,36 @@ public class TankDrive implements PIDOutput
 		
 		this.shifter = shifter;
 		
+		this.encRight = encRight;
+		this.encLeft = encLeft;
+		
 		int pGain = Integer.parseInt(SmartDashboard.getData("Drive P Value").toString());
 		int iGain = Integer.parseInt(SmartDashboard.getData("Drive I Value").toString());
 		int dGain = Integer.parseInt(SmartDashboard.getData("Drive D Value").toString());
 		angleControl = new PIDController(pGain, iGain, dGain, navX, Repository.TankDrive);
 		
 		angleControl.setContinuous();
-		angleControl.setInputRange(0.0, 360.0);
+		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
 		angleControl.enable();
+	}
+	
+	public synchronized boolean isAutoStepFinished()
+	{
+		return autoStepFinished;
+	}
+	
+	public void goStraight()
+	{
+		goToSetpoint(navX.getYaw());
+		setDirection(0.75);
+		
+	}
+	
+	public void goToAngle(double angle)
+	{
+		goToSetpoint(angle);
+		setDirection(0.0);
 	}
 	
 	@Override
@@ -56,23 +82,13 @@ public class TankDrive implements PIDOutput
 		
 		
 		if (right > 1)
-		{
 			right = 1; 
-		}
-		
 		if (left > 1)
-		{
 			left = 1;
-		}
 		if (right < -1)
-		{
 			right = -1; 
-		}
-		
 		if (left < -1)
-		{
-			left = -1;
-		}
+			left = -1;	
 		
 		fr.set(right);
 		fl.set(left);
@@ -83,19 +99,19 @@ public class TankDrive implements PIDOutput
 		
 	}
 	
-	public void setDirection(double power)
+	public synchronized void setDirection(double power)
 	{
 		direction = power;
 	}
 	
-	public double getDirection()
+	public synchronized double getDirection()
 	{
 		return direction;
 	}
 	
-	public synchronized void drive(int shiftButton)
+	public synchronized void drive()
 	{
-		checkUserShift(shiftButton);
+		checkUserShift();
 		
 		double x = j.getX();
 		double y = j.getY();
@@ -129,14 +145,19 @@ public class TankDrive implements PIDOutput
 		}
 	}
 	
+	public void autoDrive()
+	{
+		
+	}
+	
 	public synchronized void stopAll()
 	{
 		driveTrain.stopAll();
 	}
 	
-	private synchronized void checkUserShift(int button)
+	private synchronized void checkUserShift()
 	{
-		if(j.getRawButton(button))
+		if(j.getRawButton(9))
 			shifter.set(DoubleSolenoid.Value.kReverse);
 		else
 			shifter.set(DoubleSolenoid.Value.kForward);	

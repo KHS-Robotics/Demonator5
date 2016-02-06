@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot
 		cc = new CompressorComponent(Repository.Compressor);
 		ComponentRunner.startAutomaticMode(cc);
 		
-		tdc = new TankDriveComponent(Repository.TankDrive, 2);
+		tdc = new TankDriveComponent(Repository.TankDrive);
 		
 		sc = new ShootingComponent(Repository.Shooter);
 		
@@ -111,9 +111,8 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(cc);
 		}
 		
-		if (Repository.SwitchBox.getRawButton(1))
+		if (Repository.SwitchBox.getRawButton(4)) //check button number
 		{
-			Repository.TankDrive.goToSetpoint(0.0);
 			Repository.TankDrive.turnPIDOn();
 		}
 		else
@@ -121,6 +120,12 @@ public class Robot extends IterativeRobot
 			Repository.TankDrive.turnPIDOff();
 		}
 		
+		if (Repository.DriveStick.getRawButton(9)) //check button number
+			Repository.TankDrive.goStraight();
+		
+		if (Repository.DriveStick.getRawButton(8)) //check button number
+			Repository.TankDrive.goToAngle(0.0);
+
 		if(numLoops % 10 == 0)
 		{
 			Repository.TankDrive.setPID(

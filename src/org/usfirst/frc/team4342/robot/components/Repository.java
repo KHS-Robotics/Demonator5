@@ -11,6 +11,7 @@ import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Relay;
@@ -46,6 +47,7 @@ public class Repository
 	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
 	private static Relay Accumulator;
 	public static DriveTrain DriveTrain;
+	public static Encoder DriveLeftEncoder, DriveRightEncoder;
 	
 	public static AHRS Navx;
 	
@@ -68,6 +70,7 @@ public class Repository
 			initializeShooter();
 			initializePneumatics();
 			initializeComponents();
+			initializeEncoders();
 		}
 		
 		initialized = true;
@@ -116,12 +119,12 @@ public class Repository
 	{
 		try
 		{
-			FrontRight = new CANTalon(15);
-			FrontLeft = new CANTalon(0);
+			FrontRight = new CANTalon(13);
+			FrontLeft = new CANTalon(2);
 			MiddleRight = new CANTalon(14);
 			MiddleLeft = new CANTalon(1);
-			RearRight = new CANTalon(13);
-			RearLeft = new CANTalon(2);
+			RearRight = new CANTalon(15);
+			RearLeft = new CANTalon(0);
 			
 			DriveTrain = new DriveTrain(
 				DriveStick,
@@ -156,9 +159,9 @@ public class Repository
 			ultra = new Ultrasonic(1, 2);
 			ultra.setAutomaticMode(true);
 			
-			RightShooter = new CANTalon(12);
-			LeftShooter = new CANTalon(3);
-			VerticalMotor = new CANTalon(11);
+			RightShooter = new CANTalon(3);
+			LeftShooter = new CANTalon(12);
+			VerticalMotor = new CANTalon(4);
 			
 			Accumulator = new Relay(0, Relay.Direction.kForward);
 			
@@ -199,12 +202,18 @@ public class Repository
 		try
 		{
 			Compressor = new Compressor(CompressorRelay);
-			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter);
+			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
 			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra);
 		}
 		catch(Exception ex)
 		{
 			Logs.error("Failed to initialize main components of the robot (" + ExceptionInfo.getType(ex) + ")", ex);
 		}
+	}
+	
+	private static void initializeEncoders()
+	{
+		DriveRightEncoder = new Encoder(0,1);
+		DriveLeftEncoder = new Encoder(2,3);
 	}
 }

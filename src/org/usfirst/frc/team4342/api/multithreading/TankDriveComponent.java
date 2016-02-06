@@ -9,12 +9,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class TankDriveComponent extends Component
 {
 	private TankDrive td;
-	private int shiftButton;
 	
-	public TankDriveComponent(TankDrive td, int shiftButton)
+	public TankDriveComponent(TankDrive td)
 	{
 		this.td = td;
-		this.shiftButton = shiftButton;
+
 	}
 	
 	@Override
@@ -32,7 +31,7 @@ public class TankDriveComponent extends Component
 			{
 				if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{
-					td.drive(shiftButton);
+					td.drive();
 				}
 				
 				Thread.sleep(Component.SLEEP_MILLIS);

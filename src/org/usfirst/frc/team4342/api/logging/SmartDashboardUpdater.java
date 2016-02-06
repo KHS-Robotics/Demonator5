@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
-import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 
+import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import ernie.logging.loggers.ILogger;
@@ -23,10 +24,12 @@ public class SmartDashboardUpdater
 	private static ArrayList<String> joystickKeys = new ArrayList<String>();
 	private static ArrayList<String> talonKeys = new ArrayList<String>();
 	private static ArrayList<String> limitSwitchKeys = new ArrayList<String>();
+	private static ArrayList<String> encoderKeys = new ArrayList<String>();
 	
 	private static Map<String, Joystick> joysticks = new HashMap<String, Joystick>();
 	private static Map<String, CANTalon> talons = new HashMap<String, CANTalon>();
 	private static Map<String, DigitalInput> limitSwitches = new HashMap<String, DigitalInput>();
+	private static Map<String, Encoder> encoders = new HashMap<String, Encoder>();
 	
 	/**
 	 * Adds a joystick to put on the Smart Dashboard
@@ -61,6 +64,12 @@ public class SmartDashboardUpdater
 		limitSwitches.put(key, limitSwitch);
 	}
 	
+	public static void addEncoder(String key, Encoder encoder)
+	{
+		encoderKeys.add(key);
+		encoders.put(key, encoder);
+	}
+	
 	/**
 	 * Starts updating the Smart Dashboard
 	 */
@@ -82,6 +91,7 @@ public class SmartDashboardUpdater
 		private boolean loggedTalons;
 		private boolean loggedDigitalInput;
 		private boolean loggedNavx;
+		private boolean loggedEncoders;
 		
 		private MultiLogger multiLog;
 		
@@ -104,6 +114,7 @@ public class SmartDashboardUpdater
 				putTalonData();
 				putLimitSwitchData();
 				putNavXData();
+				putEncoderData();
 				
 				SmartDashboard.putString("Shooter-State", Repository.Shooter.getState().toString());
 				
@@ -246,5 +257,21 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
+		
+		private void putEncoderData() 
+		{
+			try 
+			{
+				SmartDashboard.putNumber("Left Encoder Counts- ", Repository.DriveLeftEncoder.getRaw());
+				SmartDashboard.putNumber("Rightt Encoder Counts- ", Repository.DriveRightEncoder.getRaw());
+			} 
+			catch(Exception ex) 
+			{
+				if(!loggedEncoders) 
+				{
+					multiLog.error("Error while putting Encoder data", ex);
+					loggedEncoders = true;
+				}
+			}
 	}
 }
