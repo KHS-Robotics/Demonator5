@@ -19,7 +19,7 @@ public class TankDrive implements PIDOutput
 	private AHRS navX;
 	private DoubleSolenoid shifter;
 	private PIDController angleControl;
-	private double direction;
+	private double direction = 0;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter)
 	{
@@ -83,9 +83,14 @@ public class TankDrive implements PIDOutput
 		
 	}
 	
-	public void direction(double power)
+	public void setDirection(double power)
 	{
 		direction = power;
+	}
+	
+	public double getDirection()
+	{
+		return direction;
 	}
 	
 	public synchronized void drive(int shiftButton)
@@ -94,19 +99,9 @@ public class TankDrive implements PIDOutput
 		
 		double x = j.getX();
 		double y = j.getY();
-		double z = j.getZ();
 		
-		double a;
-		
-		if (z == 0)
-			a = x;
-		else if (x == 0)
-			a = z;
-		else
-			a = (x+z) / 2.0;
-		
-		double left = (y-a);
-		double right = (y+a);
+		double left = (y-x);
+		double right = (y+x);
 		
 		if (left > 1.0)
             left = 1.0;
