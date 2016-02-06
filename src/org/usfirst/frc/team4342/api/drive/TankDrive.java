@@ -51,31 +51,35 @@ public class TankDrive implements PIDOutput
 	@Override
 	public void pidWrite(double output) 
 	{
-		if (direction + output > 1)
+		double right = direction - output;
+		double left = direction + output;
+		
+		
+		if (right > 1)
 		{
-			fr.set(1);
-			fl.set(1/((direction+output)/(direction-output)));
-			mr.set(1);
-			ml.set(1/((direction+output)/(direction-output)));
-			rr.set(1);
-			rl.set(1/((direction+output)/(direction-output))); 
+			right = 1; 
 		}
-		else if (direction - output > 1)
+		
+		if (left > 1)
 		{
-			fl.set(1);
-			fr.set(1/((direction+output)/(direction-output)));
-			ml.set(1);
-			mr.set(1/((direction+output)/(direction-output)));
-			rl.set(1);
-			rr.set(1/((direction+output)/(direction-output))); 
+			left = 1;
 		}
-		else 
-			fr.set(direction-output);
-			fl.set(direction+output);
-			mr.set(direction-output);
-			ml.set(direction+output);
-			rr.set(direction-output);
-			rl.set(direction+output);
+		if (right < -1)
+		{
+			right = -1; 
+		}
+		
+		if (left < -1)
+		{
+			left = -1;
+		}
+		
+		fr.set(right);
+		fl.set(left);
+		mr.set(right);
+		ml.set(left);
+		rr.set(right);
+		rl.set(left);
 		
 	}
 	
