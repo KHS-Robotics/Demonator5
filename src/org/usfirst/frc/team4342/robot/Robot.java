@@ -76,6 +76,14 @@ public class Robot extends IterativeRobot
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
     	
+    	if (Repository.SwitchBox.getRawButton(4)) //check button number
+		{
+			Repository.TankDrive.turnPIDOn();
+		}
+		else
+		{
+			Repository.TankDrive.turnPIDOff();
+		}
     }
 
     /**
@@ -90,16 +98,7 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(sc);
 		}
 		
-		if (Repository.SwitchBox.getRawButton(4)) //check button number
-		{
-			Repository.TankDrive.turnPIDOn();
-		}
-		else
-		{
-			Repository.TankDrive.turnPIDOff();
-		}
-		
-		if (Repository.DriveStick.getRawButton(9)) //check button number
+		if (Repository.DriveStick.getRawButton(7)) //check button number
 			Repository.TankDrive.goStraight();
 		
 		if (Repository.DriveStick.getRawButton(8)) //check button number
