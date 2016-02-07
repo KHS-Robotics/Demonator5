@@ -114,7 +114,7 @@ public class TankDrive implements PIDOutput
 		checkUserShift();
 		
 		double x = j.getX();
-		double y = j.getY();
+		double y = -j.getY();
 		
 		double left = (y-x);
 		double right = (y+x);

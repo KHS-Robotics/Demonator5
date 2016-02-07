@@ -47,11 +47,11 @@ public class Repository
 	public static Relay Accumulator;
 	public static DriveTrain DriveTrain;
 	public static DoubleSolenoid Shifter;
-	public static Encoder DriveLeftEncoder, DriveRightEncoder;
+	public static Encoder LeftDriveEncoder, RightDriveEncoder;
 	
 	public static AHRS Navx;
 	
-	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
+	public static CANTalon RightShooter, LeftShooter, ArmMotor;
 	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
 	public static SetpointMapWrapper setpoints;
@@ -68,8 +68,8 @@ public class Repository
 			initializeDrive();
 			initializeShooter();
 			initializePneumatics();
-			initializeComponents();
 			initializeEncoders();
+			initializeComponents();
 		}
 		
 		initialized = true;
@@ -96,7 +96,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			Logs.warning("Failed to start PDP Logger due to a " + ExceptionInfo.getType(ex));
+			Logs.warning("Failed to start PDP Logger");
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialize joysticks due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize joysticks", ex);
 		}
 	}
 	
@@ -147,7 +147,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialize drive due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize drive", ex);
 		}
 	}
 	
@@ -157,7 +157,7 @@ public class Repository
 		{
 			RightShooter = new CANTalon(3);
 			LeftShooter = new CANTalon(12);
-			VerticalMotor = new CANTalon(4);
+			ArmMotor = new CANTalon(4);
 			
 			Accumulator = new Relay(0, Relay.Direction.kForward);
 			
@@ -167,11 +167,11 @@ public class Repository
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
-			VerticalMotor.enableBrakeMode(true);
+			ArmMotor.enableBrakeMode(true);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
-			VerticalMotor.enable();
+			ArmMotor.enable();
 			
 			ArmEncoder = new Encoder(4, 5);
 			
@@ -183,7 +183,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialize shooter due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize shooter", ex);
 		}
 	}
 	
@@ -196,7 +196,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialize pneumatics due to a " + ExceptionInfo.getType(ex), ex);
+			Logs.error("Failed to initialize pneumatics", ex);
 		}
 	}
 	
@@ -204,12 +204,12 @@ public class Repository
 	{
 		try
 		{
-			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, BallPusher, ArmEncoder, setpoints);
+			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, LeftDriveEncoder, RightDriveEncoder);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, ArmMotor, BallPusher, ArmEncoder, setpoints);
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialize main components of the robot (" + ExceptionInfo.getType(ex) + ")", ex);
+			Logs.error("Failed to initialize main components of the robot", ex);
 		}
 	}
 	
@@ -217,12 +217,12 @@ public class Repository
 	{
 		try
 		{
-			DriveRightEncoder = new Encoder(0, 1);
-			DriveLeftEncoder = new Encoder(2, 3);
+			RightDriveEncoder = new Encoder(0, 1);
+			LeftDriveEncoder = new Encoder(2, 3);
 		}
 		catch(Exception ex)
 		{
-			Logs.error("Failed to initialze encoders (" + ExceptionInfo.getType(ex) + ")", ex);
+			Logs.error("Failed to initialze encoders", ex);
 		}
 	}
 }

@@ -145,7 +145,7 @@ public class SmartDashboardUpdater
 				SmartDashboardUpdater.addTalon("ML", Repository.MiddleLeft);
 				SmartDashboardUpdater.addTalon("RR", Repository.RearRight);
 				SmartDashboardUpdater.addTalon("RL", Repository.RearLeft);
-				SmartDashboardUpdater.addTalon("Arm", Repository.VerticalMotor);
+				SmartDashboardUpdater.addTalon("Arm", Repository.ArmMotor);
 				SmartDashboardUpdater.addTalon("RightShooter", Repository.RightShooter);
 				SmartDashboardUpdater.addTalon("LeftShooter", Repository.LeftShooter);
 				

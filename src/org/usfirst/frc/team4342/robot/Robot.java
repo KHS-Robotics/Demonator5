@@ -4,7 +4,6 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
@@ -32,10 +31,6 @@ public class Robot extends IterativeRobot
 	@Override
     public void robotInit() 
     {
-		SmartDashboard.putNumber("Drive-P", 1.0);
-		SmartDashboard.putNumber("Drive-I", 0.0);
-		SmartDashboard.putNumber("Drive-D", 0.0);
-		
 		Repository.initializeAll();
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
