@@ -109,7 +109,6 @@ public class Robot extends IterativeRobot
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);
     }
-
     
     /**
      * This function is called periodically during disabled

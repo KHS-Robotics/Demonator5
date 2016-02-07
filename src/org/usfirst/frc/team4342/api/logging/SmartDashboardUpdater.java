@@ -150,6 +150,10 @@ public class SmartDashboardUpdater
 				SmartDashboardUpdater.addTalon("LeftShooter", Repository.LeftShooter);
 				
 				SmartDashboardUpdater.addEncoder("Arm-Enc", Repository.ArmEncoder);
+				
+				SmartDashboard.putNumber("Drive-P", 0.0);
+				SmartDashboard.putNumber("Drive-I", 0.0);
+				SmartDashboard.putNumber("Drive-D", 0.0);
 			} 
 			catch(Exception ex) 
 			{

@@ -24,6 +24,7 @@ public class TankDrive implements PIDOutput
 	private boolean autoStepFinished;
 	private Encoder encLeft, encRight;
 	
+	private double autoX, autoY, autoEncCounts;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, Encoder encLeft,
 					 Encoder encRight)
@@ -145,7 +146,7 @@ public class TankDrive implements PIDOutput
 		}
 	}
 	
-	public void autoDrive()
+	public void autoDrive(double x, double y, double encCounts)
 	{
 		
 	}
@@ -181,5 +182,35 @@ public class TankDrive implements PIDOutput
 	public synchronized void setPID(double p, double i, double d)
 	{
 		angleControl.setPID(p, i, d);
+	}
+	
+	public synchronized void setAutoX(double x)
+	{
+		this.autoX = x;
+	}
+	
+	public synchronized void setAutoY(double y)
+	{
+		this.autoY = y;
+	}
+	
+	public synchronized void setAutoEncoderCounts(double encCounts)
+	{
+		this.autoEncCounts = encCounts;
+	}
+	
+	public synchronized double getAutoX()
+	{
+		return autoX;
+	}
+	
+	public synchronized double getAutoY()
+	{
+		return autoY;
+	}
+	
+	public synchronized double getAutoEncoderCounts()
+	{
+		return autoEncCounts;
 	}
 }
