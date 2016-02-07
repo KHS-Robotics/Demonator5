@@ -51,10 +51,8 @@ public class Repository
 	
 	public static AHRS Navx;
 	
-	public static Relay CompressorRelay;
-	
 	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
-	public static Solenoid LoaderX, LoaderY;
+	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
 	public static SetpointMapWrapper setpoints;
 	
@@ -193,9 +191,8 @@ public class Repository
 	{
 		try
 		{
-			CompressorRelay = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(0, 1);
-			LoaderX = new Solenoid(7);
+			BallPusher = new Solenoid(3);
 		}
 		catch(Exception ex)
 		{
@@ -208,7 +205,7 @@ public class Repository
 		try
 		{
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ArmEncoder, setpoints);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, BallPusher, ArmEncoder, setpoints);
 		}
 		catch(Exception ex)
 		{
@@ -220,7 +217,6 @@ public class Repository
 	{
 		try
 		{
-			// TODO: DIO value conflicts? Getting AllocationExceptions...
 			DriveRightEncoder = new Encoder(0, 1);
 			DriveLeftEncoder = new Encoder(2, 3);
 		}

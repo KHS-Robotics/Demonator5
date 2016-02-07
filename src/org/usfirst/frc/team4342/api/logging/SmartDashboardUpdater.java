@@ -137,6 +137,7 @@ public class SmartDashboardUpdater
 			try 
 			{
 				SmartDashboardUpdater.addJoystick("Joy-Drive", Repository.DriveStick);
+				SmartDashboardUpdater.addJoystick("Joy-Control", Repository.ShooterStick);
 
 				SmartDashboardUpdater.addTalon("FR", Repository.FrontRight);
 				SmartDashboardUpdater.addTalon("FL", Repository.FrontLeft);
@@ -144,6 +145,11 @@ public class SmartDashboardUpdater
 				SmartDashboardUpdater.addTalon("ML", Repository.MiddleLeft);
 				SmartDashboardUpdater.addTalon("RR", Repository.RearRight);
 				SmartDashboardUpdater.addTalon("RL", Repository.RearLeft);
+				SmartDashboardUpdater.addTalon("Arm", Repository.VerticalMotor);
+				SmartDashboardUpdater.addTalon("RightShooter", Repository.RightShooter);
+				SmartDashboardUpdater.addTalon("LeftShooter", Repository.LeftShooter);
+				
+				SmartDashboardUpdater.addEncoder("Arm-Enc", Repository.ArmEncoder);
 			} 
 			catch(Exception ex) 
 			{
@@ -186,7 +192,7 @@ public class SmartDashboardUpdater
 				for(String key : talonKeys)
 				{
 					CANTalon talon = talons.get(key);
-					SmartDashboard.putNumber(key + "-Enc", talon.getPosition());
+					SmartDashboard.putNumber("Talon- " + key + "-Enc", talon.getPosition());
 				}
 			} 
 			catch(Exception ex) 
@@ -257,13 +263,19 @@ public class SmartDashboardUpdater
 				}
 			}
 		}
-
+		
+		/**
+		 * Puts Encoder data to the Smart Dashboard
+		 */
 		private void putEncoderData() 
 		{
 			try 
 			{
-				SmartDashboard.putNumber("Left Encoder Counts- ", Repository.DriveLeftEncoder.getRaw());
-				SmartDashboard.putNumber("Rightt Encoder Counts- ", Repository.DriveRightEncoder.getRaw());
+				for(String key : encoderKeys) 
+				{
+					Encoder encoder = encoders.get(key);
+					SmartDashboard.putNumber(key + "-Count", encoder.get());
+				}
 			} 
 			catch(Exception ex) 
 			{
