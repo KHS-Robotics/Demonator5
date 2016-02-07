@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Ultrasonic;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -56,7 +55,6 @@ public class Repository
 	
 	public static CANTalon RightShooter, LeftShooter, VerticalMotor;
 	public static Solenoid LoaderX, LoaderY;
-	public static Ultrasonic ultra;
 	public static Encoder ArmEncoder;
 	public static SetpointMapWrapper setpoints;
 	
@@ -159,9 +157,6 @@ public class Repository
 	{
 		try
 		{
-			ultra = new Ultrasonic(1, 2);
-			ultra.setAutomaticMode(true);
-			
 			RightShooter = new CANTalon(3);
 			LeftShooter = new CANTalon(12);
 			VerticalMotor = new CANTalon(4);
@@ -213,7 +208,7 @@ public class Repository
 		try
 		{
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra, ArmEncoder, setpoints);
+			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ArmEncoder, setpoints);
 		}
 		catch(Exception ex)
 		{

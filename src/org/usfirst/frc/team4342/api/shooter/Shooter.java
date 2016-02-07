@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class Shooter 
 {
@@ -19,7 +18,6 @@ public class Shooter
 	private Relay accumulator;
 	private CANTalon rightMotor, leftMotor, arm;
 	private Solenoid ballPusher, accumulatorLifter;
-	private Ultrasonic ultra;
 	private Encoder enc;
 	private SetpointMapWrapper setpoints;
 	
@@ -35,9 +33,8 @@ public class Shooter
 	private boolean isAtAutoSetpoint;
 	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
-							   CANTalon leftMotor, CANTalon armMotor, 
-							   Solenoid ballPusher, Ultrasonic ultra,
-							   Encoder enc, SetpointMapWrapper setpoints)
+					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
+					Encoder enc, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
@@ -45,7 +42,6 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.arm = armMotor;
 		this.ballPusher = ballPusher;
-		this.ultra = ultra;
 		this.enc = enc;
 		this.setpoints = setpoints;
 		
@@ -150,17 +146,15 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRING)
 		{
+			// TODO: create a sensor to detect if ball has been ejected
 			ballPusher.set(true);
 			
-			if(ultra.getRangeInches() > 18)
-			{
-				rightMotor.set(0);
-				leftMotor.set(0);
-				
-				accumulatorLifter.set(false);
-				
-				state = ShooterState.FIRED;
-			}
+			rightMotor.set(0);
+			leftMotor.set(0);
+			
+			accumulatorLifter.set(false);
+			
+			state = ShooterState.FIRED;
 		}
 		else if (state == ShooterState.FIRED)
 		{
