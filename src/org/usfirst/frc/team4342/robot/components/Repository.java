@@ -182,7 +182,7 @@ public class Repository
 			LeftShooter.enable();
 			VerticalMotor.enable();
 			
-			ArmEncoder = new Encoder(1, 2);
+			ArmEncoder = new Encoder(4, 5);
 			
 			setpoints = new SetpointMapWrapper(
 				new Setpoint[] {
@@ -202,7 +202,7 @@ public class Repository
 		{
 			CompressorRelay = new Relay(1, Relay.Direction.kForward);
 			Shifter = new DoubleSolenoid(0, 1);
-			LoaderX = new Solenoid(3);
+			LoaderX = new Solenoid(7);
 		}
 		catch(Exception ex)
 		{
@@ -226,7 +226,15 @@ public class Repository
 	
 	private static void initializeEncoders()
 	{
-		DriveRightEncoder = new Encoder(0,1);
-		DriveLeftEncoder = new Encoder(2,3);
+		try
+		{
+			// TODO: DIO value conflicts? Getting AllocationExceptions...
+			DriveRightEncoder = new Encoder(0, 1);
+			DriveLeftEncoder = new Encoder(2, 3);
+		}
+		catch(Exception ex)
+		{
+			Logs.error("Failed to initialze encoders (" + ExceptionInfo.getType(ex) + ")", ex);
+		}
 	}
 }

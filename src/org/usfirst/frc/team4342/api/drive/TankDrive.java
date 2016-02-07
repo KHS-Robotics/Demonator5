@@ -45,10 +45,10 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		int pGain = Integer.parseInt(SmartDashboard.getData("Drive P Value").toString());
-		int iGain = Integer.parseInt(SmartDashboard.getData("Drive I Value").toString());
-		int dGain = Integer.parseInt(SmartDashboard.getData("Drive D Value").toString());
-		angleControl = new PIDController(pGain, iGain, dGain, navX, Repository.TankDrive);
+		double pGain = SmartDashboard.getNumber("Drive-P");
+		double iGain = SmartDashboard.getNumber("Drive-I");
+		double dGain = SmartDashboard.getNumber("Drive-D");
+		angleControl = new PIDController(pGain, iGain, dGain, navX, this);
 		
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);

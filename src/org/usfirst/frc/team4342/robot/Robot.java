@@ -4,7 +4,6 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
@@ -28,9 +27,6 @@ public class Robot extends IterativeRobot
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
 	
-	private SendableChooser pChooser, iChooser, dChooser;
-	private long numLoops;
-	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -38,6 +34,10 @@ public class Robot extends IterativeRobot
 	@Override
     public void robotInit() 
     {
+		SmartDashboard.putNumber("Drive-P", 1.0);
+		SmartDashboard.putNumber("Drive-I", 0.0);
+		SmartDashboard.putNumber("Drive-D", 0.0);
+		
 		Repository.initializeAll();
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
@@ -48,16 +48,6 @@ public class Robot extends IterativeRobot
 		tdc = new TankDriveComponent(Repository.TankDrive);
 		
 		sc = new ShootingComponent(Repository.Shooter);
-		
-		pChooser = new SendableChooser();
-		pChooser.addObject("P-Drive", 0.0);
-		SmartDashboard.putData("Drive P Value", pChooser);
-		iChooser = new SendableChooser();
-		iChooser.addObject("I-Drive", 0.0);
-		SmartDashboard.putData("Drive I Value", iChooser);
-		dChooser = new SendableChooser();
-		dChooser.addObject("D-Drive", 0.0);
-		SmartDashboard.putData("Drive D Value", dChooser);
     }
 	
 	/**
@@ -125,17 +115,6 @@ public class Robot extends IterativeRobot
 		
 		if (Repository.DriveStick.getRawButton(8)) //check button number
 			Repository.TankDrive.goToAngle(0.0);
-
-		if(numLoops % 10 == 0)
-		{
-			Repository.TankDrive.setPID(
-				Integer.parseInt(SmartDashboard.getData("Drive P Value").toString()),
-				Integer.parseInt(SmartDashboard.getData("Drive I Value").toString()),
-				Integer.parseInt(SmartDashboard.getData("Drive D Value").toString())
-			);
-		}
-		
-		numLoops++;
     }
     
 	/**
@@ -144,7 +123,6 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
-    	numLoops = 0L;
     	Repository.DriveTrain.setCoastMode();
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);

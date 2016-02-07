@@ -54,13 +54,13 @@ public class Shooter
 	
 	public void handleTeleop()
 	{
-		checkUserShooter();
-		checkUserAccumulator();
-		checkButtonStatus();
-		checkUserAngleMotor();
+//		checkUserShooter();
+//		checkUserAccumulator();
+//		checkButtonStatus();
+//		checkUserAngleMotor();
 		
-		//basicFire();
-		//basicAccum();
+		basicFire();
+		basicAccum();
 	}
 	
 	public void handleAuto()
@@ -75,7 +75,7 @@ public class Shooter
 		leftMotor.set(0);
 		arm.set(0);
 		ballPusher.set(false);
-		accumulatorLifter.set(false);
+		//accumulatorLifter.set(false);
 	}
 	
 	public ShooterState getState()
