@@ -11,6 +11,7 @@ import org.usfirst.frc.team4342.api.shooter.SetpointMapWrapper;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -54,6 +55,7 @@ public class Repository
 	public static CANTalon RightShooter, LeftShooter, ArmMotor;
 	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
+	public static DigitalInput BallSensor;
 	public static SetpointMapWrapper setpoints;
 	
 	public static TankDrive TankDrive;
@@ -180,6 +182,8 @@ public class Repository
 					new Setpoint(1, 0)
 				}
 			);
+			
+			BallSensor = new DigitalInput(6);
 		}
 		catch(Exception ex)
 		{
@@ -205,7 +209,17 @@ public class Repository
 		try
 		{
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, LeftDriveEncoder, RightDriveEncoder);
-			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, ArmMotor, BallPusher, ArmEncoder, setpoints);
+			Shooter = new Shooter(
+				ShooterStick, 
+				Accumulator, 
+				RightShooter,
+				LeftShooter, 
+				ArmMotor, 
+				BallPusher, 
+				ArmEncoder, 
+				BallSensor, 
+				setpoints
+			);
 		}
 		catch(Exception ex)
 		{

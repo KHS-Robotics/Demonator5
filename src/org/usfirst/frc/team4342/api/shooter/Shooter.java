@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.api.shooter;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
@@ -19,6 +20,7 @@ public class Shooter
 	private CANTalon rightMotor, leftMotor, arm;
 	private Solenoid ballPusher, accumulatorLifter;
 	private Encoder enc;
+	private DigitalInput ballSensor;
 	private SetpointMapWrapper setpoints;
 	
 	private boolean hold, buttonPressed;
@@ -34,7 +36,7 @@ public class Shooter
 	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
-					Encoder enc, SetpointMapWrapper setpoints)
+					Encoder enc, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
@@ -43,6 +45,7 @@ public class Shooter
 		this.arm = armMotor;
 		this.ballPusher = ballPusher;
 		this.enc = enc;
+		this.ballSensor = ballSensor;
 		this.setpoints = setpoints;
 		
 		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
@@ -135,7 +138,7 @@ public class Shooter
 				
 				accumulatorLifter.set(true);
 				
-				if (j.getRawButton(10) && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
+				if (j.getRawButton(10))// && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
 					state = ShooterState.FIRING;
 			}
 			else
@@ -146,15 +149,17 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRING)
 		{
-			// TODO: create a sensor to detect if ball has been ejected
-			ballPusher.set(true);
-			
-			rightMotor.set(0);
-			leftMotor.set(0);
-			
-			accumulatorLifter.set(false);
-			
-			state = ShooterState.FIRED;
+			if(!ballSensor.get())
+			{
+				ballPusher.set(true);
+				
+				rightMotor.set(0);
+				leftMotor.set(0);
+				
+				accumulatorLifter.set(false);
+				
+				state = ShooterState.FIRED;
+			}
 		}
 		else if (state == ShooterState.FIRED)
 		{
@@ -165,8 +170,11 @@ public class Shooter
 		}
 		else if (state == ShooterState.RELOADING)
 		{
-			ballPusher.set(false);
-			state = ShooterState.LOADED;
+			if(ballSensor.get())
+			{
+				ballPusher.set(false);
+				state = ShooterState.LOADED;
+			}
 		}
 	}
 	
