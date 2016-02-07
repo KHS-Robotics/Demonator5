@@ -5,7 +5,6 @@ import org.usfirst.frc.team4342.api.logging.PdpLogger;
 import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
 import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
-import org.usfirst.frc.team4342.api.pnuematics.Compressor;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Setpoint;
 import org.usfirst.frc.team4342.api.shooter.SetpointMapWrapper;
@@ -61,7 +60,6 @@ public class Repository
 	public static Encoder ArmEncoder;
 	public static SetpointMapWrapper setpoints;
 	
-	public static Compressor Compressor;
 	public static TankDrive TankDrive;
 	public static Shooter Shooter;
 	
@@ -214,7 +212,6 @@ public class Repository
 	{
 		try
 		{
-			Compressor = new Compressor(CompressorRelay);
 			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, DriveLeftEncoder, DriveRightEncoder);
 			Shooter = new Shooter(ShooterStick, Accumulator, RightShooter, LeftShooter, VerticalMotor, LoaderX, ultra, ArmEncoder, setpoints);
 		}

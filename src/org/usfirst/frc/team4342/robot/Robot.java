@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
-import org.usfirst.frc.team4342.api.multithreading.CompressorComponent;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
 import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
 
@@ -23,7 +22,6 @@ import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
  */
 public class Robot extends IterativeRobot 
 {
-	private CompressorComponent cc;
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
 	
@@ -41,9 +39,6 @@ public class Robot extends IterativeRobot
 		Repository.initializeAll();
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
-		
-		cc = new CompressorComponent(Repository.Compressor);
-		ComponentRunner.startAutomaticMode(cc);
 		
 		tdc = new TankDriveComponent(Repository.TankDrive);
 		
@@ -89,16 +84,10 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-		if(Repository.SwitchBox.getRawButton(2) && cc.isRunning())
-				ComponentRunner.stopAutomaticMode(cc);
-		else if(!cc.isRunning())
-				ComponentRunner.startAutomaticMode(cc);
-		
 		if(Repository.SwitchBox.getRawButton(9))
 		{
 			ComponentRunner.stopAutomaticMode(tdc);
 			ComponentRunner.stopAutomaticMode(sc);
-			ComponentRunner.stopAutomaticMode(cc);
 		}
 		
 		if (Repository.SwitchBox.getRawButton(4)) //check button number
