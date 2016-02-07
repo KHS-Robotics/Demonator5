@@ -32,7 +32,8 @@ public class Shooter
 	private double prevPidOut;
 	
 	private int autoSetpoint;
-	private boolean isAtAutoSetpoint;
+	private boolean isAtAutoSetpoint, solenoidStatus;
+	private double autoMotorOutput;
 	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
@@ -65,6 +66,8 @@ public class Shooter
 	public void handleAuto()
 	{
 		autoMove(autoSetpoint);
+		setMotors(autoMotorOutput);
+		setBallPusher(solenoidStatus);
 	}
 	
 	public void stopAll()
@@ -125,6 +128,27 @@ public class Shooter
 	public void setAutoSetpoint(int setpoint)
 	{
 		this.autoSetpoint = setpoint;
+	}
+	
+	public void setMotorOutput(double output)
+	{
+		this.autoMotorOutput = output;
+	}
+	
+	public void setBallPusherValue(boolean on)
+	{
+		this.solenoidStatus = on;
+	}
+	
+	private void setMotors(double output)
+	{
+		rightMotor.set(output);
+		leftMotor.set(output);
+	}
+	
+	private void setBallPusher(boolean on)
+	{
+		ballPusher.set(on);
 	}
 	
 	private void checkUserShooter()
