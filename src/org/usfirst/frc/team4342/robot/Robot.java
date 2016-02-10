@@ -6,6 +6,8 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 
+import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
+import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
@@ -25,6 +27,8 @@ public class Robot extends IterativeRobot
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
 	private Solenoid leds;
+	
+	private AutoRoutine selectedAutoRoutine;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -52,6 +56,8 @@ public class Robot extends IterativeRobot
     public void autonomousInit() 
     {
     	Repository.DriveTrain.setBrakeMode();
+    	
+    	selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine("/home/lvuser/AutoRoutine.txt");
     }
 
     /**
