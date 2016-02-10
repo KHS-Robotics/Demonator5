@@ -20,16 +20,14 @@ import org.opencv.videoio.VideoCapture;
 
 /**
  * 
- * @author Elijah Kaufman
- * @version 1.0
- * @description Uses opencv and network table 3.0 to detect the vision targets
+ * @author Magnus-Murray
+ * @author Elijah Kaufman - gotta give cred he designed originally
+ * @version 6.9 ;)
+ * @description DETECT ALL THE THINGS (actually just the high goal location)
  *
  */
-public class Hello {
+public class EmpiricallyDeterminedHighGoalLocator {
 
-	/**
-	 * static method to load opencv and networkTables
-	 */
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		//NetworkTable.setClientMode();
@@ -40,19 +38,26 @@ public class Hello {
 	UPPER_BOUNDS = new Scalar(180,190,255);
 
 	
-//	the size for resing the image
-	public static final Size resize = new Size(1080,960);
+	public static final Size resize = new Size(320,240);
 	
-//	ignore these
 	public static VideoCapture videoCapture;
 	public static Mat matOriginal, matRGB, matThresh, clusters, matHeirarchy;
 	
 	public static final int TOP_TARGET_HEIGHT = 97;
 	public static final int TOP_CAMERA_HEIGHT = 46;
 
-	public static final double VERTICAL_FOV  = 54;
-	public static final double HORIZONTAL_FOV  = 54;
-	public static final double CAMERA_ANGLE = 0;
+	/* axis sez: 
+	Horizontal angle of view: 67°
+	Vertical angle of view: 51°
+	*/
+
+	public static final double VERTICAL_FOV  = 51; //
+	public static final double HORIZONTAL_FOV  = 67; //frc says 49 degrees works better but idk
+	public static final double CAMERA_ANGLE = 0; //adjust to offset pitch of the robot- get from navX plox
+	
+	public static final String CAMERA_IP = "http://10.43.42.16/mjpg/video.mjpg";
+	public static final String OUTPUT_PATH = "C:\\Users\\Magnus\\Desktop\\output.png";
+	public static final String INPUT_PATH = "C:\\Users\\Magnus\\Desktop\\input.png";
 	
 
 	public static void main(String[] args) {
@@ -62,17 +67,13 @@ public class Hello {
 		clusters = new Mat();
 		matHeirarchy = new Mat();
 		//NetworkTable table = NetworkTable.getTable("SmartDashboard");
-//		while(shouldRun){
+//		while(true){
 //			try {
-////				opens up the camera stream and tries to load it
 //				videoCapture = new VideoCapture();
-//				videoCapture.open("http://10.##./.##.11/mjpg/video.mjpg");
-////				Example
-////				cap.open("http://10.30.19.11/mjpg/video.mjpg");
-////				wait until it is opened
-//				while(!videoCapture.isOpened()){}
-////				time to actually process the acquired images
-//				processImage();
+//				videoCapture.open(CAMERA_IP);
+
+//				while(!videoCapture.isOpened()){} //just wait till its opened, try to do more efficiently?
+				processImage();
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //				break;
@@ -80,46 +81,39 @@ public class Hello {
 //		}
 		//videoCapture.release();
 		//System.exit(0);
-		processImage();
 	}
 	/**
 	 * 
-	 * reads an image from a live image capture and outputs information to the SmartDashboard or a file
+	 * contour that mama!
 	 */
 	public static void processImage(){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetAngle,targetY,distance,azimuth;
-//		frame counter
 		int FrameCount = 0;
-		long before = System.currentTimeMillis();
-//		only run for the specified time
 		while(FrameCount < 100){
 			contours.clear();
-//			capture from the axis camera
-			//videoCapture.read(matOriginal);
-//			captures from a static file for testing
-			matOriginal = Imgcodecs.imread("C:\\Users\\Magnus\\Desktop\\walrus.png");
-			Imgproc.cvtColor(matOriginal,matRGB,Imgproc.COLOR_BGR2RGB);			
+			//videoCapture.read(matOriginal); //put this back in when we do network table/robotsource
+			matOriginal = Imgcodecs.imread(INPUT_PATH);
+			Imgproc.cvtColor(matOriginal,matRGB,Imgproc.COLOR_BGR2RGB); //windows native bgr not rgb cuz ther dumb			
 			Core.inRange(matRGB, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, 
 					Imgproc.CHAIN_APPROX_SIMPLE);
-//			make sure the contours that are detected are at least 20x20 
-//			pixels with an area of 400 and an aspect ration greater then 1
+					
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
-					if(rec.height < 25 || rec.width < 25){
+					if(rec.height < 25 || rec.width < 25){ //tune these values? unless we wont ever be far enough away
 						iterator.remove();
 					continue;
 					}
 					float aspect = (float)rec.width/(float)rec.height;
 					System.out.println(aspect);
-					if(aspect < 1.4 || aspect > 1.8) //should be around 1.6ish methinks
+					if(aspect < 1.35 || aspect > 1.8) //should be around 1.6ish methinks
 						iterator.remove();
 				}
 				for(MatOfPoint mop : contours){
 					Rect rec = Imgproc.boundingRect(mop);
-					Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), new Scalar(255,255,255));
+					Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), new Scalar(0,0,0)); //black
 			}
 			if(contours.size() == 1){
 				Rect rec = Imgproc.boundingRect(contours.get(0));
@@ -131,11 +125,11 @@ public class Hello {
 				targetAngle = (2 * (targetAngle / matOriginal.width())) - 1;
 				azimuth = normalize360(targetAngle*HORIZONTAL_FOV /2.0 + 0);
 				System.out.println(distance);
-				System.out.println(y*(VERTICAL_FOV/2));
 				
 			break;
 			}
-			File f=new File("C:\\Users\\Magnus\\Desktop\\output.png");
+			//take out once we finish testing the thing
+			File f=new File(OUTPUT_PATH);
 			Imgcodecs.imwrite(f.getPath(), matOriginal);
 			
 
@@ -144,7 +138,7 @@ public class Hello {
 		}
 	}
 	/**
-	 * @param angle a nonnormalized angle
+	 *normalize that mama!
 	 */
 	public static double normalize360(double angle){
 		while(angle >= 360.0)
