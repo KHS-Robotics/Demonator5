@@ -4,6 +4,8 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
@@ -13,6 +15,7 @@ import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
  * 
+ * @author Brice Chapman
  * @author Ernie Wilson
  * @author Katie Schuetz
  * @author Payton DuLong
@@ -22,6 +25,7 @@ public class Robot extends IterativeRobot
 {
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
+	private Solenoid leds;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -37,6 +41,9 @@ public class Robot extends IterativeRobot
 		tdc = new TankDriveComponent(Repository.TankDrive);
 		
 		sc = new ShootingComponent(Repository.Shooter);
+		
+		leds = new Solenoid(6);
+		leds.set(true);
     }
 	
 	/**
@@ -69,15 +76,6 @@ public class Robot extends IterativeRobot
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
-    	
-    	if (Repository.SwitchBox.getRawButton(4)) //check button number
-		{
-			Repository.TankDrive.turnPIDOn();
-		}
-		else
-		{
-			Repository.TankDrive.turnPIDOff();
-		}
     }
 
     /**
@@ -92,11 +90,8 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(sc);
 		}
 		
-		if (Repository.DriveStick.getRawButton(7)) //check button number
-			Repository.TankDrive.goStraight();
-		
-		if (Repository.DriveStick.getRawButton(8)) //check button number
-			Repository.TankDrive.goToAngle(0.0);
+//		if (Repository.DriveStick.getRawButton(7)) //check button number
+//			Repository.TankDrive.goStraight();
     }
     
 	/**
@@ -109,6 +104,7 @@ public class Robot extends IterativeRobot
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);
     }
+
     
     /**
      * This function is called periodically during disabled

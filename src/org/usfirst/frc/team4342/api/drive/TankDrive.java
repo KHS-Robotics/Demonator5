@@ -23,8 +23,10 @@ public class TankDrive implements PIDOutput
 	private double direction = 0;
 	private boolean autoStepFinished;
 	private Encoder encLeft, encRight;
+	private static boolean lastButton4;
+	private static final double DEAD_BAND = 0.05;
+	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
 	
-	private double autoX, autoY, autoEncCounts;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, Encoder encLeft,
 					 Encoder encRight)
@@ -46,15 +48,15 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		double pGain = SmartDashboard.getNumber("Drive-P");
-		double iGain = SmartDashboard.getNumber("Drive-I");
-		double dGain = SmartDashboard.getNumber("Drive-D");
-		angleControl = new PIDController(pGain, iGain, dGain, navX, this);
+		SmartDashboard.putNumber("P-", pGain);
+		SmartDashboard.putNumber("I-", iGain);
+		SmartDashboard.putNumber("D-", dGain);
+		angleControl = new PIDController(pGain, iGain, dGain, navX, this, 20);
 		
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
-		angleControl.enable();
+		angleControl.disable();
 	}
 	
 	public synchronized boolean isAutoStepFinished()
@@ -67,10 +69,12 @@ public class TankDrive implements PIDOutput
 		goToSetpoint(navX.getYaw());
 		setDirection(0.75);
 		
+		
 	}
 	
 	public void goToAngle(double angle)
 	{
+		turnPIDOn();
 		goToSetpoint(angle);
 		setDirection(0.0);
 	}
@@ -112,41 +116,58 @@ public class TankDrive implements PIDOutput
 	
 	public synchronized void drive()
 	{
-		checkUserShift();
-		
-		double x = j.getX();
-		double y = -j.getY();
-		
-		double left = (y-x);
-		double right = (y+x);
-		
-		if (left > 1.0)
-            left = 1.0;
-        else if (left < -1.0)
-            left = -1.0;
-		
-        if (right > 1.0)
-            right = 1.0;
-        else if (right < -1.0)
-            right = -1.0;
-        
-		try
+		if (!Repository.SwitchBox.getRawButton(4))
 		{
-			fr.set(right);
-			fl.set(left);
-			mr.set(right);
-			ml.set(left);
-			rr.set(right);
-			rl.set(left);
+			turnPIDOff();
+			checkUserShift();
+
+			double z = Math.abs(j.getZ()) > DEAD_BAND ? -j.getZ() : 0.0;
+			double y = Math.abs(j.getY()) > DEAD_BAND ? -j.getY() : 0.0;
+
+			double left = (y-z);
+			double right = (y+z);
+
+			if (left > 1.0)
+				left = 1.0;
+			else if (left < -1.0)
+				left = -1.0;
+
+			if (right > 1.0)
+				right = 1.0;
+			else if (right < -1.0)
+				right = -1.0;
+
+			try
+			{
+				fr.set(right);
+				fl.set(left);
+				mr.set(right);
+				ml.set(left);
+				rr.set(right);
+				rl.set(left);
+
+			}
+			catch (Exception ex)
+			{
+				Repository.Logs.error("Failed to set drive motors", ex);
+			}
+		}
+		else if (lastButton4 != Repository.SwitchBox.getRawButton(4))
+		{
+			setPID(
+				SmartDashboard.getNumber("Drive-P"),
+				SmartDashboard.getNumber("Drive-I"),
+				SmartDashboard.getNumber("Drive-D")
+			); 
 			
+			goToSetpoint(0);
+			turnPIDOn();
 		}
-		catch (Exception ex)
-		{
-			Repository.Logs.error("Failed to set drive motors", ex);
-		}
+		
+		lastButton4 = Repository.SwitchBox.getRawButton(4);
 	}
 	
-	public void autoDrive(double x, double y, double encCounts)
+	public void autoDrive()
 	{
 		
 	}
@@ -181,36 +202,9 @@ public class TankDrive implements PIDOutput
 	
 	public synchronized void setPID(double p, double i, double d)
 	{
+		pGain = p;
+		iGain = i;
+		dGain = d;
 		angleControl.setPID(p, i, d);
-	}
-	
-	public synchronized void setAutoX(double x)
-	{
-		this.autoX = x;
-	}
-	
-	public synchronized void setAutoY(double y)
-	{
-		this.autoY = y;
-	}
-	
-	public synchronized void setAutoEncoderCounts(double encCounts)
-	{
-		this.autoEncCounts = encCounts;
-	}
-	
-	public synchronized double getAutoX()
-	{
-		return autoX;
-	}
-	
-	public synchronized double getAutoY()
-	{
-		return autoY;
-	}
-	
-	public synchronized double getAutoEncoderCounts()
-	{
-		return autoEncCounts;
 	}
 }

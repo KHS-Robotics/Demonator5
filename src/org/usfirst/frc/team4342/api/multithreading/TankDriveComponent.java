@@ -35,7 +35,7 @@ public class TankDriveComponent extends Component
 				}
 				else if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isAutonomous())
 				{
-					td.autoDrive(td.getAutoX(), td.getAutoY(), td.getAutoEncoderCounts());
+					
 				}
 				
 				Thread.sleep(Component.SLEEP_MILLIS);
