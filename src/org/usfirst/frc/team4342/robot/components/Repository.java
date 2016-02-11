@@ -45,14 +45,14 @@ public class Repository
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
-	public static Relay Accumulator;
+	
 	public static DriveTrain DriveTrain;
 	public static DoubleSolenoid Shifter;
 	public static Encoder LeftDriveEncoder, RightDriveEncoder;
 	
 	public static AHRS Navx;
 	
-	public static CANTalon RightShooter, LeftShooter, ArmMotor;
+	public static CANTalon RightShooter, LeftShooter, ArmMotor, Accumulator;
 	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
 	public static DigitalInput BallSensor;
@@ -158,10 +158,9 @@ public class Repository
 		try
 		{
 			RightShooter = new CANTalon(3);
-			LeftShooter = new CANTalon(12);
+			LeftShooter = new CANTalon(11);
 			ArmMotor = new CANTalon(4);
-			
-			Accumulator = new Relay(0, Relay.Direction.kForward);
+			Accumulator = new CANTalon(12);
 			
 //			RightShooter.changeControlMode(TalonControlMode.Speed);
 //			LeftShooter.changeControlMode(TalonControlMode.Speed);
@@ -170,10 +169,12 @@ public class Repository
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
 			ArmMotor.enableBrakeMode(true);
+			Accumulator.enableBrakeMode(true);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
 			ArmMotor.enable();
+			Accumulator.enable();
 			
 			ArmEncoder = new Encoder(4, 5);
 			ArmEncoder.setDistancePerPulse(1);

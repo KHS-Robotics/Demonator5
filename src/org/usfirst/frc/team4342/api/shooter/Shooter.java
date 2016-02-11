@@ -34,7 +34,7 @@ public class Shooter
 	
 	private ArmPIDController apidc;
 	
-	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
+	public Shooter(Joystick j, CANTalon Accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
 					Encoder enc, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
