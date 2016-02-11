@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
+import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
@@ -66,7 +67,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void autonomousPeriodic() 
     {
-    	
+    	AutoRoutinesRunner.execute(selectedAutoRoutine);
     }
 	
 	/**
