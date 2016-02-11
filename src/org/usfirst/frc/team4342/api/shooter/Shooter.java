@@ -16,7 +16,7 @@ public class Shooter
 	public static final double JOYSTICK_DEADBAND = 0.05;
 	
 	private Joystick j;
-	private Relay accumulator;
+	private CANTalon accumulator;
 	private CANTalon rightMotor, leftMotor, arm;
 	private Solenoid ballPusher, accumulatorLifter;
 	private Encoder enc;
@@ -34,7 +34,7 @@ public class Shooter
 	
 	private ArmPIDController apidc;
 	
-	public Shooter(Joystick j, CANTalon Accumulator, CANTalon rightMotor, 
+	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
 					Encoder enc, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
@@ -83,7 +83,7 @@ public class Shooter
 	
 	public void stopAll()
 	{
-		accumulator.set(Value.kOff);
+		accumulator.set(0);
 		rightMotor.set(0);
 		leftMotor.set(0);
 		arm.set(0);
@@ -106,7 +106,7 @@ public class Shooter
 		return j;
 	}
 	
-	public Relay getAccumulator()
+	public CANTalon getAccumulator()
 	{
 		return accumulator;
 	}
@@ -217,11 +217,11 @@ public class Shooter
 	{
 		if(j.getRawButton(2))
 		{
-			accumulator.set(Value.kForward);
+			accumulator.set(1);
 		}
 		else
 		{
-			accumulator.set(Value.kOff);
+			accumulator.set(0);
 		}
 		
 		if(j.getRawButton(3) || Repository.SwitchBox.getRawButton(2))
@@ -309,13 +309,13 @@ public class Shooter
 	{
 		if (Repository.SwitchBox.getRawButton(7) && !(Repository.SwitchBox.getRawButton(3)))
 		{
-			accumulator.set(Value.kOn);
+			accumulator.set(1);
 			rightMotor.set(-0.5);
 			leftMotor.set(-0.5);
 		}
 		else
 		{
-			accumulator.set(Value.kOff);
+			accumulator.set(0);
 		}
 	}
 }
