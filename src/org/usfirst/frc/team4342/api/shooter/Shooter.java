@@ -35,7 +35,7 @@ public class Shooter
 	private boolean isAtAutoSetpoint, solenoidStatus;
 	private double autoMotorOutput;
 	
-	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
+	public Shooter(Joystick j, CANTalon Accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
 					Encoder enc, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
