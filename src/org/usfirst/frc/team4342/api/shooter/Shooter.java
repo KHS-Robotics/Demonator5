@@ -28,12 +28,11 @@ public class Shooter
 	
 	private ShooterState state;
 	
-	private int error, prevError, accumulatedError;
-	private double prevPidOut;
-	
 	private int autoSetpoint;
 	private boolean isAtAutoSetpoint, solenoidStatus;
 	private double autoMotorOutput;
+	
+	private ArmPIDController apidc;
 	
 	public Shooter(Joystick j, Relay accumulator, CANTalon rightMotor, 
 					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
@@ -48,6 +47,18 @@ public class Shooter
 		this.enc = enc;
 		this.ballSensor = ballSensor;
 		this.setpoints = setpoints;
+		
+		apidc = new ArmPIDController(
+			ArmPID.kP, 
+			ArmPID.kI, 
+			ArmPID.kD, 
+			ArmPID.kPd, 
+			ArmPID.kId, 
+			ArmPID.kDd, 
+			enc, 
+			arm, 
+			50.0
+		);
 		
 		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
@@ -65,7 +76,7 @@ public class Shooter
 	
 	public void handleAuto()
 	{
-		autoMove(autoSetpoint);
+		apidc.setSetpoint(autoSetpoint);
 		setMotors(autoMotorOutput);
 		setBallPusher(solenoidStatus);
 	}
@@ -231,11 +242,13 @@ public class Shooter
 			{
 				if(hold) 
 				{
-					autoMove(holdSetpoint);
+					apidc.setSetpoint(holdSetpoint);
+					apidc.enable();
 				} 
 				else 
 				{
-					autoMove(setpoints.getSetpoint(buttonSelected));
+					apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
+					apidc.enable();
 				}
 			} 
 			else
@@ -248,28 +261,6 @@ public class Shooter
 			stopOperatorAutoMove();
 			arm.set(j.getY());
 		}
-	}
-	
-	private void autoMove(int setpoint)
-	{
-		error = setpoint - enc.get();
-		
-		if (Math.abs(error) <= 20) 
-		{
-			isAtAutoSetpoint = true;
-			return;
-		}
-		
-		isAtAutoSetpoint = false;
-		
-		double out;
-		
-		if (error > 0)
-			out = pid(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, error);
-		else
-			out = pid(ShooterPID.kPd, ShooterPID.kId, ShooterPID.kDd, error);
-		
-		arm.set(out);
 	}
 	
 	private void checkButtonStatus()
@@ -297,49 +288,7 @@ public class Shooter
 	{
 		buttonPressed = false;
 		buttonSelected = -1;
-	}
-	
-	private synchronized double pid(double p, double i, double d, int err) 
-	{
-		double out = 0;
-		if (Math.abs(err) <= 5) 
-		{
-			accumulatedError = 0;
-			return 0;
-		} 
-		else if (Math.abs(prevError - err) > Math.abs(err + prevError)) 
-		{
-			accumulatedError = 0;
-		}
-
-		accumulatedError += err;
-
-		double P = p * err;
-		double I = i * accumulatedError;
-		double D = (err - prevError) * d;
-		
-		prevError = err;
-		out = P + I + D;
-		
-		if (out > 1)
-			out = 1;
-		else if (out < -.5)
-			out = -.5;
-		
-		if (out - prevPidOut > .1)
-			out = prevPidOut + .1;
-		else if (out - prevPidOut < -.1)
-			out = prevPidOut - .1;
-		
-		
-		prevPidOut = out;
-		
-		if(out < 0.1 && out > 0.0)
-			out = 0.1;
-		else if(out > -0.1 && out < 0.0)
-			out = -0.1;
-		
-		return out;
+		apidc.disable();
 	}
 	
 	public void basicFire()
