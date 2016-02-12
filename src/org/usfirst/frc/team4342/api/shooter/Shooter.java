@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.api.shooter;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -17,7 +18,8 @@ public class Shooter
 	private CANTalon accumulator;
 	private CANTalon rightMotor, leftMotor, arm;
 	private Solenoid ballPusher, accumulatorLifter;
-	private Encoder enc;
+	private Encoder armEnc;
+	private Counter rightMotorCounter, leftMotorCounter;
 	private DigitalInput ballSensor;
 	private SetpointMapWrapper setpoints;
 	
@@ -32,9 +34,9 @@ public class Shooter
 	
 	private ArmPIDController apidc;
 	
-	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, 
-					CANTalon leftMotor, CANTalon armMotor, Solenoid ballPusher,
-					Encoder enc, DigitalInput ballSensor, SetpointMapWrapper setpoints)
+	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, CANTalon leftMotor, 
+					CANTalon armMotor, Solenoid ballPusher, Encoder armEnc, Counter rightMotorCounter, 
+					Counter leftMotorCounter, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.accumulator = accumulator;
@@ -42,7 +44,9 @@ public class Shooter
 		this.leftMotor = leftMotor;
 		this.arm = armMotor;
 		this.ballPusher = ballPusher;
-		this.enc = enc;
+		this.armEnc = armEnc;
+		this.rightMotorCounter = rightMotorCounter;
+		this.leftMotorCounter = leftMotorCounter;
 		this.ballSensor = ballSensor;
 		this.setpoints = setpoints;
 		
@@ -53,7 +57,7 @@ public class Shooter
 			ArmPID.kPd, 
 			ArmPID.kId, 
 			ArmPID.kDd, 
-			enc, 
+			armEnc, 
 			arm, 
 			50.0
 		);
@@ -171,8 +175,12 @@ public class Shooter
 				
 				accumulatorLifter.set(true);
 				
-				if (j.getRawButton(10))// && (rightMotor.getEncVelocity() > MIN_ENC_VELOCITY && leftMotor.getEncVelocity() > MIN_ENC_VELOCITY))
+				if (j.getRawButton(10) && (rightMotorCounter.getPeriod() > MIN_ENC_VELOCITY && leftMotorCounter.getPeriod() > MIN_ENC_VELOCITY))
+				{
+					ballPusher.set(true);
+					
 					state = ShooterState.FIRING;
+				}
 			}
 			else
 			{
@@ -184,8 +192,6 @@ public class Shooter
 		{
 			if(!ballSensor.get())
 			{
-				ballPusher.set(true);
-				
 				rightMotor.set(0);
 				leftMotor.set(0);
 				
@@ -198,6 +204,13 @@ public class Shooter
 		{
 			if (!j.getRawButton(5))
 			{
+				rightMotor.set(-1.0);
+				leftMotor.set(-1.0);
+				
+				accumulator.set(1.0);
+				
+				ballPusher.set(false);
+				
 				state = ShooterState.RELOADING;
 			}
 		}
@@ -205,7 +218,11 @@ public class Shooter
 		{
 			if(ballSensor.get())
 			{
-				ballPusher.set(false);
+				rightMotor.set(0.0);
+				leftMotor.set(0.0);
+				
+				accumulator.set(0.0);
+				
 				state = ShooterState.LOADED;
 			}
 		}
@@ -278,7 +295,7 @@ public class Shooter
 			buttonPressed = true;
 			hold = true;
 			buttonSelected = -1;
-			holdSetpoint = enc.get();
+			holdSetpoint = armEnc.get();
 		}
 	}
 	

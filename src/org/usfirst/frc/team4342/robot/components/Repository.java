@@ -11,6 +11,7 @@ import org.usfirst.frc.team4342.api.shooter.SetpointMapWrapper;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -54,6 +55,7 @@ public class Repository
 	public static CANTalon RightShooter, LeftShooter, ArmMotor, Accumulator;
 	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
+	public static Counter RightMotorCounter, LeftMotorCounter;
 	public static DigitalInput BallSensor;
 	public static SetpointMapWrapper setpoints;
 	
@@ -205,6 +207,21 @@ public class Repository
 		}
 	}
 	
+	private static void initializeEncoders()
+	{
+		try
+		{
+			RightDriveEncoder = new Encoder(0, 1);
+			LeftDriveEncoder = new Encoder(2, 3);
+			RightMotorCounter = new Counter(7);
+			LeftMotorCounter = new Counter(8);
+		}
+		catch(Exception ex)
+		{
+			Logs.error("Failed to initialze encoders", ex);
+		}
+	}
+	
 	private static void initializeComponents()
 	{
 		try
@@ -218,6 +235,8 @@ public class Repository
 				ArmMotor, 
 				BallPusher, 
 				ArmEncoder, 
+				RightMotorCounter,
+				LeftMotorCounter,
 				BallSensor, 
 				setpoints
 			);
@@ -225,19 +244,6 @@ public class Repository
 		catch(Exception ex)
 		{
 			Logs.error("Failed to initialize main components of the robot", ex);
-		}
-	}
-	
-	private static void initializeEncoders()
-	{
-		try
-		{
-			RightDriveEncoder = new Encoder(0, 1);
-			LeftDriveEncoder = new Encoder(2, 3);
-		}
-		catch(Exception ex)
-		{
-			Logs.error("Failed to initialze encoders", ex);
 		}
 	}
 }
