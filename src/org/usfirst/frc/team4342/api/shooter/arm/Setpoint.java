@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.api.shooter;
+package org.usfirst.frc.team4342.api.shooter.arm;
 
 public class Setpoint 
 {	

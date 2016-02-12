@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
 
-import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.logging.FileHelper;
 
 import ernie.logging.loggers.ILogger;
@@ -114,7 +113,7 @@ public class PdpLogger
 			} 
 			catch(Exception ex) 
 			{
-				multiLog.warning("Failed to write to CSV for PDP logger :: " + ExceptionInfo.getType(ex));
+				multiLog.warning("Failed to write to CSV for PDP logger");
 			} 
 			finally 
 			{

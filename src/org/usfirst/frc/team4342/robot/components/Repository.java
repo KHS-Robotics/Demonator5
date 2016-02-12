@@ -1,14 +1,14 @@
 package org.usfirst.frc.team4342.robot.components;
 
-import org.usfirst.frc.team4342.api.logging.ExceptionInfo;
 import org.usfirst.frc.team4342.api.logging.PdpLogger;
 import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
 import org.usfirst.frc.team4342.api.logging.RobotLogFactory;
+import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
-import org.usfirst.frc.team4342.api.shooter.Setpoint;
-import org.usfirst.frc.team4342.api.shooter.SetpointMapWrapper;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
+import org.usfirst.frc.team4342.api.shooter.arm.Setpoint;
+import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
@@ -73,6 +73,7 @@ public class Repository
 			initializePneumatics();
 			initializeEncoders();
 			initializeComponents();
+			initializeSmartDashboard();
 		}
 		
 		initialized = true;
@@ -88,7 +89,7 @@ public class Repository
 		}
 		catch(Exception ex)
 		{
-			ConsoleLog.warning("Failed to initialize log due to a " + ExceptionInfo.getType(ex));
+			ConsoleLog.warning("Failed to initialize log");
 			Logs = new MultiLogger(new ILogger[] { ConsoleLog });
 		}
 		
@@ -140,8 +141,6 @@ public class Repository
 			
 			for(CANTalon talon : DriveTrain.getDriveTrain())
 			{
-				//talon.changeControlMode(TalonControlMode.Speed);
-				//talon.configEncoderCodesPerRev(512);
 				talon.enableBrakeMode(true);
 				talon.enable();
 			}
@@ -163,14 +162,10 @@ public class Repository
 			ArmMotor = new CANTalon(4);
 			Accumulator = new CANTalon(12);
 			
-//			RightShooter.changeControlMode(TalonControlMode.Speed);
-//			LeftShooter.changeControlMode(TalonControlMode.Speed);
-//			VerticalMotor.changeControlMode(TalonControlMode.Speed);
-			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
 			ArmMotor.enableBrakeMode(true);
-			Accumulator.enableBrakeMode(true);
+			Accumulator.enableBrakeMode(false);
 			
 			RightShooter.enable();
 			LeftShooter.enable();
@@ -226,7 +221,15 @@ public class Repository
 	{
 		try
 		{
-			TankDrive = new TankDrive(DriveStick, DriveTrain, Navx, Shifter, LeftDriveEncoder, RightDriveEncoder);
+			TankDrive = new TankDrive(
+				DriveStick, 
+				DriveTrain, 
+				Navx, 
+				Shifter, 
+				LeftDriveEncoder, 
+				RightDriveEncoder
+			);
+			
 			Shooter = new Shooter(
 				ShooterStick, 
 				Accumulator, 
@@ -245,5 +248,28 @@ public class Repository
 		{
 			Logs.error("Failed to initialize main components of the robot", ex);
 		}
+	}
+	
+	private static void initializeSmartDashboard()
+	{
+		SmartDashboardUpdater.addJoystick("Drive", DriveStick);
+		SmartDashboardUpdater.addJoystick("Shooter", ShooterStick);
+		
+		SmartDashboardUpdater.addTalon("FR", FrontRight);
+		SmartDashboardUpdater.addTalon("FL", FrontLeft);
+		SmartDashboardUpdater.addTalon("MR", MiddleRight);
+		SmartDashboardUpdater.addTalon("ML", MiddleLeft);
+		SmartDashboardUpdater.addTalon("RR", RearRight);
+		SmartDashboardUpdater.addTalon("RL", RearLeft);
+		SmartDashboardUpdater.addTalon("Accum", Accumulator);
+		SmartDashboardUpdater.addTalon("Arm", ArmMotor);
+		SmartDashboardUpdater.addTalon("RShooter", RightShooter);
+		SmartDashboardUpdater.addTalon("LShooter", LeftShooter);
+		
+		SmartDashboardUpdater.addEncoder("RShooter", RightDriveEncoder);
+		SmartDashboardUpdater.addEncoder("LShooter", LeftDriveEncoder);
+		
+		SmartDashboardUpdater.addCounter("RShooter", RightMotorCounter);
+		SmartDashboardUpdater.addCounter("LShooter", LeftMotorCounter);
 	}
 }

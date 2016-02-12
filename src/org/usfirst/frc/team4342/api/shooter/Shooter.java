@@ -1,5 +1,8 @@
 package org.usfirst.frc.team4342.api.shooter;
 
+import org.usfirst.frc.team4342.api.shooter.arm.ArmPID;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmPIDController;
+import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;

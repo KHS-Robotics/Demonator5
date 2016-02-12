@@ -1,13 +1,14 @@
 package org.usfirst.frc.team4342.api.logging;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -20,16 +21,12 @@ public class SmartDashboardUpdater
 	private SmartDashboardUpdater() {}
 
 	private static boolean started;
-
-	private static ArrayList<String> joystickKeys = new ArrayList<String>();
-	private static ArrayList<String> talonKeys = new ArrayList<String>();
-	private static ArrayList<String> limitSwitchKeys = new ArrayList<String>();
-	private static ArrayList<String> encoderKeys = new ArrayList<String>();
-
+	
 	private static Map<String, Joystick> joysticks = new HashMap<String, Joystick>();
 	private static Map<String, CANTalon> talons = new HashMap<String, CANTalon>();
 	private static Map<String, DigitalInput> limitSwitches = new HashMap<String, DigitalInput>();
 	private static Map<String, Encoder> encoders = new HashMap<String, Encoder>();
+	private static Map<String, Counter> counters = new HashMap<String, Counter>();
 
 	/**
 	 * Adds a joystick to put on the Smart Dashboard
@@ -38,19 +35,17 @@ public class SmartDashboardUpdater
 	 */
 	public static void addJoystick(String key, Joystick joystick) 
 	{
-		joystickKeys.add(key);
 		joysticks.put(key, joystick);
 	}
 
 	/**
-	 * Adds a Jagaur to put on the Smart Dashboard
+	 * Adds a talon to put on the Smart Dashboard
 	 * @param key the key to use when putting to the Smart Dashboard
-	 * @param jaguar the jagaur to get data from
+	 * @param talon the jagaur to get data from
 	 */
-	public static void addTalon(String key, CANTalon jaguar) 
+	public static void addTalon(String key, CANTalon talon) 
 	{
-		talonKeys.add(key);
-		talons.put(key, jaguar);
+		talons.put(key, talon);
 	}
 
 	/**
@@ -60,14 +55,17 @@ public class SmartDashboardUpdater
 	 */
 	public static void addDigitalInput(String key, DigitalInput limitSwitch) 
 	{
-		limitSwitchKeys.add(key);
 		limitSwitches.put(key, limitSwitch);
 	}
 
 	public static void addEncoder(String key, Encoder encoder)
 	{
-		encoderKeys.add(key);
 		encoders.put(key, encoder);
+	}
+	
+	public static void addCounter(String key, Counter counter)
+	{
+		counters.put(key, counter);
 	}
 
 	/**
@@ -92,6 +90,7 @@ public class SmartDashboardUpdater
 		private boolean loggedDigitalInput;
 		private boolean loggedNavx;
 		private boolean loggedEncoders;
+		private boolean loggedCounters;
 
 		private MultiLogger multiLog;
 
@@ -106,8 +105,6 @@ public class SmartDashboardUpdater
 		@Override
 		public void run() 
 		{
-			init();
-
 			while(true) 
 			{
 				putJoystickData();
@@ -115,7 +112,8 @@ public class SmartDashboardUpdater
 				putLimitSwitchData();
 				putNavXData();
 				putEncoderData();
-
+				putCounterData();
+				
 				SmartDashboard.putString("Shooter-State", Repository.Shooter.getState().toString());
 
 				try
@@ -124,42 +122,12 @@ public class SmartDashboardUpdater
 				} 
 				catch(Exception ex)
 				{
-					multiLog.error(ExceptionInfo.getType(ex) + " in SDU", ex);
+					multiLog.error("Unexpected error while putting data to SmartDashboard", ex);
+					break;
 				}
 			}
 		}
 
-		/**
-		 * Initializes all the data to the Smart Dashboard
-		 */
-		private void init() 
-		{
-			try 
-			{
-				SmartDashboardUpdater.addJoystick("Joy-Drive", Repository.DriveStick);
-				SmartDashboardUpdater.addJoystick("Joy-Control", Repository.ShooterStick);
-
-				SmartDashboardUpdater.addTalon("FR", Repository.FrontRight);
-				SmartDashboardUpdater.addTalon("FL", Repository.FrontLeft);
-				SmartDashboardUpdater.addTalon("MR", Repository.MiddleRight);
-				SmartDashboardUpdater.addTalon("ML", Repository.MiddleLeft);
-				SmartDashboardUpdater.addTalon("RR", Repository.RearRight);
-				SmartDashboardUpdater.addTalon("RL", Repository.RearLeft);
-				SmartDashboardUpdater.addTalon("Arm", Repository.ArmMotor);
-				SmartDashboardUpdater.addTalon("RightShooter", Repository.RightShooter);
-				SmartDashboardUpdater.addTalon("LeftShooter", Repository.LeftShooter);
-				
-				SmartDashboardUpdater.addEncoder("Arm-Enc", Repository.ArmEncoder);
-				
-				SmartDashboard.putNumber("Drive-P", 0.0);
-				SmartDashboard.putNumber("Drive-I", 0.0);
-				SmartDashboard.putNumber("Drive-D", 0.0);
-			} 
-			catch(Exception ex) 
-			{
-				multiLog.error("Failed to put data to SDBU", ex);
-			}
-		}
 
 		/**
 		 * Puts Joystick data to the Smart Dashboard
@@ -168,9 +136,11 @@ public class SmartDashboardUpdater
 		{
 			try 
 			{
-				for(String key : joystickKeys) 
+				for(Entry<String, Joystick> entry : joysticks.entrySet())
 				{
-					Joystick joystick = joysticks.get(key);
+					String key = entry.getKey();
+					Joystick joystick = entry.getValue();
+					
 					SmartDashboard.putNumber(key + "-X", joystick.getX());
 					SmartDashboard.putNumber(key + "-Y", joystick.getY());
 					SmartDashboard.putNumber(key + "-Z", joystick.getZ());
@@ -187,16 +157,18 @@ public class SmartDashboardUpdater
 		}
 
 		/**
-		 * Puts Jagaur data to the Smart Dashboard
+		 * Puts Talon data to the Smart Dashboard
 		 */
 		private void putTalonData()
 		{
 			try 
 			{
-				for(String key : talonKeys)
+				for(Entry<String, CANTalon> entry : talons.entrySet())
 				{
-					CANTalon talon = talons.get(key);
-					SmartDashboard.putNumber("Talon- " + key + "-Enc", talon.getPosition());
+					String key = entry.getKey();
+					CANTalon talon = entry.getValue();
+					
+					SmartDashboard.putNumber("Talon- " + key + "-Out", talon.get());
 				}
 			} 
 			catch(Exception ex) 
@@ -216,9 +188,11 @@ public class SmartDashboardUpdater
 		{
 			try 
 			{
-				for(String key : limitSwitchKeys) 
+				for(Entry<String, DigitalInput> entry : limitSwitches.entrySet())
 				{
-					DigitalInput limitSwitch = limitSwitches.get(key);
+					String key = entry.getKey();
+					DigitalInput limitSwitch = entry.getValue();
+					
 					SmartDashboard.putBoolean(key, limitSwitch.get());
 				}
 			} 
@@ -275,9 +249,11 @@ public class SmartDashboardUpdater
 		{
 			try 
 			{
-				for(String key : encoderKeys) 
+				for(Entry<String, Encoder> entry : encoders.entrySet())
 				{
-					Encoder encoder = encoders.get(key);
+					String key = entry.getKey();
+					Encoder encoder = entry.getValue();
+					
 					SmartDashboard.putNumber(key + "-Count", encoder.get());
 				}
 			} 
@@ -287,6 +263,31 @@ public class SmartDashboardUpdater
 				{
 					multiLog.error("Error while putting Encoder data", ex);
 					loggedEncoders = true;
+				}
+			}
+		}
+		
+		/**
+		 * Puts Counter data to the Smart Dashboard
+		 */
+		private void putCounterData()
+		{
+			try
+			{
+				for(Entry<String, Counter> entry : counters.entrySet())
+				{
+					String key = entry.getKey();
+					Counter counter = entry.getValue();
+					
+					SmartDashboard.putNumber(key + "-Count", counter.getPeriod());
+				}
+			}
+			catch(Exception ex)
+			{
+				if(!loggedCounters)
+				{
+					multiLog.error("Error while putting Counter data", ex);
+					loggedCounters = true;
 				}
 			}
 		}

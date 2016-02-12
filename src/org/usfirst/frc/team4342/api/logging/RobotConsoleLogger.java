@@ -56,7 +56,7 @@ public class RobotConsoleLogger extends BaseLogger
 	private static String createErrorMessage(Severity severity, String message, Exception ex)
 	{
 		String mssg = severity.toString().toUpperCase() + ": " 
-					  + message + "(" + ExceptionInfo.getType(ex) + ")" 
+					  + message + "(" + ex.getClass().getName() + ")" 
 					  + returnFeed;
 		
 		return mssg;
