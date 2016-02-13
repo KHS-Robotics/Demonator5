@@ -271,9 +271,16 @@ public class Shooter
 			}
 			else if(!autoHold)
 			{
-				apidc.setSetpoint(armEnc.get());
-				apidc.enable();
-				autoHold = true;
+				if(switchBox.getRawButton(4))
+				{
+					apidc.disable();
+				}
+				else
+				{
+					apidc.setSetpoint(armEnc.get());
+					apidc.enable();
+					autoHold = true;
+				}
 			}
 		} 
 		else 
