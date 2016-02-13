@@ -48,9 +48,9 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		SmartDashboard.putNumber("P-", pGain);
-		SmartDashboard.putNumber("I-", iGain);
-		SmartDashboard.putNumber("D-", dGain);
+		SmartDashboard.putNumber("Drive-P", pGain);
+		SmartDashboard.putNumber("Drive-I", iGain);
+		SmartDashboard.putNumber("Drive-D", dGain);
 		angleControl = new PIDController(pGain, iGain, dGain, navX, this, 20);
 		
 		angleControl.setContinuous();
@@ -180,9 +180,9 @@ public class TankDrive implements PIDOutput
 	private synchronized void checkUserShift()
 	{
 		if(j.getRawButton(9))
-			shifter.set(DoubleSolenoid.Value.kReverse);
+			shifter.set(DoubleSolenoid.Value.kForward);
 		else
-			shifter.set(DoubleSolenoid.Value.kForward);	
+			shifter.set(DoubleSolenoid.Value.kReverse);	
 	}
 	
 	public synchronized void turnPIDOn()

@@ -17,7 +17,7 @@ public class Shooter
 	public static final int MIN_ENC_VELOCITY = 30;
 	public static final double JOYSTICK_DEADBAND = 0.05;
 	
-	private Joystick j;
+	private Joystick armJoy, switchBox;
 	private CANTalon accumulator;
 	private CANTalon rightMotor, leftMotor, arm;
 	private Solenoid ballPusher, accumulatorLifter;
@@ -37,11 +37,12 @@ public class Shooter
 	
 	private ArmPIDController apidc;
 	
-	public Shooter(Joystick j, CANTalon accumulator, CANTalon rightMotor, CANTalon leftMotor, 
+	public Shooter(Joystick armJoy, Joystick switchBox, CANTalon accumulator, CANTalon rightMotor, CANTalon leftMotor, 
 					CANTalon armMotor, Solenoid ballPusher, Encoder armEnc, Counter rightMotorCounter, 
 					Counter leftMotorCounter, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
-		this.j = j;
+		this.armJoy = armJoy;
+		this.switchBox = switchBox;
 		this.accumulator = accumulator;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
@@ -65,18 +66,20 @@ public class Shooter
 			50.0
 		);
 		
+		apidc.disable();
+		
 		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
 	
 	public void handleTeleop()
 	{
-//		checkUserShooter();
-//		checkUserAccumulator();
-//		checkButtonStatus();
-//		checkUserAngleMotor();
+		checkUserShooter();
+		checkUserAccumulator();
+		checkButtonStatus();
+		checkUserAngleMotor();
 		
-		basicFire();
-		basicAccum();
+//		basicFire();
+//		basicAccum();
 	}
 	
 	public void handleAuto()
@@ -108,7 +111,7 @@ public class Shooter
 	
 	public Joystick getJoystick()
 	{
-		return j;
+		return armJoy;
 	}
 	
 	public CANTalon getAccumulator()
@@ -171,14 +174,14 @@ public class Shooter
 	{
 		if (state == ShooterState.LOADED)
 		{
-			if (j.getRawButton(5))
+			if (switchBox.getRawButton(5))
 			{
 				rightMotor.set(1);
 				leftMotor.set(1);
 				
-				accumulatorLifter.set(true);
+				//accumulatorLifter.set(true);
 				
-				if (j.getRawButton(10) && (rightMotorCounter.getPeriod() > MIN_ENC_VELOCITY && leftMotorCounter.getPeriod() > MIN_ENC_VELOCITY))
+				if (switchBox.getRawButton(10))// && (rightMotorCounter.getPeriod() > MIN_ENC_VELOCITY && leftMotorCounter.getPeriod() > MIN_ENC_VELOCITY))
 				{
 					ballPusher.set(true);
 					
@@ -193,19 +196,19 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRING)
 		{
-			if(!ballSensor.get())
+			if(true)//!ballSensor.get())
 			{
 				rightMotor.set(0);
 				leftMotor.set(0);
 				
-				accumulatorLifter.set(false);
+				//accumulatorLifter.set(false);
 				
 				state = ShooterState.FIRED;
 			}
 		}
 		else if (state == ShooterState.FIRED)
 		{
-			if (!j.getRawButton(5))
+			if (!switchBox.getRawButton(5))
 			{
 				rightMotor.set(-1.0);
 				leftMotor.set(-1.0);
@@ -219,7 +222,7 @@ public class Shooter
 		}
 		else if (state == ShooterState.RELOADING)
 		{
-			if(ballSensor.get())
+			if(true)//ballSensor.get())
 			{
 				rightMotor.set(0.0);
 				leftMotor.set(0.0);
@@ -233,7 +236,7 @@ public class Shooter
 	
 	private void checkUserAccumulator()
 	{
-		if(j.getRawButton(2))
+		if(armJoy.getRawButton(2) || switchBox.getRawButton(1))
 		{
 			accumulator.set(1);
 		}
@@ -242,19 +245,19 @@ public class Shooter
 			accumulator.set(0);
 		}
 		
-		if(j.getRawButton(3) || Repository.SwitchBox.getRawButton(2))
+		if(armJoy.getRawButton(3) || Repository.SwitchBox.getRawButton(2))
 		{
-			accumulatorLifter.set(true);
+			//accumulatorLifter.set(true);
 		}
 		else
 		{
-			accumulatorLifter.set(false);
+			//accumulatorLifter.set(false);
 		}
 	}
 	
 	private void checkUserAngleMotor()
 	{
-		if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
+		if(Math.abs(armJoy.getY()) < JOYSTICK_DEADBAND) 
 		{
 			if(buttonPressed) 
 			{
@@ -277,15 +280,15 @@ public class Shooter
 		else 
 		{
 			stopOperatorAutoMove();
-			arm.set(j.getY());
+			arm.set(armJoy.getY());
 		}
 	}
 	
 	private void checkButtonStatus()
 	{
-		for(int i = 1; i < j.getButtonCount(); i++) 
+		for(int i = 1; i < armJoy.getButtonCount(); i++) 
 		{
-			if(j.getRawButton(i) && setpoints.containsButton(i)) 
+			if(armJoy.getRawButton(i) && setpoints.containsButton(i)) 
 			{
 				hold = false;
 				buttonPressed = true;
@@ -293,7 +296,7 @@ public class Shooter
 			}
 		}
 		
-		if(j.getRawButton(3)) 
+		if(armJoy.getRawButton(3)) 
 		{
 			buttonPressed = true;
 			hold = true;

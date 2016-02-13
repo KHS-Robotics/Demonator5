@@ -122,12 +122,12 @@ public class Repository
 	{
 		try
 		{
-			FrontRight = new CANTalon(13);
-			FrontLeft = new CANTalon(2);
-			MiddleRight = new CANTalon(14);
-			MiddleLeft = new CANTalon(1);
-			RearRight = new CANTalon(15);
-			RearLeft = new CANTalon(0);
+			FrontRight = new CANTalon(2);
+			FrontLeft = new CANTalon(13);
+			MiddleRight = new CANTalon(1);
+			MiddleLeft = new CANTalon(14);
+			RearRight = new CANTalon(0);
+			RearLeft = new CANTalon(15);
 			
 			DriveTrain = new DriveTrain(
 				DriveStick,
@@ -158,7 +158,7 @@ public class Repository
 		try
 		{
 			RightShooter = new CANTalon(3);
-			LeftShooter = new CANTalon(11);
+			LeftShooter = new CANTalon(12);
 			ArmMotor = new CANTalon(4);
 			Accumulator = new CANTalon(12);
 			
@@ -206,7 +206,7 @@ public class Repository
 	{
 		try
 		{
-			RightDriveEncoder = new Encoder(0, 1);
+			RightDriveEncoder = new Encoder(0, 1, true);
 			LeftDriveEncoder = new Encoder(2, 3);
 			RightMotorCounter = new Counter(7);
 			LeftMotorCounter = new Counter(8);
@@ -232,6 +232,7 @@ public class Repository
 			
 			Shooter = new Shooter(
 				ShooterStick, 
+				SwitchBox,
 				Accumulator, 
 				RightShooter,
 				LeftShooter, 
@@ -263,13 +264,13 @@ public class Repository
 		SmartDashboardUpdater.addTalon("RL", RearLeft);
 		SmartDashboardUpdater.addTalon("Accum", Accumulator);
 		SmartDashboardUpdater.addTalon("Arm", ArmMotor);
-		SmartDashboardUpdater.addTalon("RShooter", RightShooter);
-		SmartDashboardUpdater.addTalon("LShooter", LeftShooter);
+		SmartDashboardUpdater.addTalon("Shooter-Right", RightShooter);
+		SmartDashboardUpdater.addTalon("Shooter-Left", LeftShooter);
 		
-		SmartDashboardUpdater.addEncoder("RShooter", RightDriveEncoder);
-		SmartDashboardUpdater.addEncoder("LShooter", LeftDriveEncoder);
+		SmartDashboardUpdater.addEncoder("Drive-R", RightDriveEncoder);
+		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);
 		
-		SmartDashboardUpdater.addCounter("RShooter", RightMotorCounter);
-		SmartDashboardUpdater.addCounter("LShooter", LeftMotorCounter);
+		SmartDashboardUpdater.addCounter("Shooter-R", RightMotorCounter);
+		SmartDashboardUpdater.addCounter("Shooter-L", LeftMotorCounter);
 	}
 }
