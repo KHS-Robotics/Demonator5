@@ -124,9 +124,6 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(tdc);
 			ComponentRunner.stopAutomaticMode(sc);
 		}
-		
-//		if (Repository.DriveStick.getRawButton(7)) //check button number
-//			Repository.TankDrive.goStraight();
     }
     
 	/**

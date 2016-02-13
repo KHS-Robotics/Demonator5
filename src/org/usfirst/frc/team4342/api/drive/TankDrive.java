@@ -23,7 +23,7 @@ public class TankDrive implements PIDOutput
 	private double direction = 0;
 	private boolean autoStepFinished;
 	private Encoder encLeft, encRight;
-	private static boolean lastButton4;
+	private static boolean lastButton4, lastButton7;
 	private static final double DEAD_BAND = 0.05;
 	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
 	
@@ -64,12 +64,15 @@ public class TankDrive implements PIDOutput
 		return autoStepFinished;
 	}
 	
-	public void goStraight()
+	public void goStraight(boolean firstRun)
 	{
-		goToSetpoint(navX.getYaw());
-		setDirection(0.75);
+		if (true == firstRun)
+		{
+			goToSetpoint(navX.getYaw());
+			angleControl.enable();
+		}
 		
-		
+		setDirection(j.getY());
 	}
 	
 	public void goToAngle(double angle)
@@ -116,43 +119,7 @@ public class TankDrive implements PIDOutput
 	
 	public synchronized void drive()
 	{
-		if (!Repository.SwitchBox.getRawButton(4))
-		{
-			turnPIDOff();
-			checkUserShift();
-
-			double z = Math.abs(j.getZ()) > DEAD_BAND ? -j.getZ() : 0.0;
-			double y = Math.abs(j.getY()) > DEAD_BAND ? -j.getY() : 0.0;
-
-			double left = (y-z);
-			double right = (y+z);
-
-			if (left > 1.0)
-				left = 1.0;
-			else if (left < -1.0)
-				left = -1.0;
-
-			if (right > 1.0)
-				right = 1.0;
-			else if (right < -1.0)
-				right = -1.0;
-
-			try
-			{
-				fr.set(right);
-				fl.set(left);
-				mr.set(right);
-				ml.set(left);
-				rr.set(right);
-				rl.set(left);
-
-			}
-			catch (Exception ex)
-			{
-				Repository.Logs.error("Failed to set drive motors", ex);
-			}
-		}
-		else if (lastButton4 != Repository.SwitchBox.getRawButton(4))
+		if (lastButton4 != Repository.SwitchBox.getRawButton(4))
 		{
 			setPID(
 				SmartDashboard.getNumber("Drive-P"),
@@ -163,13 +130,54 @@ public class TankDrive implements PIDOutput
 			goToSetpoint(0);
 			turnPIDOn();
 		}
+		else if (Repository.DriveStick.getRawButton(7)) 
+		{
+			Repository.TankDrive.goStraight(Repository.DriveStick.getRawButton(7) == lastButton7);
+		}
+		else
+		{
+			joystickDrive();
+		}	
 		
 		lastButton4 = Repository.SwitchBox.getRawButton(4);
+		lastButton7 = Repository.DriveStick.getRawButton(7);
 	}
 	
-	public void autoDrive()
+	public void joystickDrive()
 	{
-		
+		turnPIDOff();
+		checkUserShift();
+
+		double z = Math.abs(j.getZ()) > DEAD_BAND ? -j.getZ() : 0.0;
+		double y = Math.abs(j.getY()) > DEAD_BAND ? -j.getY() : 0.0;
+
+		double left = (y-z);
+		double right = (y+z);
+
+		if (left > 1.0)
+			left = 1.0;
+		else if (left < -1.0)
+			left = -1.0;
+
+		if (right > 1.0)
+			right = 1.0;
+		else if (right < -1.0)
+			right = -1.0;
+
+		try
+		{
+			fr.set(right);
+			fl.set(left);
+			mr.set(right);
+			ml.set(left);
+			rr.set(right);
+			rl.set(left);
+
+		}
+		catch (Exception ex)
+		{
+			Repository.Logs.error("Failed to set drive motors", ex);
+		}
 	}
 	
 	public synchronized void stopAll()
