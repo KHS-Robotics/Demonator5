@@ -26,8 +26,8 @@ public class Shooter
 	private DigitalInput ballSensor;
 	private SetpointMapWrapper setpoints;
 	
-	private boolean hold, buttonPressed;
-	private int buttonSelected, holdSetpoint;
+	private boolean buttonPressed, autoHold;
+	private int buttonSelected;
 	
 	private ShooterState state;
 	
@@ -266,20 +266,14 @@ public class Shooter
 		{
 			if(buttonPressed) 
 			{
-				if(hold) 
-				{
-					apidc.setSetpoint(holdSetpoint);
-					apidc.enable();
-				} 
-				else 
-				{
-					apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
-					apidc.enable();
-				}
-			} 
-			else
+				apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
+				apidc.enable();
+			}
+			else if(!autoHold)
 			{
-				arm.set(0.0);
+				apidc.setSetpoint(armEnc.get());
+				apidc.enable();
+				autoHold = true;
 			}
 		} 
 		else 
@@ -295,23 +289,16 @@ public class Shooter
 		{
 			if(armJoy.getRawButton(i) && setpoints.containsButton(i)) 
 			{
-				hold = false;
+				autoHold = false;
 				buttonPressed = true;
 				buttonSelected = i;
 			}
-		}
-		
-		if(armJoy.getRawButton(3)) 
-		{
-			buttonPressed = true;
-			hold = true;
-			buttonSelected = -1;
-			holdSetpoint = armEnc.get();
 		}
 	}
 	
 	private void stopOperatorAutoMove() 
 	{
+		autoHold = false;
 		buttonPressed = false;
 		buttonSelected = -1;
 		apidc.disable();
