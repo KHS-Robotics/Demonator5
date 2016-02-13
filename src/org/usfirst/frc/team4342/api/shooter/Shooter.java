@@ -144,6 +144,11 @@ public class Shooter
 		return accumulatorLifter;
 	}
 	
+	public ArmPIDController getPIDController()
+	{
+		return apidc;
+	}
+	
 	public void setAutoSetpoint(int setpoint)
 	{
 		this.autoSetpoint = setpoint;

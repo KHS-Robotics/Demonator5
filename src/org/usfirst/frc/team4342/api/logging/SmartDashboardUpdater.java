@@ -226,9 +226,6 @@ public class SmartDashboardUpdater
 				SmartDashboard.putNumber("NavX-Disp-X", Navx.getDisplacementX());
 				SmartDashboard.putNumber("NavX-Disp-Y", Navx.getDisplacementY());
 				SmartDashboard.putNumber("NavX-Disp-Z", Navx.getDisplacementZ());
-				SmartDashboard.putNumber("NavX-Mag-X", Navx.getRawMagX());
-				SmartDashboard.putNumber("NavX-Mag-Y", Navx.getRawMagY());
-				SmartDashboard.putNumber("NavX-Mag-Z", Navx.getRawMagZ());
 				SmartDashboard.putBoolean("NavX-Connected", Navx.isConnected());
 				SmartDashboard.putBoolean("NavX-Calibrating", Navx.isCalibrating());
 			} 
@@ -236,7 +233,7 @@ public class SmartDashboardUpdater
 			{
 				if(!loggedNavx) 
 				{
-					multiLog.error("Error while putting Gyro data", ex);
+					multiLog.error("Error while putting NavX data", ex);
 					loggedNavx = true;
 				}
 			}

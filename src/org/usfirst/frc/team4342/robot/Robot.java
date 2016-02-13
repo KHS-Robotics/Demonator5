@@ -5,6 +5,7 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
@@ -47,6 +48,22 @@ public class Robot extends IterativeRobot
 		
 		leds = new Solenoid(7);
 		leds.set(true);
+		
+		SmartDashboard.putNumber("Drive-P", 0.0);
+		SmartDashboard.putNumber("Drive-I", 0.0);
+		SmartDashboard.putNumber("Drive-D", 0.0);
+		
+		SmartDashboard.putNumber("Shooter-P", 0.0);
+		SmartDashboard.putNumber("Shooter-I", 0.0);
+		SmartDashboard.putNumber("Shooter-D", 0.0);
+		
+		SmartDashboard.putNumber("Arm-P-Up", 0.0);
+		SmartDashboard.putNumber("Arm-I-Up", 0.0);
+		SmartDashboard.putNumber("Arm-D-Up", 0.0);
+		
+		SmartDashboard.putNumber("Arm-P-Down", 0.0);
+		SmartDashboard.putNumber("Arm-I-Down", 0.0);
+		SmartDashboard.putNumber("Arm-D-Down", 0.0);
     }
 	
 	/**
@@ -75,9 +92,22 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
-		
 		Repository.DriveTrain.setBrakeMode();
 		Repository.DriveTrain.enable();
+		
+		Repository.TankDrive.setPID(SmartDashboard.getNumber("Drive-P"), SmartDashboard.getNumber("Drive-I"), SmartDashboard.getNumber("Drive-D"));
+		
+		Repository.Shooter.getPIDController().setPIDUp(
+			SmartDashboard.getNumber("Arm-P-Up"), 
+			SmartDashboard.getNumber("Arm-I-Up"), 
+			SmartDashboard.getNumber("Arm-D-Up")
+		);
+		
+		Repository.Shooter.getPIDController().setPIDDown(
+			SmartDashboard.getNumber("Arm-P-Down"), 
+			SmartDashboard.getNumber("Arm-I-Down"), 
+			SmartDashboard.getNumber("Arm-D-Down")
+		);
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);

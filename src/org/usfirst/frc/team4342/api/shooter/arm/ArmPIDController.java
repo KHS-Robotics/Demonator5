@@ -10,7 +10,7 @@ public final class ArmPIDController extends PIDController
 	private double kPd, kId, kDd;
 	
 	public ArmPIDController(double Kp, double Ki, double Kd, double Kpd, double Kid, double Kdd, 
-						PIDSource source, PIDOutput output, double period) 
+							PIDSource source, PIDOutput output, double period) 
 	{
 		super(Kp, Ki, Kd, source, output, period);
 		
@@ -45,19 +45,53 @@ public final class ArmPIDController extends PIDController
 		}
 	}
 	
+	public synchronized void setPIDUp(double p, double i, double d)
+	{
+		kP = p;
+		kI = i;
+		kD = d;
+	}
+	
+	public synchronized void setPIDDown(double p, double i, double d)
+	{
+		kPd = p;
+		kId = i;
+		kDd = d;
+	}
+	
 	public synchronized void setPUp(double p)
 	{
-		super.setPID(p, kI, kD);
+		kP = p;
+	}
+
+	public synchronized void setIUp(double i)
+	{
+		kI = i;
+	}
+	
+	public synchronized void setDUp(double d)
+	{
+		kD = d;
+	}
+	
+	public synchronized void setPDown(double p)
+	{
+		kPd = p;
+	}
+	
+	public synchronized void setIDown(double i)
+	{
+		kId = i;
+	}
+	
+	public synchronized void setDDown(double d)
+	{
+		kDd = d;
 	}
 	
 	public synchronized double getPUp()
 	{
 		return kP;
-	}
-
-	public synchronized void setIUp(double i)
-	{
-		super.setPID(kP, i, kD);
 	}
 	
 	public synchronized double getIUp()
@@ -65,19 +99,9 @@ public final class ArmPIDController extends PIDController
 		return kI;
 	}
 	
-	public synchronized void setDUp(double d)
-	{
-		super.setPID(kP, kI, d);
-	}
-	
 	public synchronized double getDUp()
 	{
 		return kD;
-	}
-	
-	public synchronized void setPDown(double p)
-	{
-		this.kPd = p;
 	}
 	
 	public synchronized double getPDown()
@@ -85,21 +109,11 @@ public final class ArmPIDController extends PIDController
 		return kPd;
 	}
 	
-	public synchronized void setIDown(double i)
-	{
-		this.kId = i;
-	}
-	
 	public synchronized double getIDown()
 	{
 		return kId;
 	}
 	
-	public synchronized void setDDown(double d)
-	{
-		this.kDd = d;
-	}
-
 	public synchronized double getDDown()
 	{
 		return kDd;
