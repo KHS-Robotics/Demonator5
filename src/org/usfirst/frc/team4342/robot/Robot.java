@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot
 		
 		sc = new ShootingComponent(Repository.Shooter);
 		
-		leds = new Solenoid(6);
+		leds = new Solenoid(7);
 		leds.set(true);
     }
 	
