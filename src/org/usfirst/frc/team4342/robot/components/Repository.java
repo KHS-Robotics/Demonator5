@@ -193,7 +193,7 @@ public class Repository
 	{
 		try
 		{
-			Shifter = new DoubleSolenoid(0, 1);
+			Shifter = new DoubleSolenoid(1, 2);
 			BallPusher = new Solenoid(3);
 		}
 		catch(Exception ex)
