@@ -127,7 +127,7 @@ public class TankDrive implements PIDOutput
 				SmartDashboard.getNumber("Drive-D")
 			); 
 			
-			goToSetpoint(0);
+			goToAngle(0);
 			turnPIDOn();
 		}
 		else if (Repository.DriveStick.getRawButton(7)) 
