@@ -160,7 +160,7 @@ public class Repository
 			RightShooter = new CANTalon(3);
 			LeftShooter = new CANTalon(12);
 			ArmMotor = new CANTalon(4);
-			Accumulator = new CANTalon(12);
+			Accumulator = new CANTalon(11);
 			
 			RightShooter.enableBrakeMode(false);
 			LeftShooter.enableBrakeMode(false);
