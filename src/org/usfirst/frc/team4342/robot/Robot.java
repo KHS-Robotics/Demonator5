@@ -27,7 +27,6 @@ public class Robot extends IterativeRobot
 {
 	private TankDriveComponent tdc;
 	private ShootingComponent sc;
-	private Solenoid leds;
 	
 	private AutoRoutine selectedAutoRoutine;
 	
@@ -46,8 +45,8 @@ public class Robot extends IterativeRobot
 		
 		sc = new ShootingComponent(Repository.Shooter);
 		
-		leds = new Solenoid(7);
-		leds.set(true);
+		new Solenoid(2).set(true);
+		new Solenoid(3).set(true);
 		
 		SmartDashboard.putNumber("Drive-P", 0.0);
 		SmartDashboard.putNumber("Drive-I", 0.0);

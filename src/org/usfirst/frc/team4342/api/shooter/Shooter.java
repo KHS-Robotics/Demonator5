@@ -36,14 +36,16 @@ public class Shooter
 	private double autoMotorOutput;
 	
 	private ArmPIDController apidc;
+	private int numLoops;
 	
 	public Shooter(Joystick armJoy, Joystick switchBox, CANTalon accumulator, CANTalon rightMotor, CANTalon leftMotor, 
-					CANTalon armMotor, Solenoid ballPusher, Encoder armEnc, Counter rightMotorCounter, 
+					CANTalon armMotor, Solenoid ballPusher, Solenoid accumulatorLifter, Encoder armEnc, Counter rightMotorCounter, 
 					Counter leftMotorCounter, DigitalInput ballSensor, SetpointMapWrapper setpoints)
 	{
 		this.armJoy = armJoy;
 		this.switchBox = switchBox;
 		this.accumulator = accumulator;
+		this.accumulatorLifter = accumulatorLifter;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
 		this.arm = armMotor;
@@ -78,8 +80,8 @@ public class Shooter
 		checkButtonStatus();
 		checkUserAngleMotor();
 		
-//		basicFire();
-//		basicAccum();
+		//basicFire();
+		//basicAccum();
 	}
 	
 	public void handleAuto()
@@ -96,7 +98,7 @@ public class Shooter
 		leftMotor.set(0);
 		arm.set(0);
 		ballPusher.set(false);
-		//accumulatorLifter.set(false);
+		accumulatorLifter.set(false);
 	}
 	
 	public ShooterState getState()
@@ -184,7 +186,7 @@ public class Shooter
 				rightMotor.set(1);
 				leftMotor.set(1);
 				
-				//accumulatorLifter.set(true);
+				accumulatorLifter.set(true);
 				
 				if (switchBox.getRawButton(10))// && (rightMotorCounter.getPeriod() > MIN_ENC_VELOCITY && leftMotorCounter.getPeriod() > MIN_ENC_VELOCITY))
 				{
@@ -201,15 +203,18 @@ public class Shooter
 		}
 		else if (state == ShooterState.FIRING)
 		{
-			if(true)//!ballSensor.get())
+			if(numLoops > 100)//!ballSensor.get())
 			{
 				rightMotor.set(0);
 				leftMotor.set(0);
 				
-				//accumulatorLifter.set(false);
+				accumulatorLifter.set(false);
+				numLoops = 0;
 				
 				state = ShooterState.FIRED;
 			}
+			
+			numLoops++;
 		}
 		else if (state == ShooterState.FIRED)
 		{
@@ -250,13 +255,13 @@ public class Shooter
 			accumulator.set(0);
 		}
 		
-		if(armJoy.getRawButton(3) || Repository.SwitchBox.getRawButton(2))
+		if(armJoy.getRawButton(3) || switchBox.getRawButton(2))
 		{
-			//accumulatorLifter.set(true);
+			accumulatorLifter.set(true);
 		}
-		else
+		else if (!switchBox.getRawButton(5))
 		{
-			//accumulatorLifter.set(false);
+			accumulatorLifter.set(false);
 		}
 	}
 	

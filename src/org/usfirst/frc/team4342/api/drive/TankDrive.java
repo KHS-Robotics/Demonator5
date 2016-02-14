@@ -148,11 +148,11 @@ public class TankDrive implements PIDOutput
 		turnPIDOff();
 		checkUserShift();
 
-		double z = Math.abs(j.getZ()) > DEAD_BAND ? -j.getZ() : 0.0;
+		double x = Math.abs(j.getTwist()) > DEAD_BAND ? -j.getTwist() : 0.0;
 		double y = Math.abs(j.getY()) > DEAD_BAND ? -j.getY() : 0.0;
 
-		double left = (y-z);
-		double right = (y+z);
+		double left = (y-x);
+		double right = (y+x);
 
 		if (left > 1.0)
 			left = 1.0;

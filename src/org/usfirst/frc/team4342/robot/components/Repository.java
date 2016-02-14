@@ -53,7 +53,7 @@ public class Repository
 	public static AHRS Navx;
 	
 	public static CANTalon RightShooter, LeftShooter, ArmMotor, Accumulator;
-	public static Solenoid BallPusher;
+	public static Solenoid BallPusher, AccumulatorLifter;
 	public static Encoder ArmEncoder;
 	public static Counter RightMotorCounter, LeftMotorCounter;
 	public static DigitalInput BallSensor;
@@ -195,6 +195,7 @@ public class Repository
 		{
 			Shifter = new DoubleSolenoid(4, 5);
 			BallPusher = new Solenoid(6);
+			AccumulatorLifter = new Solenoid(7);
 		}
 		catch(Exception ex)
 		{
@@ -237,7 +238,8 @@ public class Repository
 				RightShooter,
 				LeftShooter, 
 				ArmMotor, 
-				BallPusher, 
+				BallPusher,
+				AccumulatorLifter,
 				ArmEncoder, 
 				RightMotorCounter,
 				LeftMotorCounter,
