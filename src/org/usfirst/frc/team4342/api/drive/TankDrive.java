@@ -28,8 +28,8 @@ public class TankDrive implements PIDOutput
 	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
 	
 	
-	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, Encoder encLeft,
-					 Encoder encRight)
+	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
+					Encoder encLeft, Encoder encRight)
 	{
 		this.j = j;
 		
@@ -48,11 +48,7 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		SmartDashboard.putNumber("Drive-P", pGain);
-		SmartDashboard.putNumber("Drive-I", iGain);
-		SmartDashboard.putNumber("Drive-D", dGain);
 		angleControl = new PIDController(pGain, iGain, dGain, navX, this, 20);
-		
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);

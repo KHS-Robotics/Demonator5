@@ -96,13 +96,13 @@ public class Robot extends IterativeRobot
 		
 		Repository.TankDrive.setPID(SmartDashboard.getNumber("Drive-P"), SmartDashboard.getNumber("Drive-I"), SmartDashboard.getNumber("Drive-D"));
 		
-		Repository.Shooter.getPIDController().setPIDUp(
+		Repository.ArmController.getPIDController().setPIDUp(
 			SmartDashboard.getNumber("Arm-P-Up"), 
 			SmartDashboard.getNumber("Arm-I-Up"), 
 			SmartDashboard.getNumber("Arm-D-Up")
 		);
 		
-		Repository.Shooter.getPIDController().setPIDDown(
+		Repository.ArmController.getPIDController().setPIDDown(
 			SmartDashboard.getNumber("Arm-P-Down"), 
 			SmartDashboard.getNumber("Arm-I-Down"), 
 			SmartDashboard.getNumber("Arm-D-Down")

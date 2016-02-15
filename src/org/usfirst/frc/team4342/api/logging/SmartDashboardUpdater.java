@@ -114,7 +114,7 @@ public class SmartDashboardUpdater
 				putEncoderData();
 				putCounterData();
 				
-				SmartDashboard.putString("Shooter-State", Repository.Shooter.getState().toString());
+				SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
 
 				try
 				{

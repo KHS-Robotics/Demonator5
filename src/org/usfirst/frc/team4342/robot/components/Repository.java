@@ -7,6 +7,8 @@ import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
+import org.usfirst.frc.team4342.api.shooter.ShooterController;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
 import org.usfirst.frc.team4342.api.shooter.arm.Setpoint;
 import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
 
@@ -59,6 +61,8 @@ public class Repository
 	public static DigitalInput BallSensor;
 	public static SetpointMapWrapper setpoints;
 	
+	public static ArmController ArmController;
+	public static ShooterController ShooterController;
 	public static TankDrive TankDrive;
 	public static Shooter Shooter;
 	
@@ -231,21 +235,10 @@ public class Repository
 				RightDriveEncoder
 			);
 			
-			Shooter = new Shooter(
-				ShooterStick, 
-				SwitchBox,
-				Accumulator, 
-				RightShooter,
-				LeftShooter, 
-				ArmMotor, 
-				BallPusher,
-				AccumulatorLifter,
-				ArmEncoder, 
-				RightMotorCounter,
-				LeftMotorCounter,
-				BallSensor, 
-				setpoints
-			);
+			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, AccumulatorLifter, ArmEncoder, setpoints);
+			ShooterController = new ShooterController(SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
+			
+			Shooter = new Shooter(ShooterController, ArmController);
 		}
 		catch(Exception ex)
 		{
