@@ -14,19 +14,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDrive implements PIDOutput
 {
+	private static final double DEAD_BAND = 0.05;
+	
 	private Joystick j;
 	private DriveTrain driveTrain;
 	private CANTalon fr, fl, mr, ml, rr, rl;
 	private AHRS navX;
 	private DoubleSolenoid shifter;
-	private PIDController angleControl;
-	private double direction = 0;
-	private boolean autoStepFinished;
 	private Encoder encLeft, encRight;
-	private static boolean lastButton4, lastButton7;
-	private static final double DEAD_BAND = 0.05;
-	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
 	
+	private PIDController angleControl;
+	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
+	private double direction;
+	private boolean firstRunPID, firstRunGoStraight;
+	
+	private boolean autoStepFinished;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
 					Encoder encLeft, Encoder encRight)
@@ -55,35 +57,11 @@ public class TankDrive implements PIDOutput
 		angleControl.disable();
 	}
 	
-	public synchronized boolean isAutoStepFinished()
-	{
-		return autoStepFinished;
-	}
-	
-	public void goStraight(boolean firstRun)
-	{
-		if (true == firstRun)
-		{
-			goToSetpoint(navX.getYaw());
-			angleControl.enable();
-		}
-		
-		setDirection(j.getY());
-	}
-	
-	public void goToAngle(double angle)
-	{
-		turnPIDOn();
-		goToSetpoint(angle);
-		setDirection(0.0);
-	}
-	
 	@Override
 	public void pidWrite(double output) 
 	{
 		double right = direction - output;
 		double left = direction + output;
-		
 		
 		if (right > 1)
 			right = 1; 
@@ -100,22 +78,11 @@ public class TankDrive implements PIDOutput
 		ml.set(left);
 		rr.set(right);
 		rl.set(left);
-		
 	}
 	
-	public synchronized void setDirection(double power)
+	public synchronized void drive(int shiftButton)
 	{
-		direction = power;
-	}
-	
-	public synchronized double getDirection()
-	{
-		return direction;
-	}
-	
-	public synchronized void drive()
-	{
-		if (lastButton4 != Repository.SwitchBox.getRawButton(4))
+		if(Repository.SwitchBox.getRawButton(4) && !firstRunPID)
 		{
 			setPID(
 				SmartDashboard.getNumber("Drive-P"),
@@ -125,24 +92,35 @@ public class TankDrive implements PIDOutput
 			
 			goToAngle(0);
 			turnPIDOn();
+			
+			firstRunPID = true;
 		}
-		else if (Repository.DriveStick.getRawButton(7)) 
+		else if(!Repository.SwitchBox.getRawButton(4))
 		{
-			Repository.TankDrive.goStraight(Repository.DriveStick.getRawButton(7) == lastButton7);
+			firstRunPID = false;
+		}
+		
+		if(Repository.DriveStick.getRawButton(7) && !firstRunGoStraight)
+		{
+			goToSetpoint(navX.getYaw());
+			angleControl.enable();
+			
+			firstRunGoStraight = true;
+		}
+		else if(Repository.DriveStick.getRawButton(7) && firstRunGoStraight)
+		{
+			goStraight();
 		}
 		else
 		{
-			joystickDrive();
-		}	
-		
-		lastButton4 = Repository.SwitchBox.getRawButton(4);
-		lastButton7 = Repository.DriveStick.getRawButton(7);
+			joystickDrive(shiftButton);
+		}
 	}
 	
-	public void joystickDrive()
+	public void joystickDrive(int shiftButton)
 	{
 		turnPIDOff();
-		checkUserShift();
+		checkUserShift(shiftButton);
 
 		double x = Math.abs(j.getTwist()) > DEAD_BAND ? -j.getTwist() : 0.0;
 		double y = Math.abs(j.getY()) > DEAD_BAND ? -j.getY() : 0.0;
@@ -176,17 +154,21 @@ public class TankDrive implements PIDOutput
 		}
 	}
 	
+	public void goStraight()
+	{
+		setDirection(j.getY());
+	}
+	
+	public void goToAngle(double angle)
+	{
+		turnPIDOn();
+		goToSetpoint(angle);
+		setDirection(0.0);
+	}
+	
 	public synchronized void stopAll()
 	{
 		driveTrain.stopAll();
-	}
-	
-	private synchronized void checkUserShift()
-	{
-		if(j.getRawButton(9))
-			shifter.set(DoubleSolenoid.Value.kForward);
-		else
-			shifter.set(DoubleSolenoid.Value.kReverse);	
 	}
 	
 	public synchronized void turnPIDOn()
@@ -210,5 +192,28 @@ public class TankDrive implements PIDOutput
 		iGain = i;
 		dGain = d;
 		angleControl.setPID(p, i, d);
+	}
+	
+	public synchronized void setDirection(double power)
+	{
+		direction = power;
+	}
+	
+	public synchronized double getDirection()
+	{
+		return direction;
+	}
+	
+	public synchronized boolean isAutoStepFinished()
+	{
+		return autoStepFinished;
+	}
+	
+	private synchronized void checkUserShift(int button)
+	{
+		if(j.getRawButton(button))
+			shifter.set(DoubleSolenoid.Value.kForward);
+		else
+			shifter.set(DoubleSolenoid.Value.kReverse);	
 	}
 }
