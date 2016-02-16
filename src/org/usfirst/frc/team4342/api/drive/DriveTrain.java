@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.api.drive;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class DriveTrain 
 {
@@ -48,6 +49,14 @@ public class DriveTrain
 		for(CANTalon talon : getDriveTrain())
 		{
 			talon.enable();
+		}
+	}
+	
+	public void setPIDSourceType (PIDSourceType type)
+	{
+		for(CANTalon talon : getDriveTrain())
+		{
+			talon.setPIDSourceType(type);
 		}
 	}
 	

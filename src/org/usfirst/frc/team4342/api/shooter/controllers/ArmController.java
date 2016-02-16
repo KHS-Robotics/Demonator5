@@ -44,8 +44,8 @@ public class ArmController
 			ArmPID.kId, 
 			ArmPID.kDd, 
 			armEnc, 
-			armMotor, 
-			50.0
+			armMotor,
+			0.05
 		);
 		
 		apidc.disable();

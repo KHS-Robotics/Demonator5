@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4342.api.drive;
 
+import org.usfirst.frc.team4342.api.drive.pid.DrivePID;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -24,7 +25,6 @@ public class TankDrive implements PIDOutput
 	private Encoder encLeft, encRight;
 	
 	private PIDController angleControl;
-	private double pGain = 1.0, iGain = 0.0, dGain = 0.0;
 	private double direction;
 	private boolean firstRunPID, firstRunGoStraight;
 	
@@ -50,7 +50,7 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		angleControl = new PIDController(pGain, iGain, dGain, navX, this, 20);
+		angleControl = new PIDController(DrivePID.kP, DrivePID.kI, DrivePID.kD, navX, this, 0.05);
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
@@ -188,9 +188,6 @@ public class TankDrive implements PIDOutput
 	
 	public synchronized void setPID(double p, double i, double d)
 	{
-		pGain = p;
-		iGain = i;
-		dGain = d;
 		angleControl.setPID(p, i, d);
 	}
 	

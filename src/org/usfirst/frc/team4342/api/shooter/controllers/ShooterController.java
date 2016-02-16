@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class ShooterController 
@@ -16,6 +18,8 @@ public class ShooterController
 	private Counter rightMotorCounter, leftMotorCounter;
 	private DigitalInput ballSensor;
 	private ArmController arm;
+	
+	private PIDController rightPID, leftPID;
 	
 	private ShooterState state;
 	
@@ -32,6 +36,18 @@ public class ShooterController
 		this.leftMotorCounter = leftMotorCounter;
 		this.ballSensor = ballSensor;
 		this.arm = arm;
+		
+		rightMotor.setPIDSourceType(PIDSourceType.kRate);
+		rightPID = new PIDController(0.0, 0.0, 0.0, this.rightMotorCounter, this.rightMotor);
+		rightPID.setInputRange(-1.0, 1.0);
+		rightPID.setOutputRange(-1.0, 1.0);
+		
+		leftMotor.setPIDSourceType(PIDSourceType.kRate);
+		leftPID = new PIDController(0.0, 0.0, 0.0, this.leftMotorCounter, this.leftMotor);
+		leftPID.setInputRange(-1.0, 1.0);
+		leftPID.setOutputRange(-1.0, 1.0);
+		
+		enablePID();
 		
 		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
@@ -112,6 +128,18 @@ public class ShooterController
 	public void setBallPusher(boolean on)
 	{
 		ballPusher.set(on);
+	}
+	
+	public void enablePID()
+	{
+		rightPID.enable();
+		leftPID.disable();
+	}
+	
+	public void disablePID()
+	{
+		rightPID.disable();
+		leftPID.disable();
 	}
 	
 	public void stopAll()
