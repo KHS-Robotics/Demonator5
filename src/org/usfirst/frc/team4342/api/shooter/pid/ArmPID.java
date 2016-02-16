@@ -1,8 +1,8 @@
-package org.usfirst.frc.team4342.api.shooter;
+package org.usfirst.frc.team4342.api.shooter.pid;
 
-public final class ShooterPID 
+public final class ArmPID 
 {
-	private ShooterPID() {}
+	private ArmPID() {}
 	
 	// Up values
 	public static final double kP = 0.0;
@@ -13,6 +13,4 @@ public final class ShooterPID
 	public static final double kPd = 0.0;
 	public static final double kId = 0.0;
 	public static final double kDd = 0.0;
-	
-	
 }

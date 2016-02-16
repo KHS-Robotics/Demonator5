@@ -7,10 +7,10 @@ import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
-import org.usfirst.frc.team4342.api.shooter.ShooterController;
-import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
 import org.usfirst.frc.team4342.api.shooter.arm.Setpoint;
 import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
+import org.usfirst.frc.team4342.api.shooter.controllers.ArmController;
+import org.usfirst.frc.team4342.api.shooter.controllers.ShooterController;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;

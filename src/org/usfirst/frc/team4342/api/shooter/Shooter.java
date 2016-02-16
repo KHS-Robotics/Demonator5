@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter;
 
-import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
+import org.usfirst.frc.team4342.api.shooter.controllers.ArmController;
+import org.usfirst.frc.team4342.api.shooter.controllers.ShooterController;
 
 public class Shooter 
 {
