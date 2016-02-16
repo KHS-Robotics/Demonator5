@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter.controllers;
 
 import org.usfirst.frc.team4342.api.shooter.ShooterState;
+import org.usfirst.frc.team4342.api.shooter.pid.ShooterPID;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
@@ -38,12 +39,12 @@ public class ShooterController
 		this.arm = arm;
 		
 		rightMotor.setPIDSourceType(PIDSourceType.kRate);
-		rightPID = new PIDController(0.0, 0.0, 0.0, this.rightMotorCounter, this.rightMotor);
+		rightPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, this.rightMotorCounter, this.rightMotor);
 		rightPID.setInputRange(-1.0, 1.0);
 		rightPID.setOutputRange(-1.0, 1.0);
 		
 		leftMotor.setPIDSourceType(PIDSourceType.kRate);
-		leftPID = new PIDController(0.0, 0.0, 0.0, this.leftMotorCounter, this.leftMotor);
+		leftPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, this.leftMotorCounter, this.leftMotor);
 		leftPID.setInputRange(-1.0, 1.0);
 		leftPID.setOutputRange(-1.0, 1.0);
 		
@@ -140,6 +141,12 @@ public class ShooterController
 	{
 		rightPID.disable();
 		leftPID.disable();
+	}
+	
+	public void setPID(double p, double i, double d)
+	{
+		rightPID.setPID(p, i, d);
+		leftPID.setPID(p, i, d);
 	}
 	
 	public void stopAll()

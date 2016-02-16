@@ -47,9 +47,17 @@ public class Robot extends IterativeRobot
 		new Solenoid(2).set(true);
 		new Solenoid(3).set(true);
 		
-		SmartDashboard.putNumber("Drive-P", 0.0);
-		SmartDashboard.putNumber("Drive-I", 0.0);
-		SmartDashboard.putNumber("Drive-D", 0.0);
+		SmartDashboard.putNumber("Drive-Rot-P", 0.0);
+		SmartDashboard.putNumber("Drive-Rot-I", 0.0);
+		SmartDashboard.putNumber("Drive-Rot-D", 0.0);
+		
+		SmartDashboard.putNumber("Drive-Right-P", 0.0);
+		SmartDashboard.putNumber("Drive-Right-I", 0.0);
+		SmartDashboard.putNumber("Drive-Right-D", 0.0);
+		
+		SmartDashboard.putNumber("Drive-Left-P", 0.0);
+		SmartDashboard.putNumber("Drive-Left-I", 0.0);
+		SmartDashboard.putNumber("Drive-Left-D", 0.0);
 		
 		SmartDashboard.putNumber("Shooter-P", 0.0);
 		SmartDashboard.putNumber("Shooter-I", 0.0);
@@ -62,6 +70,11 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Arm-P-Down", 0.0);
 		SmartDashboard.putNumber("Arm-I-Down", 0.0);
 		SmartDashboard.putNumber("Arm-D-Down", 0.0);
+		
+		SmartDashboard.putNumber("Goal-Dist", 0.0);
+		SmartDashboard.putNumber("Goal-Ang", 0.0);
+		
+		PIDTuner.startUpdating();
     }
 	
 	/**
@@ -92,20 +105,6 @@ public class Robot extends IterativeRobot
     {
 		Repository.DriveTrain.setBrakeMode();
 		Repository.DriveTrain.enable();
-		
-		Repository.TankDrive.setPID(SmartDashboard.getNumber("Drive-P"), SmartDashboard.getNumber("Drive-I"), SmartDashboard.getNumber("Drive-D"));
-		
-		Repository.ArmController.getPIDController().setPIDUp(
-			SmartDashboard.getNumber("Arm-P-Up"), 
-			SmartDashboard.getNumber("Arm-I-Up"), 
-			SmartDashboard.getNumber("Arm-D-Up")
-		);
-		
-		Repository.ArmController.getPIDController().setPIDDown(
-			SmartDashboard.getNumber("Arm-P-Down"), 
-			SmartDashboard.getNumber("Arm-I-Down"), 
-			SmartDashboard.getNumber("Arm-D-Down")
-		);
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
