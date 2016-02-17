@@ -124,40 +124,24 @@ public class TankDrive implements PIDOutput
 		rlPID.setSetpoint(left);
 	}
 	
-	public synchronized void drive(int shiftButton)
+	public synchronized void drive(int shiftButton, int straightButton)
 	{
-		if(Repository.SwitchBox.getRawButton(4) && !firstRunPID)
-		{
-			setPID(
-				SmartDashboard.getNumber("Drive-P"),
-				SmartDashboard.getNumber("Drive-I"),
-				SmartDashboard.getNumber("Drive-D")
-			); 
-			
-			goToAngle(0);
-			turnPIDOn();
-			
-			firstRunPID = true;
-		}
-		else if(!Repository.SwitchBox.getRawButton(4))
-		{
-			firstRunPID = false;
-		}
-		
-		if(Repository.DriveStick.getRawButton(7) && !firstRunGoStraight)
+		if(j.getRawButton(straightButton) && !firstRunGoStraight)
 		{
 			goToSetpoint(navX.getYaw());
 			angleControl.enable();
 			
 			firstRunGoStraight = true;
 		}
-		else if(Repository.DriveStick.getRawButton(7) && firstRunGoStraight)
+		else if(j.getRawButton(straightButton) && firstRunGoStraight)
 		{
 			goStraight();
 		}
 		else
 		{
 			joystickDrive(shiftButton);
+			
+			firstRunGoStraight = false;
 		}
 	}
 	
@@ -229,7 +213,7 @@ public class TankDrive implements PIDOutput
 		angleControl.setSetpoint(setpointAngle);
 	}
 	
-	public synchronized void setPID(double p, double i, double d)
+	public synchronized void setYawPID(double p, double i, double d)
 	{
 		angleControl.setPID(p, i, d);
 	}

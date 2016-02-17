@@ -36,10 +36,10 @@ public final class PIDTuner
 			{
 				try
 				{
-					Repository.TankDrive.setPID(
-						SmartDashboard.getNumber("Drive-Rot-P"), 
-						SmartDashboard.getNumber("Drive-Rot-I"), 
-						SmartDashboard.getNumber("Drive-Rot-D")
+					Repository.TankDrive.setYawPID(
+						SmartDashboard.getNumber("Drive-Yaw-P"), 
+						SmartDashboard.getNumber("Drive-Yaw-I"), 
+						SmartDashboard.getNumber("Drive-Yaw-D")
 					);
 					
 					Repository.TankDrive.setRightPID(
