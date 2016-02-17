@@ -215,6 +215,12 @@ public class Repository
 			LeftDriveEncoder = new Encoder(2, 3);
 			RightMotorCounter = new Counter(7);
 			LeftMotorCounter = new Counter(8);
+			
+			// 7.5 * PI / 128
+			RightDriveEncoder.setDistancePerPulse(0.184);
+			LeftDriveEncoder.setDistancePerPulse(0.184);
+			RightMotorCounter.setDistancePerPulse(0.05);
+			LeftMotorCounter.setDistancePerPulse(0.05);
 		}
 		catch(Exception ex)
 		{

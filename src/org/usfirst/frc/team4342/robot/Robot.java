@@ -74,6 +74,9 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Goal-Dist", 0.0);
 		SmartDashboard.putNumber("Goal-Ang", 0.0);
 		
+		SmartDashboard.putNumber("Shooter-Setpoint", 0.0);
+		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
+		
 		PIDTuner.startUpdating();
     }
 	

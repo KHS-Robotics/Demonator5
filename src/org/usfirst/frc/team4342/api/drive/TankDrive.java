@@ -55,6 +55,9 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
+		encRight.setPIDSourceType(PIDSourceType.kRate);
+		encLeft.setPIDSourceType(PIDSourceType.kRate);
+		
 		frPID = new PIDController(DrivePID.Right.kP, DrivePID.Right.kI, DrivePID.Right.kD, encRight, this.fr);
 		frPID.setContinuous();
 		frPID.setInputRange(-1.0, 1.0);

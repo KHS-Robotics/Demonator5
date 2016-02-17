@@ -276,7 +276,10 @@ public class SmartDashboardUpdater
 					String key = entry.getKey();
 					Counter counter = entry.getValue();
 					
-					SmartDashboard.putNumber(key + "-Count", counter.getPeriod());
+					SmartDashboard.putNumber(key + "-Rate", counter.getRate());
+					SmartDashboard.putNumber(key + "-Period", counter.getPeriod());
+					SmartDashboard.putNumber(key + "-Get", counter.get());
+					SmartDashboard.putNumber(key + "-Dist", counter.getDistance());
 				}
 			}
 			catch(Exception ex)

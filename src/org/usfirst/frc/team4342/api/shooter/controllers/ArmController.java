@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmController 
 {
@@ -63,7 +64,12 @@ public class ArmController
 		{
 			checkButtonStatus();
 			
-			if(buttonPressed) 
+			if(switchBox.getRawButton(7))
+			{
+				apidc.setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
+				apidc.enable();
+			}
+			else if(buttonPressed) 
 			{
 				apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
 				apidc.enable();
@@ -104,7 +110,7 @@ public class ArmController
 		{
 			accumLifter.set(true);
 		}
-		else if (switchBox.getRawButton(fireSafetyButton))
+		else if (!switchBox.getRawButton(fireSafetyButton))
 		{
 			accumLifter.set(false);
 		}

@@ -2,6 +2,7 @@ package org.usfirst.frc.team4342.api.shooter.controllers;
 
 import org.usfirst.frc.team4342.api.shooter.ShooterState;
 import org.usfirst.frc.team4342.api.shooter.pid.ShooterPID;
+import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterController 
 {
@@ -30,6 +32,7 @@ public class ShooterController
 							Solenoid ballPusher, Counter rightMotorCounter, Counter leftMotorCounter, 
 							DigitalInput ballSensor, ArmController arm)
 	{
+		this.switchBox = switchBox;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
 		this.ballPusher = ballPusher;
@@ -38,17 +41,22 @@ public class ShooterController
 		this.ballSensor = ballSensor;
 		this.arm = arm;
 		
+		rightMotorCounter.setPIDSourceType(PIDSourceType.kRate);
+		leftMotorCounter.setPIDSourceType(PIDSourceType.kRate);
+		
 		rightMotor.setPIDSourceType(PIDSourceType.kRate);
-		rightPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, this.rightMotorCounter, this.rightMotor);
-		rightPID.setInputRange(-1.0, 1.0);
-		rightPID.setOutputRange(-1.0, 1.0);
+		rightPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.rightMotorCounter, this.rightMotor);
+		rightPID.setInputRange(0.0, 100.0);
+		rightPID.setOutputRange(0.0, 1.0);
 		
 		leftMotor.setPIDSourceType(PIDSourceType.kRate);
-		leftPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, this.leftMotorCounter, this.leftMotor);
-		leftPID.setInputRange(-1.0, 1.0);
-		leftPID.setOutputRange(-1.0, 1.0);
+		leftPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.leftMotorCounter, this.leftMotor);
+		leftPID.setInputRange(0.0, 100.0);
+		leftPID.setOutputRange(0.0, 1.0);
 		
 		enablePID();
+		
+		new ShooterFMonitor().start();
 		
 		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
 	}
@@ -59,8 +67,8 @@ public class ShooterController
 		{
 			if (switchBox.getRawButton(safetyButton))
 			{
-				rightMotor.set(1);
-				leftMotor.set(1);
+				leftPID.setSetpoint(SmartDashboard.getNumber("Shooter-Setpoint"));
+				rightPID.setSetpoint(SmartDashboard.getNumber("Shooter-Setpoint"));
 				
 				arm.getAccumLifter().set(true);
 				
@@ -73,19 +81,21 @@ public class ShooterController
 			}
 			else
 			{
-				rightMotor.set(0);
-				leftMotor.set(0);
+				leftPID.setSetpoint(0);
+				rightPID.setSetpoint(0);
 			}
 		}
 		else if (state == ShooterState.FIRING)
 		{
-			if(numLoops > 100)//!ballSensor.get())
+			if(numLoops > 50)//!ballSensor.get())
 			{
-				rightMotor.set(0);
-				leftMotor.set(0);
+				leftPID.setSetpoint(0);
+				rightPID.setSetpoint(0);
 				
 				arm.getAccumLifter().set(false);
 				numLoops = 0;
+				
+				disablePID();
 				
 				state = ShooterState.FIRED;
 			}
@@ -114,6 +124,8 @@ public class ShooterController
 				leftMotor.set(0.0);
 				
 				arm.getAccumMotor().set(0.0);
+				
+				enablePID();
 				
 				state = ShooterState.LOADED;
 			}
@@ -159,5 +171,43 @@ public class ShooterController
 	public ShooterState getState()
 	{
 		return state;
+	}
+	
+	private class ShooterFMonitor extends Thread implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				try
+				{
+					if(rightMotorCounter.getRate() > rightPID.getSetpoint())
+					{
+						rightPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, 0.0);
+					}
+					else
+					{
+						rightPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF);
+					}
+					
+					if(leftMotorCounter.getRate() > leftPID.getSetpoint())
+					{
+						leftPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, 0.0);
+					}
+					else
+					{
+						leftPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF);
+					}
+					
+					Thread.sleep(20);
+				}
+				catch(Exception ex)
+				{
+					Repository.Logs.error("Error while checking shooter setpoints", ex);
+					break;
+				}
+			}
+		}
 	}
 }
