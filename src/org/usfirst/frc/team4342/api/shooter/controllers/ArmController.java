@@ -1,8 +1,8 @@
 package org.usfirst.frc.team4342.api.shooter.controllers;
 
 import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
-import org.usfirst.frc.team4342.api.shooter.pid.ArmPID;
-import org.usfirst.frc.team4342.api.shooter.pid.ArmPIDController;
+import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPID;
+import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPIDController;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -48,6 +48,8 @@ public class ArmController
 			armMotor,
 			0.05
 		);
+		
+		apidc.setPercentTolerance(5);
 		
 		apidc.disable();
 	}

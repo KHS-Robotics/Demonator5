@@ -38,38 +38,26 @@ public final class PIDTuner
 				{
 					Repository.TankDrive.setYawPID(
 						SmartDashboard.getNumber("Drive-Yaw-P"), 
-						SmartDashboard.getNumber("Drive-Yaw-I"), 
+						SmartDashboard.getNumber("Drive-Yaw-I") / 1000.0, 
 						SmartDashboard.getNumber("Drive-Yaw-D")
 					);
 					
 					Repository.TankDrive.setRightPID(
 						SmartDashboard.getNumber("Drive-Right-P"), 
-						SmartDashboard.getNumber("Drive-Right-I"), 
+						SmartDashboard.getNumber("Drive-Right-I") / 1000.0, 
 						SmartDashboard.getNumber("Drive-Right-D")
 					);
 					
 					Repository.TankDrive.setLeftPID(
 						SmartDashboard.getNumber("Drive-Left-P"), 
-						SmartDashboard.getNumber("Drive-Left-I"), 
+						SmartDashboard.getNumber("Drive-Left-I") / 1000.0, 
 						SmartDashboard.getNumber("Drive-Left-D")
 					);
 					
 					Repository.ShooterController.setPID(
 						SmartDashboard.getNumber("Shooter-P"), 
-						SmartDashboard.getNumber("Shooter-I"), 
+						SmartDashboard.getNumber("Shooter-I") / 1000.0, 
 						SmartDashboard.getNumber("Shooter-D")
-					);
-					
-					Repository.ArmController.getPIDController().setPIDUp(
-						SmartDashboard.getNumber("Arm-P-Up"), 
-						SmartDashboard.getNumber("Arm-I-Up"), 
-						SmartDashboard.getNumber("Arm-D-Up")
-					);
-					
-					Repository.ArmController.getPIDController().setPIDDown(
-						SmartDashboard.getNumber("Arm-P-Down"), 
-						SmartDashboard.getNumber("Arm-I-Down"), 
-						SmartDashboard.getNumber("Arm-D-Down")
 					);
 					
 					Thread.sleep(20);

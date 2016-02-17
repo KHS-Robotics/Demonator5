@@ -46,11 +46,13 @@ public class ShooterController
 		
 		rightMotor.setPIDSourceType(PIDSourceType.kRate);
 		rightPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.rightMotorCounter, this.rightMotor);
+		rightPID.setPercentTolerance(2);
 		rightPID.setInputRange(0.0, 100.0);
 		rightPID.setOutputRange(0.0, 1.0);
 		
 		leftMotor.setPIDSourceType(PIDSourceType.kRate);
 		leftPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.leftMotorCounter, this.leftMotor);
+		leftPID.setPercentTolerance(2);
 		leftPID.setInputRange(0.0, 100.0);
 		leftPID.setOutputRange(0.0, 1.0);
 		
@@ -184,20 +186,20 @@ public class ShooterController
 				{
 					if(rightMotorCounter.getRate() > rightPID.getSetpoint())
 					{
-						rightPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, 0.0);
+						rightPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), 0.0);
 					}
 					else
 					{
-						rightPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF);
+						rightPID.setPID(0.0, 0.0, SmartDashboard.getNumber("Shooter-D"), ShooterPID.kF);
 					}
 					
 					if(leftMotorCounter.getRate() > leftPID.getSetpoint())
 					{
-						leftPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, 0.0);
+						leftPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), 0.0);
 					}
 					else
 					{
-						leftPID.setPID(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF);
+						leftPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), ShooterPID.kF);
 					}
 					
 					Thread.sleep(20);

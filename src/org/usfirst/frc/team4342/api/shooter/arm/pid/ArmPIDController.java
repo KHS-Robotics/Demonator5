@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.api.shooter.pid;
+package org.usfirst.frc.team4342.api.shooter.arm.pid;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;

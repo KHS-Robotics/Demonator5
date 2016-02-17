@@ -185,7 +185,7 @@ public class Repository
 				}
 			);
 			
-			BallSensor = new DigitalInput(6);
+			//BallSensor = new DigitalInput(9001);
 		}
 		catch(Exception ex)
 		{
@@ -213,8 +213,8 @@ public class Repository
 		{
 			RightDriveEncoder = new Encoder(0, 1, true);
 			LeftDriveEncoder = new Encoder(2, 3);
-			RightMotorCounter = new Counter(7);
-			LeftMotorCounter = new Counter(8);
+			RightMotorCounter = new Counter(6);
+			LeftMotorCounter = new Counter(7);
 			
 			// 7.5 * PI / 128
 			RightDriveEncoder.setDistancePerPulse(0.184);
@@ -270,6 +270,7 @@ public class Repository
 		
 		SmartDashboardUpdater.addEncoder("Drive-R", RightDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);
+		SmartDashboardUpdater.addEncoder("Arm", ArmEncoder);
 		
 		SmartDashboardUpdater.addCounter("Shooter-R", RightMotorCounter);
 		SmartDashboardUpdater.addCounter("Shooter-L", LeftMotorCounter);

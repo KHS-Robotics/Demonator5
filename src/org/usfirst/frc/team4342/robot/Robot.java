@@ -36,17 +36,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void robotInit() 
     {
-		Repository.initializeAll();
-		
-		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
-		
-		tdc = new TankDriveComponent(Repository.TankDrive);
-		
-		sc = new ShootingComponent(Repository.Shooter);
-		
-		new Solenoid(2).set(true);
-		new Solenoid(3).set(true);
-		
+		// temporary for shooting PID
 		SmartDashboard.putNumber("Drive-Yaw-P", 0.0);
 		SmartDashboard.putNumber("Drive-Yaw-I", 0.0);
 		SmartDashboard.putNumber("Drive-Yaw-D", 0.0);
@@ -63,19 +53,21 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Shooter-I", 0.0);
 		SmartDashboard.putNumber("Shooter-D", 0.0);
 		
-		SmartDashboard.putNumber("Arm-P-Up", 0.0);
-		SmartDashboard.putNumber("Arm-I-Up", 0.0);
-		SmartDashboard.putNumber("Arm-D-Up", 0.0);
-		
-		SmartDashboard.putNumber("Arm-P-Down", 0.0);
-		SmartDashboard.putNumber("Arm-I-Down", 0.0);
-		SmartDashboard.putNumber("Arm-D-Down", 0.0);
-		
 		SmartDashboard.putNumber("Goal-Dist", 0.0);
 		SmartDashboard.putNumber("Goal-Ang", 0.0);
 		
 		SmartDashboard.putNumber("Shooter-Setpoint", 0.0);
-		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
+		
+		Repository.initializeAll();
+		
+		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
+		
+		tdc = new TankDriveComponent(Repository.TankDrive);
+		
+		sc = new ShootingComponent(Repository.Shooter);
+		
+		new Solenoid(2).set(true);
+		new Solenoid(3).set(true);
 		
 		PIDTuner.startUpdating();
     }
