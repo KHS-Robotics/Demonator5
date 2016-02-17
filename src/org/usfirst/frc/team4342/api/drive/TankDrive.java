@@ -273,6 +273,6 @@ public class TankDrive implements PIDOutput
 	
 	private double sensitivityControl(double input)
 	{
-		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-input)*JOYSTICK_SENSITIVITY);
+		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }

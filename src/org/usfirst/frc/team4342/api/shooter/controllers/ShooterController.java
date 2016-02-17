@@ -72,7 +72,7 @@ public class ShooterController
 				
 				arm.getAccumLifter().set(true);
 				
-				if (switchBox.getRawButton(fireButton))// && (rightMotorCounter.getPeriod() > MIN_ENC_VELOCITY && leftMotorCounter.getPeriod() > MIN_ENC_VELOCITY))
+				if (switchBox.getRawButton(fireButton) && (rightPID.onTarget() && leftPID.onTarget()))
 				{
 					ballPusher.set(true);
 					
@@ -106,8 +106,8 @@ public class ShooterController
 		{
 			if (!switchBox.getRawButton(safetyButton))
 			{
-				rightMotor.set(-1.0);
-				leftMotor.set(-1.0);
+				rightMotor.set(-0.6);
+				leftMotor.set(-0.6);
 				
 				arm.getAccumMotor().set(1.0);
 				
