@@ -60,7 +60,7 @@ public class ShooterController
 		
 		new ShooterFMonitor().start();
 		
-		state = ballPusher.get() ? ShooterState.FIRED : ShooterState.LOADED;
+		state = ballPusher.get() ? ShooterState.RELOADING : ShooterState.LOADED;
 	}
 	
 	public void checkUser(int safetyButton, int fireButton)
@@ -99,33 +99,16 @@ public class ShooterController
 				
 				disablePID();
 				
-				state = ShooterState.FIRED;
+				state = ShooterState.RELOADING;
 			}
 			
 			numLoops++;
-		}
-		else if (state == ShooterState.FIRED)
-		{
-			if (!switchBox.getRawButton(safetyButton))
-			{
-				rightMotor.set(-0.6);
-				leftMotor.set(-0.6);
-				
-				arm.getAccumMotor().set(1.0);
-				
-				ballPusher.set(false);
-				
-				state = ShooterState.RELOADING;
-			}
 		}
 		else if (state == ShooterState.RELOADING)
 		{
 			if(true)//ballSensor.get())
 			{
-				rightMotor.set(0.0);
-				leftMotor.set(0.0);
-				
-				arm.getAccumMotor().set(0.0);
+				ballPusher.set(false);
 				
 				enablePID();
 				
@@ -148,7 +131,7 @@ public class ShooterController
 	public void enablePID()
 	{
 		rightPID.enable();
-		leftPID.disable();
+		leftPID.enable();
 	}
 	
 	public void disablePID()

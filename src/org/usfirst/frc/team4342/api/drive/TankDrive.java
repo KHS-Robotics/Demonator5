@@ -29,9 +29,6 @@ public class TankDrive implements PIDOutput
 	private double direction;
 	private boolean firstRunPID, firstRunGoStraight;
 	
-	private PIDController frPID, mrPID, rrPID;
-	private PIDController flPID, mlPID, rlPID;
-	
 	private boolean autoStepFinished;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
@@ -55,45 +52,6 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		encRight.setPIDSourceType(PIDSourceType.kRate);
-		encLeft.setPIDSourceType(PIDSourceType.kRate);
-		
-		frPID = new PIDController(DrivePID.Right.kP, DrivePID.Right.kI, DrivePID.Right.kD, encRight, this.fr);
-		frPID.setContinuous();
-		frPID.setInputRange(-1.0, 1.0);
-		frPID.setOutputRange(-1.0, 1.0);
-		frPID.enable();
-		
-		mrPID = new PIDController(DrivePID.Right.kP, DrivePID.Right.kI, DrivePID.Right.kD, encRight, this.mr);
-		mrPID.setContinuous();
-		mrPID.setInputRange(-1.0, 1.0);
-		mrPID.setOutputRange(-1.0, 1.0);
-		mrPID.enable();
-
-		rrPID = new PIDController(DrivePID.Right.kP, DrivePID.Right.kI, DrivePID.Right.kD, encRight, this.rr);
-		rrPID.setContinuous();
-		rrPID.setInputRange(-1.0, 1.0);
-		rrPID.setOutputRange(-1.0, 1.0);
-		rrPID.enable();
-		
-		flPID = new PIDController(DrivePID.Left.kP, DrivePID.Left.kI, DrivePID.Left.kD, encLeft, this.fl);
-		flPID.setContinuous();
-		flPID.setInputRange(-1.0, 1.0);
-		flPID.setOutputRange(-1.0, 1.0);
-		flPID.enable();
-		
-		mlPID = new PIDController(DrivePID.Left.kP, DrivePID.Left.kI, DrivePID.Left.kD, encLeft, this.ml);
-		mlPID.setContinuous();
-		mlPID.setInputRange(-1.0, 1.0);
-		mlPID.setOutputRange(-1.0, 1.0);
-		mlPID.enable();
-		
-		rlPID = new PIDController(DrivePID.Left.kP, DrivePID.Left.kI, DrivePID.Left.kD, encLeft, this.rl);
-		rlPID.setContinuous();
-		rlPID.setInputRange(-1.0, 1.0);
-		rlPID.setOutputRange(-1.0, 1.0);
-		rlPID.enable();
-		
 		angleControl = new PIDController(DrivePID.Rotational.kP, DrivePID.Rotational.kI, DrivePID.Rotational.kD, navX, this);
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
@@ -116,12 +74,12 @@ public class TankDrive implements PIDOutput
 		if (left < -1)
 			left = -1;	
 		
-		frPID.setSetpoint(right);
-		flPID.setSetpoint(left);
-		mrPID.setSetpoint(right);
-		mlPID.setSetpoint(left);
-		rrPID.setSetpoint(right);
-		rlPID.setSetpoint(left);
+		fr.set(right);
+		rl.set(left);
+		mr.set(right);
+		ml.set(left);
+		rr.set(right);
+		rl.set(left);
 	}
 	
 	public synchronized void drive(int shiftButton, int straightButton)
@@ -168,12 +126,12 @@ public class TankDrive implements PIDOutput
 
 		try
 		{
-			frPID.setSetpoint(right);
-			flPID.setSetpoint(left);
-			mrPID.setSetpoint(right);
-			mlPID.setSetpoint(left);
-			rrPID.setSetpoint(right);
-			rlPID.setSetpoint(left);
+			fr.set(right);
+			rl.set(left);
+			mr.set(right);
+			ml.set(left);
+			rr.set(right);
+			rl.set(left);
 		}
 		catch (Exception ex)
 		{
@@ -216,20 +174,6 @@ public class TankDrive implements PIDOutput
 	public synchronized void setYawPID(double p, double i, double d)
 	{
 		angleControl.setPID(p, i, d);
-	}
-	
-	public void setRightPID(double p, double i, double d)
-	{
-		frPID.setPID(p, i, d);
-		mrPID.setPID(p, i, d);
-		rrPID.setPID(p, i, d);
-	}
-	
-	public void setLeftPID(double p, double i, double d)
-	{
-		rlPID.setPID(p, i, d);
-		mlPID.setPID(p, i, d);
-		rlPID.setPID(p, i, d);
 	}
 	
 	public synchronized void setDirection(double power)

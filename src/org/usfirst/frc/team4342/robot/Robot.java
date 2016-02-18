@@ -41,14 +41,6 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Drive-Yaw-I", 0.0);
 		SmartDashboard.putNumber("Drive-Yaw-D", 0.0);
 		
-		SmartDashboard.putNumber("Drive-Right-P", 0.0);
-		SmartDashboard.putNumber("Drive-Right-I", 0.0);
-		SmartDashboard.putNumber("Drive-Right-D", 0.0);
-		
-		SmartDashboard.putNumber("Drive-Left-P", 0.0);
-		SmartDashboard.putNumber("Drive-Left-I", 0.0);
-		SmartDashboard.putNumber("Drive-Left-D", 0.0);
-		
 		SmartDashboard.putNumber("Shooter-P", 0.0);
 		SmartDashboard.putNumber("Shooter-I", 0.0);
 		SmartDashboard.putNumber("Shooter-D", 0.0);
