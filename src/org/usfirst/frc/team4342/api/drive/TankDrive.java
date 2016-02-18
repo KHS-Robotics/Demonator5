@@ -27,7 +27,7 @@ public class TankDrive implements PIDOutput
 	
 	private PIDController angleControl;
 	private double direction;
-	private boolean firstRunPID, firstRunGoStraight;
+	private boolean firstRunPID, firstRunGoStraight = true;
 	
 	private boolean autoStepFinished;
 	
@@ -82,24 +82,29 @@ public class TankDrive implements PIDOutput
 		rl.set(left);
 	}
 	
-	public synchronized void drive(int shiftButton, int straightButton)
+	public synchronized void drive(int shiftButton, int straightButton, int angleButton)
 	{
-		if(j.getRawButton(straightButton) && !firstRunGoStraight)
-		{
-			goToSetpoint(navX.getYaw());
-			angleControl.enable();
-			
-			firstRunGoStraight = true;
-		}
-		else if(j.getRawButton(straightButton) && firstRunGoStraight)
+		if(j.getRawButton(straightButton))
 		{
 			goStraight();
+			
+			if (firstRunGoStraight)
+			{
+				goToSetpoint(navX.getYaw());
+				turnPIDOn();
+				
+				firstRunGoStraight = false;
+			}
+		}
+		else if(j.getRawButton(angleButton))
+		{
+			goToAngle(0.0);
 		}
 		else
 		{
 			joystickDrive(shiftButton);
 			
-			firstRunGoStraight = false;
+			firstRunGoStraight = true;
 		}
 	}
 	
@@ -108,8 +113,8 @@ public class TankDrive implements PIDOutput
 		turnPIDOff();
 		checkUserShift(shiftButton);
 
-		double x = sensitivityControl(j.getTwist());
-		double y = sensitivityControl(j.getY());
+		double x = sensitivityControl(j.getZ());
+		double y = sensitivityControl(-j.getY());
 
 		double left = (y-x);
 		double right = (y+x);
@@ -141,7 +146,7 @@ public class TankDrive implements PIDOutput
 	
 	public void goStraight()
 	{
-		setDirection(j.getY());
+		setDirection(-j.getY());
 	}
 	
 	public void goToAngle(double angle)
