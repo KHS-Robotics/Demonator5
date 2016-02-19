@@ -2,8 +2,6 @@ package org.usfirst.frc.team4342.robot;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  * Temporary class to tune PID values.
  */
@@ -36,17 +34,7 @@ public final class PIDTuner
 			{
 				try
 				{
-					Repository.TankDrive.setYawPID(
-						SmartDashboard.getNumber("Drive-Yaw-P"), 
-						SmartDashboard.getNumber("Drive-Yaw-I") / 1000.0, 
-						SmartDashboard.getNumber("Drive-Yaw-D")
-					);
 					
-//					Repository.ShooterController.setPID(
-//						SmartDashboard.getNumber("Shooter-P"), 
-//						SmartDashboard.getNumber("Shooter-I") / 1000.0, 
-//						SmartDashboard.getNumber("Shooter-D")
-//					);
 					
 					Thread.sleep(20);
 				}

@@ -1,10 +1,7 @@
 package org.usfirst.frc.team4342.api.logging;
 import java.io.File;
 
-import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;
-
-import ernie.logging.Severity;
-import ernie.logging.loggers.ActiveLogger;
+import org.usfirst.frc.team4342.robot.components.Repository;
 
 /**
  * This class is used to shift and get valid log files
@@ -12,7 +9,6 @@ import ernie.logging.loggers.ActiveLogger;
 public class FileHelper 
 {	
 	private static final String ROOT = "/home/lvuser/";
-	public static final String ACTIVE_LOG_PATH = "/home/lvuser/ActiveLog.txt";
 	
 	private FileHelper() {}
 	
@@ -54,6 +50,21 @@ public class FileHelper
 		return new File(ROOT + "PdpLog[1].csv");
 	}
 	
+	public static File getValidNavXLogFile()
+	{
+		for(int i = 1; i <= 5; i++) 
+		{
+			File f = new File(ROOT + "NavXLog[" + i + "].csv");
+			
+			if(!f.exists())
+				return f;
+		}
+		
+		shiftNavXLogFiles();
+		
+		return new File(ROOT + "NavXLog[1].csv");
+	}
+	
 	/**
 	 * We can save up to 5 log files! Each time we make a new
 	 * LocalLog, we want to check if we have to shift
@@ -76,8 +87,7 @@ public class FileHelper
 			
 			if(!renamed) 
 			{
-				ActiveLogger.warning(ACTIVE_LOG_PATH, "Demonator4", "The file at path \"" + f.getPath() + "\" was not successfully renamed");
-				RobotConsoleLogger.log(Severity.WARNING, "The file at path \"" + f.getPath() + "\" was not successfully renamed");
+				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
 			}
 		}
 	}
@@ -106,8 +116,36 @@ public class FileHelper
 			
 			if(!renamed) 
 			{
-				ActiveLogger.warning(ACTIVE_LOG_PATH, "D4-FH", "The file at path \"" + f.getPath() + "\" was not successfully renamed");
-				RobotConsoleLogger.log(Severity.WARNING, "The file at path \"" + f.getPath() + "\" was not successfully renamed");
+				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
+			}
+		}
+	}
+	
+	/**
+	 * We can save up to 5 log files! Each time we make a new
+	 * LocalLog, we want to check if we have to shift
+	 * the log file index values up one and delete
+	 * the oldest file and make way for the latest
+	 * log file, [1].
+	 */
+	private static void shiftNavXLogFiles()
+	{
+		File lastFile = new File(ROOT + "NavXLog[5].csv");
+		
+		if(!lastFile.exists())
+			return;
+		
+		lastFile.delete();
+		
+		for(int i = 4; i >= 1; i--) 
+		{
+			File f = new File(ROOT + "NavXLog[" + i + "].csv");
+			
+			boolean renamed = f.renameTo(new File(ROOT + "NavXLog[" + (i+1) + "].csv"));
+			
+			if(!renamed) 
+			{
+				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
 			}
 		}
 	}

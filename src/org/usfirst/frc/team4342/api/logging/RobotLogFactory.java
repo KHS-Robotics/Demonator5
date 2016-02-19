@@ -25,7 +25,7 @@ public class RobotLogFactory
 	 */
 	public static LocalLogger createLocalLog() throws IOException 
 	{
-		return new LocalLogger("Demonator4", FileHelper.getValidLogFile(), true);
+		return new LocalLogger("Demonator5", FileHelper.getValidLogFile(), true);
 	}
 	
 	/**

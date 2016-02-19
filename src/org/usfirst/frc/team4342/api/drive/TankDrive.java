@@ -56,7 +56,7 @@ public class TankDrive implements PIDOutput
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
-		angleControl.disable();
+		turnPIDOff();
 	}
 	
 	@Override
@@ -110,10 +110,12 @@ public class TankDrive implements PIDOutput
 
 	public void joystickDrive(int shiftButton)
 	{
-		turnPIDOff();
+		if(angleControl.isEnabled())
+			turnPIDOff();
+		
 		checkUserShift(shiftButton);
 
-		double x = j.getZ();
+		double x = -j.getZ();
 		double y = -j.getY();
 
 		double left = (y-x);
@@ -174,11 +176,6 @@ public class TankDrive implements PIDOutput
 	public synchronized void goToSetpoint(double setpointAngle)
 	{
 		angleControl.setSetpoint(setpointAngle);
-	}
-	
-	public synchronized void setYawPID(double p, double i, double d)
-	{
-		angleControl.setPID(p, i, d);
 	}
 	
 	public synchronized void setDirection(double power)
