@@ -185,7 +185,7 @@ public class Repository
 				}
 			);
 			
-			//BallSensor = new DigitalInput(9001);
+			BallSensor = new DigitalInput(9);
 		}
 		catch(Exception ex)
 		{
@@ -271,6 +271,8 @@ public class Repository
 		SmartDashboardUpdater.addEncoder("Drive-R", RightDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Arm", ArmEncoder);
+		
+		SmartDashboardUpdater.addDigitalInput("BallSensor", BallSensor);
 		
 		SmartDashboardUpdater.addCounter("Shooter-R", RightMotorCounter);
 		SmartDashboardUpdater.addCounter("Shooter-L", LeftMotorCounter);

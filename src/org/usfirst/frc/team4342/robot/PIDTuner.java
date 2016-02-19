@@ -42,11 +42,11 @@ public final class PIDTuner
 						SmartDashboard.getNumber("Drive-Yaw-D")
 					);
 					
-					Repository.ShooterController.setPID(
-						SmartDashboard.getNumber("Shooter-P"), 
-						SmartDashboard.getNumber("Shooter-I") / 1000.0, 
-						SmartDashboard.getNumber("Shooter-D")
-					);
+//					Repository.ShooterController.setPID(
+//						SmartDashboard.getNumber("Shooter-P"), 
+//						SmartDashboard.getNumber("Shooter-I") / 1000.0, 
+//						SmartDashboard.getNumber("Shooter-D")
+//					);
 					
 					Thread.sleep(20);
 				}

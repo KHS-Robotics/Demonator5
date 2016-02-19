@@ -5,7 +5,6 @@ import org.usfirst.frc.team4342.api.shooter.controllers.ShooterController;
 
 public class Shooter 
 {
-	public static final int MIN_ENC_VELOCITY = 30;
 	public static final double JOYSTICK_DEADBAND = 0.05;
 	
 	private ShooterController shooter;
@@ -22,7 +21,7 @@ public class Shooter
 	
 	public void handleTeleop(int safetyButton, int fireButton, int armBrakeButton, int accumButton, int accumLiftButton)
 	{
-		shooter.checkUser(safetyButton, fireButton);
+		shooter.checkUser(safetyButton, fireButton, accumButton);
 		arm.checkUser(armBrakeButton, accumButton, accumLiftButton, safetyButton);
 	}
 	

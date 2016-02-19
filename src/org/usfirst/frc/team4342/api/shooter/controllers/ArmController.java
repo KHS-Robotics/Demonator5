@@ -66,29 +66,17 @@ public class ArmController
 		{
 			checkButtonStatus();
 			
-			if(switchBox.getRawButton(7))
-			{
-				apidc.setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
-				apidc.enable();
-			}
-			else if(buttonPressed) 
+			if(buttonPressed) 
 			{
 				apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
-				apidc.enable();
-			}
-			else if(!autoHold)
-			{
-				if(Repository.SwitchBox.getRawButton(brakeButton))
-				{
-					apidc.disable();
-				}
-				else
-				{
-					apidc.setSetpoint(enc.get());
-					apidc.enable();
-					autoHold = true;
-				}
-			}
+ 				apidc.enable();
+ 			}
+ 			else if(!autoHold)
+  			{
+ 				apidc.setSetpoint(enc.get());
+ 				apidc.enable();
+ 				autoHold = true;
+  			}
 		} 
 		else 
 		{

@@ -37,7 +37,7 @@ public class TankDrive implements PIDOutput
 		this.j = j;
 		
 		this.driveTrain = talons;
-		this.driveTrain.setPIDSourceType(PIDSourceType.kRate);
+		//this.driveTrain.setPIDSourceType(PIDSourceType.kRate);
 		fr = driveTrain.getFrontRight();
 		fl = driveTrain.getFrontLeft();
 		mr = driveTrain.getMiddleRight();
@@ -107,14 +107,14 @@ public class TankDrive implements PIDOutput
 			firstRunGoStraight = true;
 		}
 	}
-	
+
 	public void joystickDrive(int shiftButton)
 	{
 		turnPIDOff();
 		checkUserShift(shiftButton);
 
-		double x = sensitivityControl(j.getZ());
-		double y = sensitivityControl(-j.getY());
+		double x = j.getZ();
+		double y = -j.getY();
 
 		double left = (y-x);
 		double right = (y+x);
@@ -125,7 +125,7 @@ public class TankDrive implements PIDOutput
 			left = -1.0;
 
 		if (right > 1.0)
-			right = 1.0;
+			right = 1.0;          
 		else if (right < -1.0)
 			right = -1.0;
 
@@ -199,9 +199,9 @@ public class TankDrive implements PIDOutput
 	private synchronized void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
-			shifter.set(DoubleSolenoid.Value.kForward);
+			shifter.set(DoubleSolenoid.Value.kReverse);
 		else
-			shifter.set(DoubleSolenoid.Value.kReverse);	
+			shifter.set(DoubleSolenoid.Value.kForward);	
 	}
 	
 	private double sensitivityControl(double input)

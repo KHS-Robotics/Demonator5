@@ -45,46 +45,57 @@ public class ShooterController
 		leftMotorCounter.setPIDSourceType(PIDSourceType.kRate);
 		
 		rightMotor.setPIDSourceType(PIDSourceType.kRate);
-		rightPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.rightMotorCounter, this.rightMotor);
+		rightPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.rightMotorCounter, this.rightMotor);
 		rightPID.setPercentTolerance(2);
 		rightPID.setInputRange(0.0, 100.0);
 		rightPID.setOutputRange(0.0, 1.0);
 		
 		leftMotor.setPIDSourceType(PIDSourceType.kRate);
-		leftPID = new PIDController(0.0, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.leftMotorCounter, this.leftMotor);
+		leftPID = new PIDController(ShooterPID.kP, ShooterPID.kI, ShooterPID.kD, ShooterPID.kF, this.leftMotorCounter, this.leftMotor);
 		leftPID.setPercentTolerance(2);
 		leftPID.setInputRange(0.0, 100.0);
 		leftPID.setOutputRange(0.0, 1.0);
 		
 		enablePID();
 		
-		new ShooterFMonitor().start();
+		//new ShooterFMonitor().start();
 		
 		state = ballPusher.get() ? ShooterState.RELOADING : ShooterState.LOADED;
 	}
 	
-	public void checkUser(int safetyButton, int fireButton)
+	public void checkUser(int safetyButton, int fireButton, int accumButton)
 	{
 		if (state == ShooterState.LOADED)
 		{
 			if (switchBox.getRawButton(safetyButton))
 			{
-				leftPID.setSetpoint(SmartDashboard.getNumber("Shooter-Setpoint"));
-				rightPID.setSetpoint(SmartDashboard.getNumber("Shooter-Setpoint"));
+				enablePID();
+				leftPID.setSetpoint(85);
+				rightPID.setSetpoint(85);
 				
 				arm.getAccumLifter().set(true);
 				
-				if (switchBox.getRawButton(fireButton) && (rightPID.onTarget() && leftPID.onTarget()))
+				if (switchBox.getRawButton(fireButton))// && (rightPID.onTarget() && leftPID.onTarget()))
 				{
 					ballPusher.set(true);
 					
 					state = ShooterState.FIRING;
 				}
 			}
+			else if(switchBox.getRawButton(accumButton))
+			{
+				rightMotor.set(-0.6);
+				leftMotor.set(-0.6);
+				arm.getAccumMotor().set(1.0);
+			}
 			else
 			{
 				leftPID.setSetpoint(0);
 				rightPID.setSetpoint(0);
+				disablePID();
+				rightMotor.set(0);
+				leftMotor.set(0);
+				arm.getAccumMotor().set(0);
 			}
 		}
 		else if (state == ShooterState.FIRING)
@@ -93,6 +104,8 @@ public class ShooterController
 			{
 				leftPID.setSetpoint(0);
 				rightPID.setSetpoint(0);
+				rightMotor.set(0);
+				leftMotor.set(0);
 				
 				arm.getAccumLifter().set(false);
 				numLoops = 0;
