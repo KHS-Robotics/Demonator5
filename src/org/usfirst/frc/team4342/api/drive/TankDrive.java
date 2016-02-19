@@ -75,7 +75,7 @@ public class TankDrive implements PIDOutput
 			left = -1;	
 		
 		fr.set(right);
-		rl.set(left);
+		fl.set(left);
 		mr.set(right);
 		ml.set(left);
 		rr.set(right);
