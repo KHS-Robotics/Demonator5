@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
+	private static final double JOYSTICK_SENSITIVITY = 0.7;
 	
 	// TODO: get actual values; these are arbitrary
 	private static final int TOP_WINDOW_SIZE = 200;
@@ -87,7 +88,8 @@ public class ArmController
 			else 
 			{
 				stopOperatorAutoMove();
-				armMotor.set(controlSpeed(j.getY(), enc.get()));
+				
+				armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}
 		else
@@ -249,5 +251,10 @@ public class ArmController
 		autoHold = false;
 		buttonPressed = false;
 		buttonSelected = -1;
+	}
+	
+	private double sensitivityControl(double input)
+	{
+		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }

@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDrive implements PIDOutput
 {
-	private static final double JOYSTICK_SENSITIVITY = 0.9;
+	private static final double JOYSTICK_SENSITIVITY = 0.7;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -117,8 +117,8 @@ public class TankDrive implements PIDOutput
 		
 		checkUserShift(shiftButton);
 
-		double x = -j.getZ();
-		double y = -j.getY();
+		double x = sensitivityControl(-j.getZ());
+		double y = sensitivityControl(-j.getY());
 
 		double left = (y-x);
 		double right = (y+x);
