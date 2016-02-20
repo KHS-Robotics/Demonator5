@@ -206,9 +206,7 @@ public class TankDrive implements PIDOutput
 		else if (state == DefenseStates.FINISH)
 		{
 			if(target)
-			{
 				goToAngle(goalAngle);
-			}
 			else
 				goStraight(-Math.abs(direction));
 		}
