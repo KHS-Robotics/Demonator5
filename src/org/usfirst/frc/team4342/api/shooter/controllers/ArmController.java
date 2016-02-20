@@ -5,6 +5,7 @@ import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPID;
 import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPIDController;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -24,6 +25,7 @@ public class ArmController
 	private CANTalon armMotor, accumMotor;
 	private Solenoid accumLifter;
 	private Encoder enc;
+	private DigitalInput topLS, botLS;
 	private SetpointMapWrapper setpoints;
 	
 	private ArmPIDController apidc;
@@ -32,7 +34,7 @@ public class ArmController
 	private int buttonSelected, autoSetpoint;
 	
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
-					Solenoid accumLifter, Encoder armEnc, SetpointMapWrapper setpoints)
+					Solenoid accumLifter, Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.switchBox = switchBox;
@@ -40,6 +42,8 @@ public class ArmController
 		this.accumMotor = accumMotor;
 		this.accumLifter = accumLifter;
 		this.enc = armEnc;
+		this.topLS = topLS;
+		this.botLS = botLS;
 		this.setpoints = setpoints;
 		
 		apidc = new ArmPIDController(
@@ -67,7 +71,20 @@ public class ArmController
 	
 	public void checkUserArm(int brakeButton)
 	{
-		if(goToSetpoint)
+		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			enc.reset();
+			armMotor.set(0.0);
+			return;
+		}
+		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
+		{
+			armMotor.set(0.0);
+			return;
+		}
+		
+		
+		if(!goToSetpoint)
 		{
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{

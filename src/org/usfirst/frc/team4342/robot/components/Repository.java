@@ -58,7 +58,7 @@ public class Repository
 	public static Solenoid BallPusher, AccumulatorLifter;
 	public static Encoder ArmEncoder;
 	public static Counter RightMotorCounter, LeftMotorCounter;
-	public static DigitalInput BallSensor;
+	public static DigitalInput BallSensor, TopLimitSwitch, BottomLimitSwitch;
 	public static SetpointMapWrapper setpoints;
 	
 	public static ArmController ArmController;
@@ -186,6 +186,8 @@ public class Repository
 			);
 			
 			BallSensor = new DigitalInput(9);
+			TopLimitSwitch = new DigitalInput(10);
+			BottomLimitSwitch = new DigitalInput(11);
 		}
 		catch(Exception ex)
 		{
@@ -241,8 +243,8 @@ public class Repository
 				RightDriveEncoder
 			);
 			
-			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, AccumulatorLifter, ArmEncoder, setpoints);
-			ShooterController = new ShooterController(SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
+			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, AccumulatorLifter, ArmEncoder, TopLimitSwitch, BottomLimitSwitch, setpoints);
+			ShooterController = new ShooterController(DriveStick, SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
 			
 			Shooter = new Shooter(ShooterController, ArmController);
 		}

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterController 
 {
-	private Joystick switchBox;
+	private Joystick driveStick, switchBox;
 	private CANTalon rightMotor, leftMotor;
 	private Solenoid ballPusher;
 	private Counter rightMotorCounter, leftMotorCounter;
@@ -26,12 +26,14 @@ public class ShooterController
 	
 	private ShooterState state;
 	
-	private int numLoops;
+	private int numLoops, driveShootLoops;
+	private boolean driverShooting;
 	
-	public ShooterController(Joystick switchBox, CANTalon rightMotor, CANTalon leftMotor, 
+	public ShooterController(Joystick driveStick, Joystick switchBox, CANTalon rightMotor, CANTalon leftMotor, 
 							Solenoid ballPusher, Counter rightMotorCounter, Counter leftMotorCounter, 
 							DigitalInput ballSensor, ArmController arm)
 	{
+		this.driveStick = driveStick;
 		this.switchBox = switchBox;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
@@ -63,69 +65,105 @@ public class ShooterController
 		state = ballPusher.get() ? ShooterState.RELOADING : ShooterState.LOADED;
 	}
 	
-	public void checkUser(int safetyButton, int fireButton, int accumButton)
+	public void checkUser(int driverShootButton, int safetyButton, int fireButton, int accumButton)
 	{
-		if (state == ShooterState.LOADED)
+		if(driverShooting || (driveStick.getRawButton(driverShootButton) && state == ShooterState.LOADED))
 		{
-			if (switchBox.getRawButton(safetyButton))
+			driverShooting = true;
+			
+			enablePID();
+			
+			// set these to 100 to get them spinning faster (more error)
+			// Don't worry it's only for a split second
+			leftPID.setSetpoint(100);
+			rightPID.setSetpoint(100);
+			
+			arm.getAccumLifter().set(true);
+			
+			driveShootLoops++;
+			
+			if(driveShootLoops > 20)
 			{
-				enablePID();
-				leftPID.setSetpoint(85);
-				rightPID.setSetpoint(85);
+				ballPusher.set(true);
 				
-				arm.getAccumLifter().set(true);
-				
-				if (switchBox.getRawButton(fireButton))// && (rightPID.onTarget() && leftPID.onTarget()))
+				if(driveShootLoops > 30)
 				{
-					ballPusher.set(true);
+					ballPusher.set(false);
+					leftPID.setSetpoint(0);
+					rightPID.setSetpoint(0);
+					disablePID();
 					
-					state = ShooterState.FIRING;
+					arm.getAccumLifter().set(false);
+					
+					driveShootLoops = 0;
+					driverShooting = false;
 				}
 			}
-			else if(switchBox.getRawButton(accumButton))
-			{
-				rightMotor.set(-0.6);
-				leftMotor.set(-0.6);
-				arm.getAccumMotor().set(1.0);
-			}
-			else
-			{
-				leftPID.setSetpoint(0);
-				rightPID.setSetpoint(0);
-				disablePID();
-				rightMotor.set(0);
-				leftMotor.set(0);
-				arm.getAccumMotor().set(0);
-			}
 		}
-		else if (state == ShooterState.FIRING)
+		else if(!driverShooting)
 		{
-			if(numLoops > 50)//!ballSensor.get())
+			if (state == ShooterState.LOADED)
 			{
-				leftPID.setSetpoint(0);
-				rightPID.setSetpoint(0);
-				rightMotor.set(0);
-				leftMotor.set(0);
-				
-				arm.getAccumLifter().set(false);
-				numLoops = 0;
-				
-				disablePID();
-				
-				state = ShooterState.RELOADING;
+				if (switchBox.getRawButton(safetyButton))
+				{
+					enablePID();
+					leftPID.setSetpoint(85);
+					rightPID.setSetpoint(85);
+					
+					arm.getAccumLifter().set(true);
+					
+					if (switchBox.getRawButton(fireButton))// && (rightPID.onTarget() && leftPID.onTarget()))
+					{
+						ballPusher.set(true);
+						
+						state = ShooterState.FIRING;
+					}
+				}
+				else if(switchBox.getRawButton(accumButton))
+				{
+					rightMotor.set(-0.6);
+					leftMotor.set(-0.6);
+					arm.getAccumMotor().set(1.0);
+				}
+				else
+				{
+					leftPID.setSetpoint(0);
+					rightPID.setSetpoint(0);
+					disablePID();
+					rightMotor.set(0);
+					leftMotor.set(0);
+					arm.getAccumMotor().set(0);
+				}
 			}
-			
-			numLoops++;
-		}
-		else if (state == ShooterState.RELOADING)
-		{
-			if(true)//ballSensor.get())
+			else if (state == ShooterState.FIRING)
 			{
-				ballPusher.set(false);
+				if(numLoops > 50)//!ballSensor.get())
+				{
+					leftPID.setSetpoint(0);
+					rightPID.setSetpoint(0);
+					rightMotor.set(0);
+					leftMotor.set(0);
+					
+					arm.getAccumLifter().set(false);
+					numLoops = 0;
+					
+					disablePID();
+					
+					state = ShooterState.RELOADING;
+				}
 				
-				enablePID();
-				
-				state = ShooterState.LOADED;
+				numLoops++;
+			}
+			else if (state == ShooterState.RELOADING)
+			{
+				if(true)//ballSensor.get())
+				{
+					ballPusher.set(false);
+					
+					enablePID();
+					
+					state = ShooterState.LOADED;
+				}
 			}
 		}
 	}
