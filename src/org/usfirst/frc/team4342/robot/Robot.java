@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
+import org.usfirst.frc.team4342.api.logging.NavXLogger;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.api.multithreading.ShootingComponent;
@@ -95,6 +96,11 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(tdc);
 			ComponentRunner.stopAutomaticMode(sc);
 		}
+		
+		if(Repository.SwitchBox.getRawButton(8))
+			NavXLogger.startLogging(Repository.Navx, Repository.DriveTrain);
+		else
+			NavXLogger.stopLogging();
     }
     
 	/**
@@ -115,7 +121,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledPeriodic()
     {
-    	
+    	// Nothing we need to do in here
     }
 }
 

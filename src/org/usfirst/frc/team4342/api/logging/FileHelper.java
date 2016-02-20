@@ -88,6 +88,7 @@ public class FileHelper
 			if(!renamed) 
 			{
 				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
+				break;
 			}
 		}
 	}
@@ -117,6 +118,7 @@ public class FileHelper
 			if(!renamed) 
 			{
 				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
+				break;
 			}
 		}
 	}
@@ -146,6 +148,7 @@ public class FileHelper
 			if(!renamed) 
 			{
 				Repository.ConsoleLog.warning("The file at path \"" + f.getPath() + "\" was not successfully renamed");
+				break;
 			}
 		}
 	}

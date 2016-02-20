@@ -57,6 +57,8 @@ public class TankDrive implements PIDOutput
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
 		turnPIDOff();
+		
+		driveTrain.setPIDController(angleControl);
 	}
 	
 	@Override

@@ -3,11 +3,13 @@ package org.usfirst.frc.team4342.api.drive;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class DriveTrain 
 {
 	private CANTalon fr, fl, mr, ml, rr, rl;
+	private PIDController pid;
 	
 	public DriveTrain(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr,
 					  CANTalon ml, CANTalon rr, CANTalon rl)
@@ -58,6 +60,16 @@ public class DriveTrain
 		{
 			talon.setPIDSourceType(type);
 		}
+	}
+	
+	public void setPIDController(PIDController pid)
+	{
+		this.pid = pid;
+	}
+	
+	public PIDController getPIDController()
+	{
+		return pid;
 	}
 	
 	public void stopAll()
