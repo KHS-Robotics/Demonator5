@@ -71,17 +71,17 @@ public class ArmController
 	
 	public void checkUserArm(int brakeButton)
 	{
-		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
-		{
-			enc.reset();
-			armMotor.set(0.0);
-			return;
-		}
-		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
-		{
-			armMotor.set(0.0);
-			return;
-		}
+//		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+//		{
+//			enc.reset();
+//			armMotor.set(0.0);
+//			return;
+//		}
+//		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
+//		{
+//			armMotor.set(0.0);
+//			return;
+//		}
 		
 		
 		if(!goToSetpoint)

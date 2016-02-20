@@ -186,8 +186,8 @@ public class Repository
 			);
 			
 			BallSensor = new DigitalInput(9);
-			TopLimitSwitch = new DigitalInput(10);
-			BottomLimitSwitch = new DigitalInput(11);
+			//TopLimitSwitch = new DigitalInput(10);
+			//BottomLimitSwitch = new DigitalInput(11);
 		}
 		catch(Exception ex)
 		{
