@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team4342.api.drive.DefenseStates;
+import org.usfirst.frc.team4342.api.drive.DefenseState;
 
 public class TankDrive implements PIDOutput
 {
@@ -31,7 +31,7 @@ public class TankDrive implements PIDOutput
 	private boolean firstRunPID, firstRunGoStraight = true;
 	
 	private boolean autoStepFinished;
-	private DefenseStates state;
+	private DefenseState state;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
 					Encoder encLeft, Encoder encRight)
@@ -159,51 +159,51 @@ public class TankDrive implements PIDOutput
 	{
 		double startAngle = 0.0 + (forward ? 180.0 : 0.0);
 		
-		if (state == DefenseStates.APPROACH)
+		if (state == DefenseState.APPROACH)
 		{
 			goToAngle(startAngle);
 			if(angleControl.onTarget())
-				state = DefenseStates.CLIMB;
+				state = DefenseState.CLIMB;
 		}
-		else if (state == DefenseStates.CLIMB)
+		else if (state == DefenseState.CLIMB)
 		{
 			goStraight(-Math.abs(direction));
 			
 			if (false)
 			{
-				state = DefenseStates.PEAK;
+				state = DefenseState.PEAK;
 			}
 		}
-		else if (state == DefenseStates.PEAK)
+		else if (state == DefenseState.PEAK)
 		{
 			
 			if (false)
 			{
-				state = DefenseStates.DESCENT;
+				state = DefenseState.DESCENT;
 			}
 		}
-		else if (state == DefenseStates.DESCENT)
+		else if (state == DefenseState.DESCENT)
 		{
 			
 			if (false)
 			{
-				state = DefenseStates.FINISHING;
+				state = DefenseState.FINISHING;
 			}
 		}
-		else if (state == DefenseStates.FINISHING)
+		else if (state == DefenseState.FINISHING)
 		{
 			if(target)
 			{
 				goToAngle(goalAngle);
 				
 				if (angleControl.onTarget())
-					state = DefenseStates.FINISH;
+					state = DefenseState.FINISH;
 			}
 			else
-				state = DefenseStates.FINISH;
+				state = DefenseState.FINISH;
 			
 		}
-		else if (state == DefenseStates.FINISH)
+		else if (state == DefenseState.FINISH)
 		{
 			if(target)
 				goToAngle(goalAngle);

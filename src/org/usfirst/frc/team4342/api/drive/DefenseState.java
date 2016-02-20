@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4342.api.drive;
 
-public enum DefenseStates
+public enum DefenseState
 {
 	APPROACH, CLIMB, PEAK, DESCENT, FINISHING, FINISH;
 }
