@@ -11,7 +11,8 @@ public class Shooter
 	private ArmController arm;
 	
 	private boolean accumStatus, ballPushStatus;
-	private double autoMotorOutput, autoSetpoint;
+	private double autoMotorOutput;
+	private int autoSetpoint;
 	
 	public Shooter(ShooterController shooter, ArmController arm)
 	{
@@ -33,7 +34,7 @@ public class Shooter
 		shooter.setBallPusher(ballPushStatus);
 	}
 	
-	public void setArmSetpoint(double setpoint)
+	public void setArmSetpoint(int setpoint)
 	{
 		this.autoSetpoint = setpoint;
 	}

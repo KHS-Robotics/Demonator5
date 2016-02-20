@@ -3,17 +3,21 @@ package org.usfirst.frc.team4342.api.shooter.controllers;
 import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
 import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPID;
 import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPIDController;
-import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
+	
+	// TODO: get actual values; these are arbitrary
+	private static final int TOP_WINDOW_SIZE = 300;
+	private static final int BOTTOM_WINDOW_SIZE = 200;
+	private static final int START_TOP_WINDOW = 500;
+	private static final int START_BOTTOM_WINDOW = 200;
 	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
@@ -23,8 +27,8 @@ public class ArmController
 	
 	private ArmPIDController apidc;
 	
-	private boolean buttonPressed, autoHold;
-	private int buttonSelected;
+	private boolean buttonPressed, autoHold, goToSetpoint;
+	private int buttonSelected, autoSetpoint;
 	
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 					Solenoid accumLifter, Encoder armEnc, SetpointMapWrapper setpoints)
@@ -62,26 +66,33 @@ public class ArmController
 	
 	public void checkUserArm(int brakeButton)
 	{
-		if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
+		if(goToSetpoint)
 		{
-			checkButtonStatus();
-			
-			if(buttonPressed) 
+			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
-				apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
- 				apidc.enable();
- 			}
- 			else if(!autoHold)
-  			{
- 				apidc.setSetpoint(enc.get());
- 				apidc.enable();
- 				autoHold = true;
-  			}
-		} 
-		else 
+				checkButtonStatus();
+				
+				if(buttonPressed) 
+				{
+					apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
+	 				apidc.enable();
+	 			}
+	 			else if(!autoHold)
+	  			{
+	 				apidc.setSetpoint(enc.get());
+	 				apidc.enable();
+	 				autoHold = true;
+	  			}
+			} 
+			else 
+			{
+				stopOperatorAutoMove();
+				armMotor.set(controlSpeed(j.getY(), enc.get()));
+			}
+		}
+		else
 		{
-			stopOperatorAutoMove();
-			armMotor.set(j.getY());
+			apidc.setSetpoint(autoSetpoint);
 		}
 	}
 	
@@ -106,14 +117,26 @@ public class ArmController
 		}
 	}
 	
+	public void startAutomaticMode()
+	{
+		goToSetpoint = true;
+		apidc.enable();
+	}
+	
+	public void stopAutomaticMode()
+	{
+		goToSetpoint = false;
+		apidc.disable();
+	}
+	
 	public boolean isAtAutoSetpoint()
 	{
 		return apidc.onTarget();
 	}
 	
-	public void setSetpoint(double setpoint)
+	public void setSetpoint(int setpoint)
 	{
-		apidc.setSetpoint(setpoint);
+		this.autoSetpoint = setpoint;
 	}
 	
 	public void setAccumLifter(boolean on)
@@ -167,11 +190,64 @@ public class ArmController
 		}
 	}
 	
+	/**
+	 * Decelerates the elevator speed as it approaches the top or
+	 * bottom to prevent it from slamming harshly
+	 * @param input the input from the joysticks or autoMove
+	 * @param encCounts the current position of the elevator
+	 * @return the new output for the motors
+	 */
+	private double controlSpeed(double input, int encCounts) 
+	{
+		double output = input;
+		
+		if(input > 0 && isInTopWindow(encCounts))
+		{
+			double penetration = (encCounts - START_TOP_WINDOW);
+			output = input - (penetration*(input/(TOP_WINDOW_SIZE)));
+			
+			output = output < .08 ? .08 : output;
+		}
+		else if(input < 0 && isInBottomWindow(encCounts))
+		{
+			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
+			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
+			
+			output = output > -.15 ? -.15 : output;
+		}
+
+		return output;
+	}
+	
+	/**
+	 * Used to determine if the elevator is getting close to the bottom
+	 * @param encCounts the current elevator position
+	 * @return true if close, false otherwise
+	 */
+	private boolean isInBottomWindow(int encCounts) 
+	{
+		return encCounts <= START_BOTTOM_WINDOW;
+	}
+	
+	/**
+	 * Used to determine if the elevator is getting close to the top
+	 * @param encCounts the current elevator postion
+	 * @return true if close, false otherwise
+	 */
+	private boolean isInTopWindow(int encCounts) 
+	{
+		return encCounts >= START_TOP_WINDOW;
+	}
+	
 	private void stopOperatorAutoMove() 
 	{
+		if(autoHold || buttonPressed)
+		{
+			apidc.disable();
+		}
+		
 		autoHold = false;
 		buttonPressed = false;
 		buttonSelected = -1;
-		apidc.disable();
 	}
 }

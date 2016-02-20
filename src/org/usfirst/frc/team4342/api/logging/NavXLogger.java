@@ -145,9 +145,9 @@ public class NavXLogger
 			writer.write("" + navx.getYaw() + COMMA);
 			writer.write("" + navx.getRoll() + COMMA);
 			writer.write("" + navx.getPitch() + COMMA);
-			writer.write("" + navx.getWorldLinearAccelX() + COMMA);
-			writer.write("" + navx.getWorldLinearAccelY() + COMMA);
-			writer.write("" + navx.getWorldLinearAccelZ() + COMMA);
+			writer.write("" + navx.getRawAccelX() + COMMA);
+			writer.write("" + navx.getRawAccelY() + COMMA);
+			writer.write("" + navx.getRawAccelZ() + COMMA);
 			writer.write("" + navx.getVelocityX() + COMMA);
 			writer.write("" + navx.getVelocityY() + COMMA);
 			writer.write("" + navx.getVelocityZ() + COMMA);
