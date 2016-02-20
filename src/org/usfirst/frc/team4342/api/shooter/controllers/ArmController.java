@@ -84,8 +84,8 @@ public class ArmController
 //		}
 		
 		
-		if(!goToSetpoint)
-		{
+		//if(!goToSetpoint)
+		//{
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
 				checkButtonStatus();
@@ -106,13 +106,14 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
+				armMotor.set(j.getY());
+				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
-		}
-		else
-		{
-			apidc.setSetpoint(autoSetpoint);
-		}
+		//}
+		//else
+		//{
+		//	apidc.setSetpoint(autoSetpoint);
+		//}
 	}
 	
 	public void checkUserAccumulator(int accumButton, int accumLiftButton, int fireSafetyButton)
