@@ -3,6 +3,9 @@ package org.usfirst.frc.team4342.api.logging;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.robot.components.Repository;
@@ -16,6 +19,7 @@ public class NavXLogger
 	private NavXLogger() {}
 	
 	private static final String RETURN_FEED = System.getProperty("line.separator");
+	private static final char COMMA = ',';
 	
 	private static boolean isLogging;
 	
@@ -56,6 +60,8 @@ public class NavXLogger
 				{
 					logNavXData();
 					logDriveTrainData();
+					
+					Thread.sleep(20);
 				}
 				catch(Exception ex)
 				{
@@ -73,56 +79,58 @@ public class NavXLogger
 			{
 				writer = new BufferedWriter(new FileWriter(FileHelper.getValidNavXLogFile()));
 				
-				writer.write("Yaw" + RETURN_FEED);
-				writer.write("Roll" + RETURN_FEED);
-				writer.write("Pitch" + RETURN_FEED);
-				writer.write("Acceleration-X" + RETURN_FEED);
-				writer.write("Acceleration-Y" + RETURN_FEED);
-				writer.write("Acceleration-Z" + RETURN_FEED);
-				writer.write("Velocity-X" + RETURN_FEED);
-				writer.write("Velocity-Y" + RETURN_FEED);
-				writer.write("Velocity-Z" + RETURN_FEED);
-				writer.write("Displacement-X" + RETURN_FEED);
-				writer.write("Displacement-Y" + RETURN_FEED);
-				writer.write("Displacement-Z" + RETURN_FEED);
-				writer.write("Rate" + RETURN_FEED);
-				writer.write("Fused Heading" + RETURN_FEED);
+				writer.write("Yaw" + COMMA);
+				writer.write("Roll" + COMMA);
+				writer.write("Pitch" + COMMA);
+				writer.write("Acceleration-X" + COMMA);
+				writer.write("Acceleration-Y" + COMMA);
+				writer.write("Acceleration-Z" + COMMA);
+				writer.write("Velocity-X" + COMMA);
+				writer.write("Velocity-Y" + COMMA);
+				writer.write("Velocity-Z" + COMMA);
+				writer.write("Displacement-X" + COMMA);
+				writer.write("Displacement-Y" + COMMA);
+				writer.write("Displacement-Z" + COMMA);
+				writer.write("Rate" + COMMA);
+				writer.write("Fused Heading" + COMMA);
 				
-				writer.write("FrontRight-Get" + RETURN_FEED);
-				writer.write("FrontRight-Setpoint" + RETURN_FEED);
-				writer.write("FrontRight-BusVoltage" + RETURN_FEED);
-				writer.write("FrontRight-OutputCurrent" + RETURN_FEED);
-				writer.write("FrontRight-OutputVoltage" + RETURN_FEED);
+				writer.write("FrontRight-Get" + COMMA);
+				writer.write("FrontRight-Setpoint" + COMMA);
+				writer.write("FrontRight-BusVoltage" + COMMA);
+				writer.write("FrontRight-OutputCurrent" + COMMA);
+				writer.write("FrontRight-OutputVoltage" + COMMA);
 				
-				writer.write("FrontLeft-Get" + RETURN_FEED);
-				writer.write("FrontLeft-Setpoint" + RETURN_FEED);
-				writer.write("FrontLeft-BusVoltage" + RETURN_FEED);
-				writer.write("FrontLeft-OutputCurrent" + RETURN_FEED);
-				writer.write("FrontLeft-OutputVoltage" + RETURN_FEED);
+				writer.write("FrontLeft-Get" + COMMA);
+				writer.write("FrontLeft-Setpoint" + COMMA);
+				writer.write("FrontLeft-BusVoltage" + COMMA);
+				writer.write("FrontLeft-OutputCurrent" + COMMA);
+				writer.write("FrontLeft-OutputVoltage" + COMMA);
 				
-				writer.write("MiddleRight-Get" + RETURN_FEED);
-				writer.write("MiddleRight-Setpoint" + RETURN_FEED);
-				writer.write("MiddleRight-BusVoltage" + RETURN_FEED);
-				writer.write("MiddleRight-OutputCurrent" + RETURN_FEED);
-				writer.write("MiddleRight-OutputVoltage" + RETURN_FEED);
+				writer.write("MiddleRight-Get" + COMMA);
+				writer.write("MiddleRight-Setpoint" + COMMA);
+				writer.write("MiddleRight-BusVoltage" + COMMA);
+				writer.write("MiddleRight-OutputCurrent" + COMMA);
+				writer.write("MiddleRight-OutputVoltage" + COMMA);
 				
-				writer.write("MiddleLeft-Get" + RETURN_FEED);
-				writer.write("MiddleLeft-Setpoint" + RETURN_FEED);
-				writer.write("MiddleLeft-BusVoltage" + RETURN_FEED);
-				writer.write("MiddleLeft-OutputCurrent" + RETURN_FEED);
-				writer.write("MiddleLeft-OutputVoltage" + RETURN_FEED);
+				writer.write("MiddleLeft-Get" + COMMA);
+				writer.write("MiddleLeft-Setpoint" + COMMA);
+				writer.write("MiddleLeft-BusVoltage" + COMMA);
+				writer.write("MiddleLeft-OutputCurrent" + COMMA);
+				writer.write("MiddleLeft-OutputVoltage" + COMMA);
 				
-				writer.write("RearRight-Get" + RETURN_FEED);
-				writer.write("RearRight-Setpoint" + RETURN_FEED);
-				writer.write("RearRight-BusVoltage" + RETURN_FEED);
-				writer.write("RearRight-OutputCurrent" + RETURN_FEED);
-				writer.write("RearRight-OutputVoltage" + RETURN_FEED);
+				writer.write("RearRight-Get" + COMMA);
+				writer.write("RearRight-Setpoint" + COMMA);
+				writer.write("RearRight-BusVoltage" + COMMA);
+				writer.write("RearRight-OutputCurrent" + COMMA);
+				writer.write("RearRight-OutputVoltage" + COMMA);
 				
-				writer.write("RearLeft-Get" + RETURN_FEED);
-				writer.write("RearLeft-Setpoint" + RETURN_FEED);
-				writer.write("RearLeft-BusVoltage" + RETURN_FEED);
-				writer.write("RearLeft-OutputCurrent" + RETURN_FEED);
-				writer.write("RearLeft-OutputVoltage" + RETURN_FEED);
+				writer.write("RearLeft-Get" + COMMA);
+				writer.write("RearLeft-Setpoint" + COMMA);
+				writer.write("RearLeft-BusVoltage" + COMMA);
+				writer.write("RearLeft-OutputCurrent" + COMMA);
+				writer.write("RearLeft-OutputVoltage" + COMMA);
+				
+				writer.write("Time" + RETURN_FEED);
 			}
 			catch(Exception ex)
 			{
@@ -134,32 +142,57 @@ public class NavXLogger
 		
 		private void logNavXData() throws IOException
 		{
-			writer.write("" + navx.getYaw());
-			writer.write("" + navx.getRoll());
-			writer.write("" + navx.getPitch());
-			writer.write("" + navx.getWorldLinearAccelX());
-			writer.write("" + navx.getWorldLinearAccelY());
-			writer.write("" + navx.getWorldLinearAccelZ());
-			writer.write("" + navx.getVelocityX());
-			writer.write("" + navx.getVelocityY());
-			writer.write("" + navx.getVelocityZ());
-			writer.write("" + navx.getDisplacementX());
-			writer.write("" + navx.getDisplacementY());
-			writer.write("" + navx.getDisplacementZ());
-			writer.write("" + navx.getRate());
-			writer.write("" + navx.getFusedHeading());
+			writer.write("" + navx.getYaw() + COMMA);
+			writer.write("" + navx.getRoll() + COMMA);
+			writer.write("" + navx.getPitch() + COMMA);
+			writer.write("" + navx.getWorldLinearAccelX() + COMMA);
+			writer.write("" + navx.getWorldLinearAccelY() + COMMA);
+			writer.write("" + navx.getWorldLinearAccelZ() + COMMA);
+			writer.write("" + navx.getVelocityX() + COMMA);
+			writer.write("" + navx.getVelocityY() + COMMA);
+			writer.write("" + navx.getVelocityZ() + COMMA);
+			writer.write("" + navx.getDisplacementX() + COMMA);
+			writer.write("" + navx.getDisplacementY() + COMMA);
+			writer.write("" + navx.getDisplacementZ() + COMMA);
+			writer.write("" + navx.getRate() + COMMA);
+			writer.write("" + navx.getFusedHeading() + COMMA);
 		}
 		
 		private void logDriveTrainData() throws IOException
 		{
 			for(CANTalon talon : drive.getDriveTrain())
 			{
-				writer.write("" + talon.get());
-				writer.write("" + drive.getPIDController().getSetpoint());
-				writer.write("" + talon.getBusVoltage());
-				writer.write("" + talon.getOutputCurrent());
-				writer.write("" + talon.getOutputVoltage());
+				writer.write("" + talon.get() + COMMA);
+				writer.write("" + drive.getPIDController().getSetpoint() + COMMA);
+				writer.write("" + talon.getBusVoltage() + COMMA);
+				writer.write("" + talon.getOutputCurrent() + COMMA);
+				writer.write("" + talon.getOutputVoltage() + COMMA);
 			}
+			
+			writer.write(getCurrentTime());
+			writer.write(RETURN_FEED);
+		}
+		
+		@SuppressWarnings("deprecation")
+		private String getCurrentTime()
+		{
+			long ts = System.currentTimeMillis();
+	        Date localTime = new Date(ts);
+	        String format = "yyyy/MM/dd HH:mm:ss";
+	        SimpleDateFormat sdf = new SimpleDateFormat(format);
+
+	        // Convert Local Time to UTC
+	        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	        Date gmtTime = new Date(sdf.format(localTime));
+
+	        // Convert UTC to Local Time
+	        Date fromGmt = new Date(gmtTime.getTime() + TimeZone.getDefault().getOffset(localTime.getTime()));
+	       
+	        // parse out to hh:mm:ss
+	        String date = fromGmt.toString();
+	        date = date.substring(date.indexOf(":")-2, 20);
+	       
+	        return date;
 		}
 	}
 }
