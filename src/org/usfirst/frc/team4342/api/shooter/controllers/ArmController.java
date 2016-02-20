@@ -14,7 +14,7 @@ public class ArmController
 	private static final double JOYSTICK_DEADBAND = 0.05;
 	
 	// TODO: get actual values; these are arbitrary
-	private static final int TOP_WINDOW_SIZE = 300;
+	private static final int TOP_WINDOW_SIZE = 200;
 	private static final int BOTTOM_WINDOW_SIZE = 200;
 	private static final int START_TOP_WINDOW = 500;
 	private static final int START_BOTTOM_WINDOW = 200;
@@ -206,14 +206,14 @@ public class ArmController
 			double penetration = (encCounts - START_TOP_WINDOW);
 			output = input - (penetration*(input/(TOP_WINDOW_SIZE)));
 			
-			output = output < .08 ? .08 : output;
+			output = output < .12 ? .12 : output;
 		}
 		else if(input < 0 && isInBottomWindow(encCounts))
 		{
 			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
 			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
 			
-			output = output > -.15 ? -.15 : output;
+			output = output > -.08 ? -.08 : output;
 		}
 
 		return output;
