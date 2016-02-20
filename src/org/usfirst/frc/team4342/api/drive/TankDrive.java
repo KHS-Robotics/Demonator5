@@ -105,11 +105,11 @@ public class TankDrive implements PIDOutput
 		}
 		else if(j.getRawButton(autoForwardButton))
 		{
-			autoRampParts(true, -0.75, true, 50.0);
+			autoRampParts(true, 0.75, true, 50.0);
 		}
 		else if(j.getRawButton(autoReverseButton))
 		{
-			autoRampParts(false, -0.75, false, 0.0);
+			autoRampParts(false, 0.75, false, 0.0);
 		}
 		else
 		{
@@ -167,7 +167,7 @@ public class TankDrive implements PIDOutput
 		}
 		else if (state == DefenseStates.CLIMB)
 		{
-			goStraight(direction);
+			goStraight(-Math.abs(direction));
 			
 			if (false)
 			{
@@ -210,7 +210,7 @@ public class TankDrive implements PIDOutput
 				goToAngle(goalAngle);
 			}
 			else
-				goStraight(direction);
+				goStraight(-Math.abs(direction));
 		}
 	}
 	
