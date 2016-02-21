@@ -2,6 +2,8 @@ package org.usfirst.frc.team4342.robot;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Temporary class to tune PID values.
  */
