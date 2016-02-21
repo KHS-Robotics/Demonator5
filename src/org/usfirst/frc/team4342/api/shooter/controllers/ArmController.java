@@ -16,10 +16,10 @@ public class ArmController
 	private static final double JOYSTICK_SENSITIVITY = 0.5;
 	
 	// TODO: get actual values; these are arbitrary
-	private static final int TOP_WINDOW_SIZE = 200;
-	private static final int BOTTOM_WINDOW_SIZE = 200;
-	private static final int START_TOP_WINDOW = 500;
-	private static final int START_BOTTOM_WINDOW = 200;
+	private static final int TOP_WINDOW_SIZE = 140;
+	private static final int BOTTOM_WINDOW_SIZE = 100;
+	private static final int START_TOP_WINDOW = 100;
+	private static final int START_BOTTOM_WINDOW = 400;
 	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
@@ -86,36 +86,35 @@ public class ArmController
 		
 		if(!goToSetpoint)
 		{
-			if(enc.get() > -50 && (armMotor.get() > 0 || j.getY() > 0))
+			if(enc.get() < 50 && (armMotor.get() > 0 || j.getY() > 0))
 			{
+				disablePID();
 				armMotor.set(0);
 				return;
 			}
-			else if(enc.get() > -75 && (armMotor.get() > 0 || j.getY() > 0))
+			else if(enc.get() < 75 && (armMotor.get() > 0 || j.getY() > 0))
 			{
 				armMotor.set(0.1);
 			}
-			else if(enc.get() > -100 && (armMotor.get() > 0 || j.getY() > 0))
+			else if(enc.get() < 100 && (armMotor.get() > 0 || j.getY() > 0))
 			{
 				armMotor.set(0.2);
 				return;
 			}
-			else if(enc.get() < -400 && (armMotor.get() < 0 || j.getY() < 0))
+			else if(enc.get() > 450 && (armMotor.get() < 0 || j.getY() < 0))
 			{
 				disablePID();
 				armMotor.set(0.0);
 				return;
 			}
-			else if(enc.get() < -425 && (armMotor.get() < 0 || j.getY() < 0))
+			else if(enc.get() > 425 && (armMotor.get() < 0 || j.getY() < 0))
 			{
-				disablePID();
-				armMotor.set(0.1);
+				armMotor.set(-0.1);
 				return;
 			}
-			else if(enc.get() < -450 && (armMotor.get() < 0 || j.getY() < 0))
+			else if(enc.get() > 400 && (armMotor.get() < 0 || j.getY() < 0))
 			{
-				disablePID();
-				armMotor.set(0.2);
+				armMotor.set(-0.2);
 				return;
 			}
 			
@@ -139,8 +138,7 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				armMotor.set(sensitivityControl(j.getY()));
-				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
+				armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}
 		else
@@ -244,7 +242,7 @@ public class ArmController
 	}
 	
 	/**
-	 * Decelerates the elevator speed as it approaches the top or
+	 * Decelerates the arm speed as it approaches the top or
 	 * bottom to prevent it from slamming harshly
 	 * @param input the input from the joysticks or autoMove
 	 * @param encCounts the current position of the elevator
@@ -254,21 +252,21 @@ public class ArmController
 	{
 		double output = input;
 		
-		if(input > 0 && isInBottomWindow(encCounts))
+		if(input < 0 && isInTopWindow(encCounts))
 		{
 			double penetration = (encCounts - START_TOP_WINDOW);
 			output = input - (penetration*(input/(TOP_WINDOW_SIZE)));
 			
-			output = output < -.10 ? -.10 : output;
+			output = output > -.1 ? -.1 : output;
 		}
-		else if(input < 0 && isInTopWindow(encCounts))
+		else if(input > 0 && isInBottomWindow(encCounts))
 		{
 			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
 			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
 			
-			output = output > 0.0 ? 0.0 : output;
+			output = output < .08 ? .08 : output;
 		}
-
+		
 		return output;
 	}
 	
