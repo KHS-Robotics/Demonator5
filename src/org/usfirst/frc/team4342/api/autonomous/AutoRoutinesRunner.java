@@ -4,11 +4,23 @@ public class AutoRoutinesRunner
 {
 	private AutoRoutinesRunner() {}
 	
+	private static int currentStep;
+	
 	public static void execute(AutoRoutine routine)
 	{
 		switch(routine)
 		{
 			
 		}
+	}
+	
+	public static void reset()
+	{
+		currentStep = 0;
+	}
+	
+	public static int getCurrentStep()
+	{
+		return currentStep;
 	}
 }
