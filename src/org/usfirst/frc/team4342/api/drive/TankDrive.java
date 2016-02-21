@@ -60,6 +60,8 @@ public class TankDrive implements PIDOutput
 		angleControl.setOutputRange(-1.0, 1.0);
 		angleControl.setAbsoluteTolerance(2);
 		angleControl.disable();
+		
+		driveTrain.setPIDController(angleControl);
 	}
 	
 	@Override
@@ -78,7 +80,7 @@ public class TankDrive implements PIDOutput
 			left = -1;	
 		
 		fr.set(right);
-		rl.set(left);
+		fl.set(left);
 		mr.set(right);
 		ml.set(left);
 		rr.set(right);
@@ -121,10 +123,9 @@ public class TankDrive implements PIDOutput
 	
 	public void joystickDrive(int shiftButton)
 	{
-		turnPIDOff();
 		checkUserShift(shiftButton);
 
-		double x = sensitivityControl(j.getZ());
+		double x = sensitivityControl(-j.getZ());
 		double y = sensitivityControl(-j.getY());
 
 		double left = (y-x);
@@ -143,7 +144,7 @@ public class TankDrive implements PIDOutput
 		try
 		{
 			fr.set(right);
-			rl.set(left);
+			fl.set(left);
 			mr.set(right);
 			ml.set(left);
 			rr.set(right);
@@ -273,9 +274,9 @@ public class TankDrive implements PIDOutput
 	private synchronized void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
-			shifter.set(DoubleSolenoid.Value.kForward);
+			shifter.set(DoubleSolenoid.Value.kReverse);
 		else
-			shifter.set(DoubleSolenoid.Value.kReverse);	
+			shifter.set(DoubleSolenoid.Value.kForward);	
 	}
 	
 	private double sensitivityControl(double input)

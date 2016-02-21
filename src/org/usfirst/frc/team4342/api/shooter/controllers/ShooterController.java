@@ -121,8 +121,8 @@ public class ShooterController
 				}
 				else if(switchBox.getRawButton(accumButton))
 				{
-					rightMotor.set(-0.6);
-					leftMotor.set(-0.6);
+					rightMotor.set(-0.5);
+					leftMotor.set(-0.5);
 					arm.getAccumMotor().set(1.0);
 				}
 				else

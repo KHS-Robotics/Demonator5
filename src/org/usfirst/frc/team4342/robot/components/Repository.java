@@ -176,7 +176,7 @@ public class Repository
 			ArmMotor.enable();
 			Accumulator.enable();
 			
-			ArmEncoder = new Encoder(4, 5, true);
+			ArmEncoder = new Encoder(4, 5);
 			ArmEncoder.setDistancePerPulse(1);
 			
 			setpoints = new SetpointMapWrapper(

@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
-	private static final double JOYSTICK_SENSITIVITY = 0.7;
+	private static final double JOYSTICK_SENSITIVITY = 0.5;
 	
 	// TODO: get actual values; these are arbitrary
 	private static final int TOP_WINDOW_SIZE = 200;
@@ -84,8 +84,41 @@ public class ArmController
 //		}
 		
 		
-		//if(!goToSetpoint)
-		//{
+		if(!goToSetpoint)
+		{
+			if(enc.get() > -50 && (armMotor.get() > 0 || j.getY() > 0))
+			{
+				armMotor.set(0);
+				return;
+			}
+			else if(enc.get() > -75 && (armMotor.get() > 0 || j.getY() > 0))
+			{
+				armMotor.set(0.1);
+			}
+			else if(enc.get() > -100 && (armMotor.get() > 0 || j.getY() > 0))
+			{
+				armMotor.set(0.2);
+				return;
+			}
+			else if(enc.get() < -400 && (armMotor.get() < 0 || j.getY() < 0))
+			{
+				disablePID();
+				armMotor.set(0.0);
+				return;
+			}
+			else if(enc.get() < -425 && (armMotor.get() < 0 || j.getY() < 0))
+			{
+				disablePID();
+				armMotor.set(0.1);
+				return;
+			}
+			else if(enc.get() < -450 && (armMotor.get() < 0 || j.getY() < 0))
+			{
+				disablePID();
+				armMotor.set(0.2);
+				return;
+			}
+			
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
 				checkButtonStatus();
@@ -106,14 +139,14 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				armMotor.set(j.getY());
+				armMotor.set(sensitivityControl(j.getY()));
 				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
-		//}
-		//else
-		//{
-		//	apidc.setSetpoint(autoSetpoint);
-		//}
+		}
+		else
+		{
+			apidc.setSetpoint(autoSetpoint);
+		}
 	}
 	
 	public void checkUserAccumulator(int accumButton, int accumLiftButton, int fireSafetyButton)
@@ -221,19 +254,19 @@ public class ArmController
 	{
 		double output = input;
 		
-		if(input > 0 && isInTopWindow(encCounts))
+		if(input > 0 && isInBottomWindow(encCounts))
 		{
 			double penetration = (encCounts - START_TOP_WINDOW);
 			output = input - (penetration*(input/(TOP_WINDOW_SIZE)));
 			
-			output = output < .12 ? .12 : output;
+			output = output < -.10 ? -.10 : output;
 		}
-		else if(input < 0 && isInBottomWindow(encCounts))
+		else if(input < 0 && isInTopWindow(encCounts))
 		{
 			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
 			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
 			
-			output = output > -.08 ? -.08 : output;
+			output = output > 0.0 ? 0.0 : output;
 		}
 
 		return output;
