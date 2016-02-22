@@ -31,7 +31,8 @@ public class ArmController
 	private ArmPIDController apidc;
 	
 	private boolean buttonPressed, autoHold, goToSetpoint;
-	private int buttonSelected, autoSetpoint;
+	private int buttonSelected;
+	private double autoSetpoint;
 	
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 					Solenoid accumLifter, Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
@@ -193,7 +194,7 @@ public class ArmController
 		return apidc.onTarget();
 	}
 	
-	public void setSetpoint(int setpoint)
+	public void setSetpoint(double setpoint)
 	{
 		this.autoSetpoint = setpoint;
 	}
