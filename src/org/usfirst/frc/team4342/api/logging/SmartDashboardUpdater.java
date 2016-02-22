@@ -193,7 +193,7 @@ public class SmartDashboardUpdater
 					String key = entry.getKey();
 					DigitalInput limitSwitch = entry.getValue();
 					
-					SmartDashboard.putBoolean(key = "-Get", limitSwitch.get());
+					SmartDashboard.putBoolean(key + "-Get", limitSwitch.get());
 				}
 			} 
 			catch(Exception ex) 

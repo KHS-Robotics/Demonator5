@@ -31,7 +31,8 @@ public class ArmController
 	private ArmPIDController apidc;
 	
 	private boolean buttonPressed, autoHold, goToSetpoint;
-	private int buttonSelected, autoSetpoint;
+	private int buttonSelected;
+	private double autoSetpoint;
 	
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 					Solenoid accumLifter, Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
@@ -71,52 +72,59 @@ public class ArmController
 	
 	public void checkUserArm(int brakeButton)
 	{
-//		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			//enc.reset();
+			armMotor.set(0.0);
+			return;
+		}
+		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
+		{
+			armMotor.set(0.0);
+			return;
+		}
+		
+//		if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
 //		{
-//			enc.reset();
 //			armMotor.set(0.0);
-//			return;
-//		}
-//		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
-//		{
-//			armMotor.set(0.0);
+//			disablePID();
 //			return;
 //		}
 		
 		
 		if(!goToSetpoint)
 		{
-			if(enc.get() < 50 && (armMotor.get() > 0 || j.getY() > 0))
-			{
-				disablePID();
-				armMotor.set(0);
-				return;
-			}
-			else if(enc.get() < 75 && (armMotor.get() > 0 || j.getY() > 0))
-			{
-				armMotor.set(0.1);
-			}
-			else if(enc.get() < 100 && (armMotor.get() > 0 || j.getY() > 0))
-			{
-				armMotor.set(0.2);
-				return;
-			}
-			else if(enc.get() > 450 && (armMotor.get() < 0 || j.getY() < 0))
-			{
-				disablePID();
-				armMotor.set(0.0);
-				return;
-			}
-			else if(enc.get() > 425 && (armMotor.get() < 0 || j.getY() < 0))
-			{
-				armMotor.set(-0.1);
-				return;
-			}
-			else if(enc.get() > 400 && (armMotor.get() < 0 || j.getY() < 0))
-			{
-				armMotor.set(-0.2);
-				return;
-			}
+//			if(enc.get() < 50 && (armMotor.get() > 0 || j.getY() > 0))
+//			{
+//				disablePID();
+//				armMotor.set(0);
+//				return;
+//			}
+//			else if(enc.get() < 75 && (armMotor.get() > 0 || j.getY() > 0))
+//			{
+//				armMotor.set(0.1);
+//			}
+//			else if(enc.get() < 100 && (armMotor.get() > 0 || j.getY() > 0))
+//			{
+//				armMotor.set(0.2);
+//				return;
+//			}
+//			else if(enc.get() > 450 && (armMotor.get() < 0 || j.getY() < 0))
+//			{
+//				disablePID();
+//				armMotor.set(0.0);
+//				return;
+//			}
+//			else if(enc.get() > 425 && (armMotor.get() < 0 || j.getY() < 0))
+//			{
+//				armMotor.set(-0.1);
+//				return;
+//			}
+//			else if(enc.get() > 400 && (armMotor.get() < 0 || j.getY() < 0))
+//			{
+//				armMotor.set(-0.2);
+//				return;
+//			}
 			
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
@@ -138,7 +146,8 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
+				armMotor.set(sensitivityControl(j.getY()));
+				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}
 		else
@@ -185,7 +194,7 @@ public class ArmController
 		return apidc.onTarget();
 	}
 	
-	public void setSetpoint(int setpoint)
+	public void setSetpoint(double setpoint)
 	{
 		this.autoSetpoint = setpoint;
 	}
@@ -226,6 +235,12 @@ public class ArmController
 	public ArmPIDController getPIDController()
 	{
 		return apidc;
+	}
+	
+	public void setPID(double p, double i, double d, double pd, double id, double dd)
+	{
+		apidc.setPIDUp(p, i, d);
+		apidc.setPIDDown(pd, id, dd);
 	}
 	
 	private void checkButtonStatus()

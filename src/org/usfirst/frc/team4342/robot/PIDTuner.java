@@ -2,6 +2,8 @@ package org.usfirst.frc.team4342.robot;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Temporary class to tune PID values.
  */
@@ -34,7 +36,14 @@ public final class PIDTuner
 			{
 				try
 				{
-					
+					Repository.ArmController.setPID(
+						SmartDashboard.getNumber("Arm-P-Up"), 
+						SmartDashboard.getNumber("Arm-I-Up"),
+						SmartDashboard.getNumber("Arm-D-Up"), 
+						SmartDashboard.getNumber("Arm-P-Down") / 100.0, 
+						SmartDashboard.getNumber("Arm-I-Down") / 1000.0, 
+						SmartDashboard.getNumber("Arm-D-Down") / 100.0
+					);
 					
 					Thread.sleep(20);
 				}

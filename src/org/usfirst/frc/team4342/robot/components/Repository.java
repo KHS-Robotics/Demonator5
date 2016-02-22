@@ -176,7 +176,7 @@ public class Repository
 			ArmMotor.enable();
 			Accumulator.enable();
 			
-			ArmEncoder = new Encoder(4, 5, true);
+			ArmEncoder = new Encoder(4, 5);
 			ArmEncoder.setDistancePerPulse(1);
 			
 			setpoints = new SetpointMapWrapper(
@@ -185,9 +185,9 @@ public class Repository
 				}
 			);
 			
-			BallSensor = new DigitalInput(9);
-			//TopLimitSwitch = new DigitalInput(10);
-			//BottomLimitSwitch = new DigitalInput(11);
+			//BallSensor = new DigitalInput(9);
+			TopLimitSwitch = new DigitalInput(8);
+			BottomLimitSwitch = new DigitalInput(9);
 		}
 		catch(Exception ex)
 		{
@@ -274,7 +274,9 @@ public class Repository
 		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Arm", ArmEncoder);
 		
-		SmartDashboardUpdater.addDigitalInput("BallSensor", BallSensor);
+		//SmartDashboardUpdater.addDigitalInput("BallSensor", BallSensor);
+		SmartDashboardUpdater.addDigitalInput("Arm-Top", TopLimitSwitch);
+		SmartDashboardUpdater.addDigitalInput("Arm-Bot", BottomLimitSwitch);
 		
 		SmartDashboardUpdater.addCounter("Shooter-R", RightMotorCounter);
 		SmartDashboardUpdater.addCounter("Shooter-L", LeftMotorCounter);

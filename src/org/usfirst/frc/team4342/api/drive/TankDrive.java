@@ -94,12 +94,12 @@ public class TankDrive implements PIDOutput
 		{
 			if (firstRunGoStraight)
 			{
-				goStraight(j.getY(), navX.getYaw());
+				goToSetpoint(navX.getYaw());
 				
 				firstRunGoStraight = false;
 			}
 			else
-				goStraight(j.getY());
+				goStraight(-j.getY());
 		}
 		else if(j.getRawButton(angleButton))
 		{
