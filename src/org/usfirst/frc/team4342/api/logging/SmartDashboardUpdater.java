@@ -253,6 +253,7 @@ public class SmartDashboardUpdater
 					
 					if(key.equals("Arm"))
 					{
+						SmartDashboard.putNumber(key + "-Get", encoder.get());
 						SmartDashboard.putNumber(key + "-Ang", encoder.getDistance() * 360.0);
 					}
 					else

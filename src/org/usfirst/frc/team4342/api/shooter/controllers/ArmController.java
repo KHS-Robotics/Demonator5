@@ -15,7 +15,7 @@ public class ArmController
 	private static final double JOYSTICK_DEADBAND = 0.05;
 	private static final double JOYSTICK_SENSITIVITY = 0.2;
 	
-	private static final int TOP_WINDOW_SIZE = 150;
+	private static final int TOP_WINDOW_SIZE = 180;
 	private static final int BOTTOM_WINDOW_SIZE = 140;
 	private static final int START_TOP_WINDOW = 300;
 	private static final int START_BOTTOM_WINDOW = 140;
@@ -72,6 +72,13 @@ public class ArmController
 	
 	public void checkUserArm(int brakeButton)
 	{
+		if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			armMotor.set(0);
+			disablePID();
+			return;
+		}
+		
 		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
 		{
 			enc.reset();
@@ -95,11 +102,15 @@ public class ArmController
 					setSetpoint(setpoints.getSetpoint(buttonSelected));
 	 				apidc.enable();
 	 			}
-	 			else if(!autoHold)
+	 			else if(enc.get() > 140)
 	  			{
-	 				setSetpoint(enc.get());
-	 				apidc.enable();
-	 				autoHold = true;
+	 				if(!autoHold)
+	 				{
+	 					setSetpoint(enc.get());
+		 				apidc.enable();
+		 				autoHold = true;
+	 				}
+	 				
 	  			}
 			} 
 			else 
@@ -156,10 +167,9 @@ public class ArmController
 	
 	public void setSetpoint(double setpoint)
 	{
-		if(setpoint > 450 || setpoint < 0)
+		if(setpoint > 475 || setpoint < 0)
 		{
-			// Gotta find these new values
-			//throw new IndexOutOfBoundsException("Arm setpoint has to be between 0 and 450");
+			throw new IndexOutOfBoundsException("Arm setpoint has to be between 0 and 450");
 		}
 		
 		apidc.setSetpoint(setpoint);
@@ -257,10 +267,7 @@ public class ArmController
 		}
 		else if(input > 0 && isInBottomWindow(encCounts))
 		{
-			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
-			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
-			
-			output = output < 0.25 ? 0.0 : output;
+			return 0.0;
 		}
 		
 		return output;

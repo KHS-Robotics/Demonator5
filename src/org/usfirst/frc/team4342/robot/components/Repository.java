@@ -178,7 +178,7 @@ public class Repository
 			
 			setpoints = new SetpointMapWrapper(
 				new Setpoint[] {
-					new Setpoint(1, 0)
+					
 				}
 			);
 			

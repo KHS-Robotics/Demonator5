@@ -37,15 +37,31 @@ public final class ArmPIDController extends PIDController
 		
 		double error = super.getSetpoint() - input;
 		
-		if(error < 0)// || (enc.get() < 140 && this.getSetpoint() > 140))
+		if(error > 0)
 		{
-			super.setPID(kP, kI, kD);
-			super.calculate();
+			if(enc.get() < 140 && this.getSetpoint() > 140)
+			{
+				super.setPID(kP, kI, kD);
+				super.calculate();
+			}
+			else
+			{
+				super.setPID(kPd, kId, kDd);
+				super.calculate();
+			}
 		}
-		else if(error > 0)
+		else if(error < 0)
 		{
-			super.setPID(kPd, kId, kDd);
-			super.calculate();
+			if(enc.get() < 140 && this.getSetpoint() < 140)
+			{
+				super.setPID(0, 0, 0);
+				super.calculate();
+			}
+			else
+			{
+				super.setPID(kP, kI, kD);
+				super.calculate();
+			}
 		}
 	}
 	
