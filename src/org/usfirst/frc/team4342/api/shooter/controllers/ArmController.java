@@ -13,13 +13,12 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
-	private static final double JOYSTICK_SENSITIVITY = 0.5;
+	private static final double JOYSTICK_SENSITIVITY = 0.2;
 	
-	// TODO: get actual values; these are arbitrary
-	private static final int TOP_WINDOW_SIZE = 140;
-	private static final int BOTTOM_WINDOW_SIZE = 100;
-	private static final int START_TOP_WINDOW = 100;
-	private static final int START_BOTTOM_WINDOW = 400;
+	private static final int TOP_WINDOW_SIZE = 150;
+	private static final int BOTTOM_WINDOW_SIZE = 140;
+	private static final int START_TOP_WINDOW = 300;
+	private static final int START_BOTTOM_WINDOW = 140;
 	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
@@ -53,7 +52,8 @@ public class ArmController
 			ArmPID.kD, 
 			ArmPID.kPd, 
 			ArmPID.kId, 
-			ArmPID.kDd, 
+			ArmPID.kDd,
+			armEnc,
 			armEnc, 
 			armMotor,
 			0.05
@@ -61,7 +61,7 @@ public class ArmController
 		
 		apidc.setPercentTolerance(5);
 		
-		apidc.disable();
+		disablePID();
 	}
 	
 	public void checkUser(int brakeButton, int accumButton, int accumLiftButton, int safetyButton)
@@ -74,7 +74,7 @@ public class ArmController
 	{
 		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
 		{
-			//enc.reset();
+			enc.reset();
 			armMotor.set(0.0);
 			return;
 		}
@@ -84,60 +84,20 @@ public class ArmController
 			return;
 		}
 		
-//		if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
-//		{
-//			armMotor.set(0.0);
-//			disablePID();
-//			return;
-//		}
-		
-		
 		if(!goToSetpoint)
 		{
-//			if(enc.get() < 50 && (armMotor.get() > 0 || j.getY() > 0))
-//			{
-//				disablePID();
-//				armMotor.set(0);
-//				return;
-//			}
-//			else if(enc.get() < 75 && (armMotor.get() > 0 || j.getY() > 0))
-//			{
-//				armMotor.set(0.1);
-//			}
-//			else if(enc.get() < 100 && (armMotor.get() > 0 || j.getY() > 0))
-//			{
-//				armMotor.set(0.2);
-//				return;
-//			}
-//			else if(enc.get() > 450 && (armMotor.get() < 0 || j.getY() < 0))
-//			{
-//				disablePID();
-//				armMotor.set(0.0);
-//				return;
-//			}
-//			else if(enc.get() > 425 && (armMotor.get() < 0 || j.getY() < 0))
-//			{
-//				armMotor.set(-0.1);
-//				return;
-//			}
-//			else if(enc.get() > 400 && (armMotor.get() < 0 || j.getY() < 0))
-//			{
-//				armMotor.set(-0.2);
-//				return;
-//			}
-			
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
 				checkButtonStatus();
 				
 				if(buttonPressed) 
 				{
-					apidc.setSetpoint(setpoints.getSetpoint(buttonSelected));
+					setSetpoint(setpoints.getSetpoint(buttonSelected));
 	 				apidc.enable();
 	 			}
 	 			else if(!autoHold)
 	  			{
-	 				apidc.setSetpoint(enc.get());
+	 				setSetpoint(enc.get());
 	 				apidc.enable();
 	 				autoHold = true;
 	  			}
@@ -191,12 +151,18 @@ public class ArmController
 	
 	public boolean isAtAutoSetpoint()
 	{
-		return apidc.onTarget();
+		return (enc.get() > apidc.getSetpoint()-3.0) || (enc.get() < apidc.getSetpoint()+3.0);
 	}
 	
 	public void setSetpoint(double setpoint)
 	{
-		this.autoSetpoint = setpoint;
+		if(setpoint > 450 || setpoint < 0)
+		{
+			// Gotta find these new values
+			//throw new IndexOutOfBoundsException("Arm setpoint has to be between 0 and 450");
+		}
+		
+		apidc.setSetpoint(setpoint);
 	}
 	
 	public void setAccumLifter(boolean on)
@@ -243,6 +209,16 @@ public class ArmController
 		apidc.setPIDDown(pd, id, dd);
 	}
 	
+	public void setAngle(double angle)
+	{
+		setSetpoint(angle / 360.0);
+	}
+	
+	public double getAngle()
+	{
+		return enc.getDistance() * 360;
+	}
+	
 	private void checkButtonStatus()
 	{
 		for(int i = 1; i < j.getButtonCount(); i++) 
@@ -254,6 +230,11 @@ public class ArmController
 				buttonSelected = i;
 			}
 		}
+	}
+	
+	public double getPortCullisVelocity()
+	{
+		return -enc.getRate()*Math.cos(enc.getDistance()*Math.PI)*18;
 	}
 	
 	/**
@@ -279,16 +260,16 @@ public class ArmController
 			double penetration = (BOTTOM_WINDOW_SIZE - encCounts);
 			output = input - (penetration*(input / (BOTTOM_WINDOW_SIZE)));
 			
-			output = output < .08 ? .08 : output;
+			output = output < 0.25 ? 0.0 : output;
 		}
 		
 		return output;
 	}
 	
 	/**
-	 * Used to determine if the elevator is getting close to the bottom
-	 * @param encCounts the current elevator position
-	 * @return true if close, false otherwise
+	 * Used to determine if the arm is getting close to the bottom
+	 * @param encCounts the current arm position
+	 * @return true if within the window, false otherwise
 	 */
 	private boolean isInBottomWindow(int encCounts) 
 	{
@@ -296,9 +277,9 @@ public class ArmController
 	}
 	
 	/**
-	 * Used to determine if the elevator is getting close to the top
-	 * @param encCounts the current elevator postion
-	 * @return true if close, false otherwise
+	 * Used to determine if the arm is getting close to the top
+	 * @param encCounts the current arm position
+	 * @return true if within the window, false otherwise
 	 */
 	private boolean isInTopWindow(int encCounts) 
 	{

@@ -176,9 +176,6 @@ public class Repository
 			ArmMotor.enable();
 			Accumulator.enable();
 			
-			ArmEncoder = new Encoder(4, 5);
-			ArmEncoder.setDistancePerPulse(1);
-			
 			setpoints = new SetpointMapWrapper(
 				new Setpoint[] {
 					new Setpoint(1, 0)
@@ -215,12 +212,17 @@ public class Repository
 		{
 			RightDriveEncoder = new Encoder(0, 1, true);
 			LeftDriveEncoder = new Encoder(2, 3);
+			ArmEncoder = new Encoder(4, 5, true);
 			RightMotorCounter = new Counter(6);
 			LeftMotorCounter = new Counter(7);
 			
 			// 7.5 * PI / 128
 			RightDriveEncoder.setDistancePerPulse(0.184);
 			LeftDriveEncoder.setDistancePerPulse(0.184);
+			
+			// 1 / (7*144)
+			ArmEncoder.setDistancePerPulse(0.001);
+			
 			RightMotorCounter.setDistancePerPulse(0.05);
 			LeftMotorCounter.setDistancePerPulse(0.05);
 		}

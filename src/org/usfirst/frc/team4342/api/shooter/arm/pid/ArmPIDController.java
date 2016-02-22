@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4342.api.shooter.arm.pid;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -8,9 +9,10 @@ public final class ArmPIDController extends PIDController
 {
 	private double kP, kI, kD;
 	private double kPd, kId, kDd;
+	private Encoder enc;
 	
 	public ArmPIDController(double Kp, double Ki, double Kd, double Kpd, double Kid, double Kdd, 
-							PIDSource source, PIDOutput output, double period) 
+							Encoder enc, PIDSource source, PIDOutput output, double period) 
 	{
 		super(Kp, Ki, Kd, source, output, period);
 		
@@ -20,12 +22,14 @@ public final class ArmPIDController extends PIDController
 		this.kPd = Kpd;
 		this.kId = Kid;
 		this.kDd = Kdd;
+		this.enc = enc;
 	}
 	
 	@Override
 	public void calculate()
 	{
 		double input;
+		
 		synchronized(this) 
 		{
 	        input = super.m_pidInput.pidGet();
@@ -33,12 +37,12 @@ public final class ArmPIDController extends PIDController
 		
 		double error = super.getSetpoint() - input;
 		
-		if(error > 0)
+		if(error < 0)// || (enc.get() < 140 && this.getSetpoint() > 140))
 		{
 			super.setPID(kP, kI, kD);
 			super.calculate();
 		}
-		else if(error < 0)
+		else if(error > 0)
 		{
 			super.setPID(kPd, kId, kDd);
 			super.calculate();
