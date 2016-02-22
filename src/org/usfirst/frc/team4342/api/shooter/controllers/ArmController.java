@@ -73,7 +73,7 @@ public class ArmController
 	{
 		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
 		{
-			enc.reset();
+			//enc.reset();
 			armMotor.set(0.0);
 			return;
 		}
@@ -82,6 +82,13 @@ public class ArmController
 			armMotor.set(0.0);
 			return;
 		}
+		
+//		if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
+//		{
+//			armMotor.set(0.0);
+//			disablePID();
+//			return;
+//		}
 		
 		
 		if(!goToSetpoint)

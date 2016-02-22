@@ -40,15 +40,6 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Goal-Dist", 0.0);
 		SmartDashboard.putNumber("Goal-Ang", 0.0);
 		
-		SmartDashboard.putNumber("Arm-P-Up", 0.0);
-		SmartDashboard.putNumber("Arm-I-Up", 0.0);
-		SmartDashboard.putNumber("Arm-D-Up", 0.0);
-		SmartDashboard.putNumber("Arm-P-Down", 0.0);
-		SmartDashboard.putNumber("Arm-I-Down", 0.0);
-		SmartDashboard.putNumber("Arm-D-Down", 0.0);
-		
-		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
-		
 		Repository.initializeAll();
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
