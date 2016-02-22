@@ -99,7 +99,7 @@ public class TankDrive implements PIDOutput
 				firstRunGoStraight = false;
 			}
 			else
-				goStraight(-j.getY());
+				goStraight(-j.getRawAxis(3));
 		}
 		else if(j.getRawButton(angleButton))
 		{
@@ -125,35 +125,54 @@ public class TankDrive implements PIDOutput
 	{
 		checkUserShift(shiftButton);
 
-		double x = sensitivityControl(-j.getZ());
-		double y = sensitivityControl(-j.getY());
-
-		double left = (y-x);
-		double right = (y+x);
-
-		if (left > 1.0)
-			left = 1.0;
-		else if (left < -1.0)
-			left = -1.0;
-
-		if (right > 1.0)
-			right = 1.0;
-		else if (right < -1.0)
-			right = -1.0;
-
+		double posy=sensitivityControl(j.getRawAxis(3));
+		double negy=-sensitivityControl(j.getRawAxis(2));
+		double x=sensitivityControl(j.getRawAxis(0));
+		
+		double y=posy+negy;
+		
 		try
 		{
-			fr.set(right);
-			fl.set(left);
-			mr.set(right);
-			ml.set(left);
-			rr.set(right);
-			rl.set(left);
+			fr.set(y-x);
+			fl.set(y+x);
+			mr.set(y-x);
+			ml.set(y+x);
+			rr.set(y-x);
+			rl.set(y+x);
 		}
 		catch (Exception ex)
 		{
 			Repository.Logs.error("Failed to set drive motors", ex);
 		}
+//		double x = sensitivityControl(-j.getZ());
+//		double y = sensitivityControl(-j.getY());
+//
+//		double left = (y-x);
+//		double right = (y+x);
+//
+//		if (left > 1.0)
+//			left = 1.0;
+//		else if (left < -1.0)
+//			left = -1.0;
+//
+//		if (right > 1.0)
+//			right = 1.0;
+//		else if (right < -1.0)
+//			right = -1.0;
+//
+//		try
+//		{
+//			fr.set(right);
+//			fl.set(left);
+//			mr.set(right);
+//			ml.set(left);
+//			rr.set(right);
+//			rl.set(left);
+//		}
+//		catch (Exception ex)
+//		{
+//			Repository.Logs.error("Failed to set drive motors", ex);
+//		}
 	}
 	
 	public void autoRampParts(boolean forward, double direction, boolean target, double goalAngle)

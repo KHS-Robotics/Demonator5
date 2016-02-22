@@ -29,7 +29,7 @@ public class ShootingComponent extends Component
 				if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{
 					shooter.handleTeleop(1, 5, 10, 4, 6, 3);
-					shooter.shootFromLowBar(2);
+					//shooter.shootFromLowBar(2);
 				}
 				else if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{

@@ -97,6 +97,8 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(sc);
 		}
 		
+		//if (Repository.SwitchBox.getRawButton(7))
+		
 		if(Repository.SwitchBox.getRawButton(8))
 			NavXLogger.startLogging(Repository.Navx, Repository.DriveTrain);
 		else
