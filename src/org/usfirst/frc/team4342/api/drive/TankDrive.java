@@ -115,6 +115,8 @@ public class TankDrive implements PIDOutput
 		}
 		else
 		{
+			if (!firstRunGoStraight)
+				turnPIDOff();
 			joystickDrive(shiftButton);
 			
 			firstRunGoStraight = true;
