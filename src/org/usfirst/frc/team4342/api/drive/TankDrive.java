@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 
 public class TankDrive implements PIDOutput
@@ -298,7 +297,8 @@ public class TankDrive implements PIDOutput
 	
 	public synchronized void turnPIDOff()
 	{
-		angleControl.disable();
+		if(angleControl.isEnabled())
+			angleControl.disable();
 	}
 	
 	public synchronized void goToSetpoint(double setpointAngle)

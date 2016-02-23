@@ -55,7 +55,7 @@ public class Repository
 	public static AHRS Navx;
 	
 	public static CANTalon RightShooter, LeftShooter, ArmMotor, Accumulator;
-	public static Solenoid BallPusher, AccumulatorLifter;
+	public static Solenoid BallPusher;
 	public static Encoder ArmEncoder;
 	public static Counter RightMotorCounter, LeftMotorCounter;
 	public static DigitalInput BallSensor, TopLimitSwitch, BottomLimitSwitch;
@@ -198,7 +198,6 @@ public class Repository
 		{
 			Shifter = new DoubleSolenoid(4, 5);
 			BallPusher = new Solenoid(6);
-			AccumulatorLifter = new Solenoid(7);
 		}
 		catch(Exception ex)
 		{
@@ -245,7 +244,7 @@ public class Repository
 				RightDriveEncoder
 			);
 			
-			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, AccumulatorLifter, ArmEncoder, TopLimitSwitch, BottomLimitSwitch, setpoints);
+			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, ArmEncoder, TopLimitSwitch, BottomLimitSwitch, setpoints);
 			ShooterController = new ShooterController(DriveStick, SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
 			
 			Shooter = new Shooter(ShooterController, ArmController);
@@ -269,8 +268,8 @@ public class Repository
 		SmartDashboardUpdater.addTalon("RL", RearLeft);
 		SmartDashboardUpdater.addTalon("Accum", Accumulator);
 		SmartDashboardUpdater.addTalon("Arm", ArmMotor);
-		SmartDashboardUpdater.addTalon("Shooter-Right", RightShooter);
-		SmartDashboardUpdater.addTalon("Shooter-Left", LeftShooter);
+		SmartDashboardUpdater.addTalon("Shooter-R", RightShooter);
+		SmartDashboardUpdater.addTalon("Shooter-L", LeftShooter);
 		
 		SmartDashboardUpdater.addEncoder("Drive-R", RightDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);

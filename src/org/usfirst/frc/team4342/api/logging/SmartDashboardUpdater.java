@@ -168,7 +168,7 @@ public class SmartDashboardUpdater
 					String key = entry.getKey();
 					CANTalon talon = entry.getValue();
 					
-					//SmartDashboard.putNumber("Talon- " + key + "-Out", talon.get());
+					SmartDashboard.putNumber("Talon-" + key + "-Get", talon.get());
 				}
 			} 
 			catch(Exception ex) 

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmController 
 {
@@ -22,28 +22,28 @@ public class ArmController
 
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
-	private Solenoid accumLifter;
 	private Encoder enc;
 	private DigitalInput topLS, botLS;
 	private SetpointMapWrapper setpoints;
 
 	private ArmPIDController apidc;
 
-	private boolean buttonPressed, autoHold, goToSetpoint;
+	private boolean buttonPressed, autoHold;
 	private int buttonSelected;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
-			Solenoid accumLifter, Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
+			Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
 	{
 		this.j = j;
 		this.switchBox = switchBox;
 		this.armMotor = armMotor;
 		this.accumMotor = accumMotor;
-		this.accumLifter = accumLifter;
 		this.enc = armEnc;
 		this.topLS = topLS;
 		this.botLS = botLS;
 		this.setpoints = setpoints;
+		
+		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
 
 		apidc = new ArmPIDController(
 			ArmPID.kP, 
@@ -58,21 +58,21 @@ public class ArmController
 			0.05
 		);
 		
-		apidc.setContinuous();
+		apidc.setInputRange(0, 500);
 		apidc.setPercentTolerance(5);
 
 		disablePID();
 	}
 
-	public void checkUser(int brakeButton, int accumButton, int accumLiftButton, int safetyButton)
+	public void checkUser(int smartDashboardSetpointButton, int accumButton, int accumLiftButton, int safetyButton)
 	{
-		checkUserArm(brakeButton);
+		checkUserArm(smartDashboardSetpointButton);
 		checkUserAccumulator(accumButton, accumLiftButton, safetyButton);
 	}
 
-	public void checkUserArm(int brakeButton)
+	public void checkUserArm(int smartDashboardSetpointButton)
 	{
-		if(!goToSetpoint)
+		if(!switchBox.getRawButton(smartDashboardSetpointButton))
 		{
 			if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
 			{
@@ -127,6 +127,10 @@ public class ArmController
 				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}
+		else
+		{
+			setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
+		}
 	}
 
 	public void checkUserAccumulator(int accumButton, int accumLiftButton, int fireSafetyButton)
@@ -139,29 +143,6 @@ public class ArmController
 		{
 			accumMotor.set(0);
 		}
-
-		if(j.getRawButton(accumLiftButton) || switchBox.getRawButton(accumLiftButton))
-		{
-			accumLifter.set(true);
-		}
-		else if (!switchBox.getRawButton(fireSafetyButton))
-		{
-			accumLifter.set(false);
-		}
-	}
-
-	public void setAutomaticMode(boolean on)
-	{
-		if(on)
-		{
-			goToSetpoint = true;
-			apidc.enable();
-		}
-		else
-		{
-			goToSetpoint = false;
-			apidc.disable();
-		}
 	}
 
 	public boolean isAtAutoSetpoint()
@@ -171,13 +152,7 @@ public class ArmController
 
 	public void setSetpoint(double setpoint)
 	{
-		if(goToSetpoint)
-			apidc.setSetpoint(setpoint);
-	}
-
-	public void setAccumLifter(boolean on)
-	{
-		accumLifter.set(on);
+		apidc.setSetpoint(setpoint);
 	}
 
 	public void stopAll()
@@ -185,7 +160,6 @@ public class ArmController
 		stopOperatorAutoMove();
 		armMotor.set(0);
 		accumMotor.set(0);
-		accumLifter.set(false);
 	}
 
 	public void enablePID()
@@ -195,17 +169,13 @@ public class ArmController
 
 	public void disablePID()
 	{
-		apidc.disable();
+		if(apidc.isEnabled())
+			apidc.disable();
 	}
 
 	public CANTalon getAccumMotor()
 	{
 		return accumMotor;
-	}
-
-	public Solenoid getAccumLifter()
-	{
-		return accumLifter;
 	}
 
 	public ArmPIDController getPIDController()

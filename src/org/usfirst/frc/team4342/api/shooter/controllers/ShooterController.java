@@ -2,7 +2,6 @@ package org.usfirst.frc.team4342.api.shooter.controllers;
 
 import org.usfirst.frc.team4342.api.shooter.ShooterState;
 import org.usfirst.frc.team4342.api.shooter.pid.ShooterPID;
-import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
@@ -11,7 +10,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterController 
 {
@@ -76,8 +74,6 @@ public class ShooterController
 			leftPID.setSetpoint(100);
 			rightPID.setSetpoint(100);
 			
-			arm.getAccumLifter().set(true);
-			
 			driveShootLoops++;
 			
 			if(driveShootLoops > 20)
@@ -90,8 +86,6 @@ public class ShooterController
 					leftPID.setSetpoint(0);
 					rightPID.setSetpoint(0);
 					disablePID();
-					
-					arm.getAccumLifter().set(false);
 					
 					driveShootLoops = 0;
 					driverShooting = false;
@@ -107,8 +101,6 @@ public class ShooterController
 					enablePID();
 					leftPID.setSetpoint(85);
 					rightPID.setSetpoint(85);
-					
-					arm.getAccumLifter().set(true);
 					
 					if (switchBox.getRawButton(fireButton) && isAtSetpoint())
 					{
@@ -142,7 +134,6 @@ public class ShooterController
 					rightMotor.set(0);
 					leftMotor.set(0);
 					
-					arm.getAccumLifter().set(false);
 					numLoops = 0;
 					
 					disablePID();
