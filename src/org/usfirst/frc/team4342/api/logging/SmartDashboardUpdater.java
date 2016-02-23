@@ -251,7 +251,15 @@ public class SmartDashboardUpdater
 					String key = entry.getKey();
 					Encoder encoder = entry.getValue();
 					
-					SmartDashboard.putNumber(key + "-Count", encoder.get());
+					if(key.equals("Arm"))
+					{
+						SmartDashboard.putNumber(key + "-Get", encoder.get());
+						SmartDashboard.putNumber(key + "-Ang", encoder.getDistance() * 360.0);
+					}
+					else
+					{
+						SmartDashboard.putNumber(key + "-Get", encoder.get());
+					}
 				}
 			} 
 			catch(Exception ex) 

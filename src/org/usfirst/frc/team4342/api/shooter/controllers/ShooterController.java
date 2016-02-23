@@ -60,8 +60,6 @@ public class ShooterController
 		
 		enablePID();
 		
-		//new ShooterFMonitor().start();
-		
 		state = ballPusher.get() ? ShooterState.RELOADING : ShooterState.LOADED;
 	}
 	
@@ -112,7 +110,7 @@ public class ShooterController
 					
 					arm.getAccumLifter().set(true);
 					
-					if (switchBox.getRawButton(fireButton))// && (rightPID.onTarget() && leftPID.onTarget()))
+					if (switchBox.getRawButton(fireButton) && isAtSetpoint())
 					{
 						ballPusher.set(true);
 						
@@ -197,6 +195,14 @@ public class ShooterController
 		leftPID.setPID(p, i, d);
 	}
 	
+	public boolean isAtSetpoint()
+	{
+		boolean right = (rightMotorCounter.getRate() > rightPID.getSetpoint() - 2.0 || rightMotorCounter.getRate() < rightPID.getSetpoint() + 2.0);
+		boolean left = (leftMotorCounter.getRate() > leftPID.getSetpoint() - 2.0 || leftMotorCounter.getRate() < leftPID.getSetpoint() + 2.0);
+		
+		return right && left;
+	}
+	
 	public void stopAll()
 	{
 		rightMotor.set(0);
@@ -207,43 +213,5 @@ public class ShooterController
 	public ShooterState getState()
 	{
 		return state;
-	}
-	
-	private class ShooterFMonitor extends Thread implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			while(true)
-			{
-				try
-				{
-					if(rightMotorCounter.getRate() > rightPID.getSetpoint())
-					{
-						rightPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), 0.0);
-					}
-					else
-					{
-						rightPID.setPID(0.0, 0.0, SmartDashboard.getNumber("Shooter-D"), ShooterPID.kF);
-					}
-					
-					if(leftMotorCounter.getRate() > leftPID.getSetpoint())
-					{
-						leftPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), 0.0);
-					}
-					else
-					{
-						leftPID.setPID(SmartDashboard.getNumber("Shooter-P"), 0.0, SmartDashboard.getNumber("Shooter-D"), ShooterPID.kF);
-					}
-					
-					Thread.sleep(20);
-				}
-				catch(Exception ex)
-				{
-					Repository.Logs.error("Error while checking shooter setpoints", ex);
-					break;
-				}
-			}
-		}
 	}
 }

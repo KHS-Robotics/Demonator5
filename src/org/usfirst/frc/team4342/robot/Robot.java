@@ -86,6 +86,8 @@ public class Robot extends IterativeRobot
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
+    	
+    	Repository.ArmController.setAutomaticMode(Repository.SwitchBox.getRawButton(7));
     }
 
     /**

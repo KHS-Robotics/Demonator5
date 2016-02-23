@@ -17,7 +17,8 @@ import org.usfirst.frc.team4342.api.drive.DefenseState;
 
 public class TankDrive implements PIDOutput
 {
-	private static final double JOYSTICK_SENSITIVITY = 0.9;
+	private static final double JOYSTICK_SENSITIVITY = 0.95;
+	private static final double DEAD_BAND = 0.08;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -104,7 +105,7 @@ public class TankDrive implements PIDOutput
 			else
 				goStraight(j.getRawAxis(3));
 		}
-		else if(j.getRawButton(angleButton))
+		else if(false)
 		{
 			goToAngle(0.0);
 		}
@@ -118,9 +119,11 @@ public class TankDrive implements PIDOutput
 		}
 		else
 		{
+			if (!firstRunGoStraight)
+				turnPIDOff();
 			joystickDrive(shiftButton);
 			
-			//firstRunGoStraight = true;
+			firstRunGoStraight = true;
 		}
 	}
 	
@@ -334,6 +337,9 @@ public class TankDrive implements PIDOutput
 	
 	private double sensitivityControl(double input)
 	{
-		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
+		if(Math.abs(input)<DEAD_BAND){
+			input=0;
+		}
+		return (JOYSTICK_SENSITIVITY*Math.pow(input, 7))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }
