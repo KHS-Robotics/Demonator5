@@ -32,6 +32,9 @@ public class TankDrive implements PIDOutput
 	
 	private boolean autoStepFinished;
 	private DefenseState state;
+	private double startingPitch = 0.0, minPitch = 0.0, maxPitch = 0.0, lastPitch = 0.0; 
+	private boolean firstRun = true;
+	private final double PITCH_WINDOW = 17;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
 					Encoder encLeft, Encoder encRight)
@@ -99,7 +102,7 @@ public class TankDrive implements PIDOutput
 				firstRunGoStraight = false;
 			}
 			else
-				goStraight(-j.getRawAxis(3));
+				goStraight(j.getRawAxis(3));
 		}
 		else if(j.getRawButton(angleButton))
 		{
@@ -178,10 +181,25 @@ public class TankDrive implements PIDOutput
 	public void autoRampParts(boolean forward, double direction, boolean target, double goalAngle)
 	{
 		double startAngle = 0.0 + (forward ? 180.0 : 0.0);
+		double currentPitch = navX.getPitch();
 		
 		if (state == DefenseState.APPROACH)
 		{
 			goToAngle(startAngle);
+			
+			if (firstRun)
+			{
+				startingPitch = navX.getPitch();
+				minPitch = navX.getPitch();
+				maxPitch = navX.getPitch();
+				firstRun = false;
+			}
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+				
 			if(angleControl.onTarget())
 				state = DefenseState.CLIMB;
 		}
@@ -189,29 +207,43 @@ public class TankDrive implements PIDOutput
 		{
 			goStraight(-Math.abs(direction));
 			
-			if (false)
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (minPitch <= -PITCH_WINDOW && currentPitch > minPitch && currentPitch > lastPitch)
 			{
 				state = DefenseState.PEAK;
 			}
 		}
 		else if (state == DefenseState.PEAK)
 		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
 			
-			if (false)
+			if (maxPitch >= PITCH_WINDOW && currentPitch < maxPitch && currentPitch < lastPitch)
 			{
 				state = DefenseState.DESCENT;
 			}
 		}
 		else if (state == DefenseState.DESCENT)
 		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
 			
-			if (false)
+			if ((currentPitch - startingPitch) < 10)
 			{
 				state = DefenseState.FINISHING;
 			}
 		}
 		else if (state == DefenseState.FINISHING)
 		{
+			
 			if(target)
 			{
 				goToAngle(goalAngle);
@@ -230,6 +262,8 @@ public class TankDrive implements PIDOutput
 			else
 				goStraight(-Math.abs(direction));
 		}
+		
+		lastPitch = currentPitch;
 	}
 	
 	public void goStraight(double direction)

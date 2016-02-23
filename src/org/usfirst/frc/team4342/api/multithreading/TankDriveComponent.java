@@ -30,7 +30,7 @@ public class TankDriveComponent extends Component
 			{
 				if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{
-					td.drive(1, 9, 10, 5, 6);
+					td.drive(5, 10, -1, 5, 6);
 				}
 				else if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isAutonomous())
 				{
