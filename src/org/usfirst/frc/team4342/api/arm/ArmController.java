@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
-	private static final double JOYSTICK_SENSITIVITY = 0.2;
+	private static final double JOYSTICK_SENSITIVITY = 0.7;
 
 	private static final int TOP_WINDOW_SIZE = 180;
 	private static final int BOTTOM_WINDOW_SIZE = 140;
