@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.api.shooter.arm.pid;
+package org.usfirst.frc.team4342.api.arm.pid;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 

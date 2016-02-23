@@ -1,8 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter;
 
-import org.usfirst.frc.team4342.api.shooter.controllers.ArmController;
-import org.usfirst.frc.team4342.api.shooter.controllers.ShooterController;
-import org.usfirst.frc.team4342.api.shooter.arm.LowBarStates;
+import org.usfirst.frc.team4342.api.arm.ArmController;
+import org.usfirst.frc.team4342.api.arm.LowBarStates;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 public class Shooter 

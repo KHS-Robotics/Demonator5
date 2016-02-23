@@ -91,18 +91,10 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopPeriodic() 
     {
-		if(Repository.SwitchBox.getRawButton(9))
-		{
-			ComponentRunner.stopAutomaticMode(tdc);
-			ComponentRunner.stopAutomaticMode(sc);
-		}
-		
 		if(Repository.SwitchBox.getRawButton(8))
 			NavXLogger.startLogging(Repository.Navx, Repository.DriveTrain);
 		else
 			NavXLogger.stopLogging();
-		
-		SmartDashboard.putNumber("Arm-Count", Repository.ArmEncoder.get());
     }
     
 	/**

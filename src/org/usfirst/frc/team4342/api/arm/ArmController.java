@@ -1,8 +1,8 @@
-package org.usfirst.frc.team4342.api.shooter.controllers;
+package org.usfirst.frc.team4342.api.arm;
 
-import org.usfirst.frc.team4342.api.shooter.arm.SetpointMapWrapper;
-import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPID;
-import org.usfirst.frc.team4342.api.shooter.arm.pid.ArmPIDController;
+import org.usfirst.frc.team4342.api.arm.pid.ArmPID;
+import org.usfirst.frc.team4342.api.arm.pid.ArmPIDController;
+import org.usfirst.frc.team4342.api.arm.setpoints.SetpointMapWrapper;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.api.shooter.arm;
+package org.usfirst.frc.team4342.api.arm.setpoints;
 
 import java.util.Hashtable;
 import java.util.Map;
