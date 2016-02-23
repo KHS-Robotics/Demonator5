@@ -46,7 +46,7 @@ public class TankDriveComponent extends Component
 					ex
 				);
 				
-				this.run = false;
+				ComponentRunner.stopAutomaticMode(this);
 				break;
 			}
 		}

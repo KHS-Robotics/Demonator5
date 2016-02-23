@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 
-public class TankDrive implements PIDOutput
+public class TankDrive
 {
 	private static final double JOYSTICK_SENSITIVITY = 0.95;
 	private static final double DEAD_BAND = 0.08;
@@ -27,7 +27,6 @@ public class TankDrive implements PIDOutput
 	private Encoder encLeft, encRight;
 	
 	private PIDController angleControl;
-	private double direction;
 	private boolean firstRunPID, firstRunGoStraight = true;
 	
 	private boolean autoStepFinished;
@@ -57,7 +56,7 @@ public class TankDrive implements PIDOutput
 		this.encRight = encRight;
 		this.encLeft = encLeft;
 		
-		angleControl = new PIDController(DrivePID.Rotational.kP, DrivePID.Rotational.kI, DrivePID.Rotational.kD, navX, this);
+		angleControl = new PIDController(DrivePID.Rotational.kP, DrivePID.Rotational.kI, DrivePID.Rotational.kD, navX, driveTrain);
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
@@ -65,29 +64,6 @@ public class TankDrive implements PIDOutput
 		angleControl.disable();
 		
 		driveTrain.setPIDController(angleControl);
-	}
-	
-	@Override
-	public void pidWrite(double output) 
-	{
-		double right = direction - output;
-		double left = direction + output;
-		
-		if (right > 1)
-			right = 1; 
-		if (left > 1)
-			left = 1;
-		if (right < -1)
-			right = -1; 
-		if (left < -1)
-			left = -1;	
-		
-		fr.set(right);
-		fl.set(left);
-		mr.set(right);
-		ml.set(left);
-		rr.set(right);
-		rl.set(left);
 	}
 	
 	public synchronized void drive(int shiftButton, int straightButton, int angleButton, int autoForwardButton,
@@ -130,11 +106,11 @@ public class TankDrive implements PIDOutput
 	{
 		checkUserShift(shiftButton);
 
-		double posy=sensitivityControl(j.getRawAxis(3));
-		double negy=-sensitivityControl(j.getRawAxis(2));
-		double x=sensitivityControl(j.getRawAxis(0));
+		double posy = sensitivityControl(j.getRawAxis(3));
+		double negy = -sensitivityControl(j.getRawAxis(2));
+		double x = sensitivityControl(j.getRawAxis(0));
 		
-		double y=posy+negy;
+		double y = posy + negy;
 		
 		try
 		{
@@ -149,6 +125,7 @@ public class TankDrive implements PIDOutput
 		{
 			Repository.Logs.error("Failed to set drive motors", ex);
 		}
+		
 //		double x = sensitivityControl(-j.getZ());
 //		double y = sensitivityControl(-j.getY());
 //
@@ -312,14 +289,14 @@ public class TankDrive implements PIDOutput
 		angleControl.setPID(p, i, d);
 	}
 	
-	public synchronized void setDirection(double power)
+	public synchronized void setDirection(double direction)
 	{
-		direction = power;
+		driveTrain.setDirection(direction);
 	}
 	
 	public synchronized double getDirection()
 	{
-		return direction;
+		return driveTrain.getDirection();
 	}
 	
 	public synchronized boolean isAutoStepFinished()

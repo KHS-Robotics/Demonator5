@@ -43,15 +43,12 @@ public class Repository
 	
 	public static Joystick DriveStick, ShooterStick, SwitchBox;
 	
-	public static PowerDistributionPanel Pdp;
-	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
 							MiddleLeft, RearRight, RearLeft;
 	
 	public static DriveTrain DriveTrain;
 	public static DoubleSolenoid Shifter;
 	public static Encoder LeftDriveEncoder, RightDriveEncoder;
-	
 	public static AHRS Navx;
 	
 	public static CANTalon RightShooter, LeftShooter, ArmMotor, Accumulator;
@@ -99,8 +96,7 @@ public class Repository
 		
 		try
 		{
-			Pdp = new PowerDistributionPanel();
-			PdpLogger.start(Pdp, Log, ConsoleLog);
+			PdpLogger.start(new PowerDistributionPanel(), Log, ConsoleLog);
 		}
 		catch(Exception ex)
 		{
@@ -219,7 +215,7 @@ public class Repository
 			RightDriveEncoder.setDistancePerPulse(0.184);
 			LeftDriveEncoder.setDistancePerPulse(0.184);
 			
-			// 1 / (7*144)
+			// 1 / (7*142)
 			ArmEncoder.setDistancePerPulse(0.001);
 			
 			RightMotorCounter.setDistancePerPulse(0.05);

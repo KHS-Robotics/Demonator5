@@ -4,12 +4,15 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
-public class DriveTrain 
+public class DriveTrain implements PIDOutput
 {
 	private CANTalon fr, fl, mr, ml, rr, rl;
 	private PIDController pid;
+	
+	private double direction;
 	
 	public DriveTrain(Joystick j, CANTalon fr, CANTalon fl, CANTalon mr,
 					  CANTalon ml, CANTalon rr, CANTalon rl)
@@ -20,6 +23,39 @@ public class DriveTrain
 		this.ml = ml;
 		this.rr = rr;
 		this.rl = rl;
+	}
+	
+	@Override
+	public void pidWrite(double output) 
+	{
+		double right = direction - output;
+		double left = direction + output;
+		
+		if (right > 1)
+			right = 1; 
+		if (left > 1)
+			left = 1;
+		if (right < -1)
+			right = -1; 
+		if (left < -1)
+			left = -1;	
+		
+		fr.set(right);
+		fl.set(left);
+		mr.set(right);
+		ml.set(left);
+		rr.set(right);
+		rl.set(left);
+	}
+	
+	public void setDirection(double direction)
+	{
+		this.direction = direction;
+	}
+	
+	public double getDirection()
+	{
+		return direction;
 	}
 	
 	public void setBrakeMode()

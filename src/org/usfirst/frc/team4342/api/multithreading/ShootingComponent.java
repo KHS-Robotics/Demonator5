@@ -45,7 +45,7 @@ public class ShootingComponent extends Component
 					ex
 				);
 				
-				this.run = false;
+				ComponentRunner.stopAutomaticMode(this);
 				break;
 			}
 		}

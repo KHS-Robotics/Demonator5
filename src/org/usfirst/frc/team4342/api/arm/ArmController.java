@@ -106,14 +106,14 @@ public class ArmController
 				if(buttonPressed) 
 				{
 					setSetpoint(setpoints.getSetpoint(buttonSelected));
-					apidc.enable();
+					enablePID();
 				}
 				else if(enc.get() > 140)
 				{
 					if(!autoHold)
 					{
 						setSetpoint(enc.get());
-						apidc.enable();
+						enablePID();
 						autoHold = true;
 					}
 
