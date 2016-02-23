@@ -40,6 +40,9 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Goal-Dist", 0.0);
 		SmartDashboard.putNumber("Goal-Ang", 0.0);
 		
+		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
+		SmartDashboard.putNumber("Arm-Count", 0.0);
+		
 		Repository.initializeAll();
 		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
@@ -83,6 +86,8 @@ public class Robot extends IterativeRobot
 		
     	ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
+    	
+    	Repository.ArmController.setAutomaticMode(Repository.SwitchBox.getRawButton(7));
     }
 
     /**
@@ -97,10 +102,14 @@ public class Robot extends IterativeRobot
 			ComponentRunner.stopAutomaticMode(sc);
 		}
 		
+		//Repository.ArmController.setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
+		
 		if(Repository.SwitchBox.getRawButton(8))
 			NavXLogger.startLogging(Repository.Navx, Repository.DriveTrain);
 		else
 			NavXLogger.stopLogging();
+		
+		SmartDashboard.putNumber("Arm-Count", Repository.ArmEncoder.get());
     }
     
 	/**

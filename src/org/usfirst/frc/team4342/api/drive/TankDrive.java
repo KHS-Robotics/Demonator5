@@ -17,7 +17,8 @@ import org.usfirst.frc.team4342.api.drive.DefenseState;
 
 public class TankDrive implements PIDOutput
 {
-	private static final double JOYSTICK_SENSITIVITY = 0.9;
+	private static final double JOYSTICK_SENSITIVITY = 0.95;
+	private static final double DEAD_BAND = 0.08;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -99,9 +100,9 @@ public class TankDrive implements PIDOutput
 				firstRunGoStraight = false;
 			}
 			else
-				goStraight(-j.getY());
+				goStraight(j.getRawAxis(3));
 		}
-		else if(j.getRawButton(angleButton))
+		else if(false)
 		{
 			goToAngle(0.0);
 		}
@@ -119,7 +120,7 @@ public class TankDrive implements PIDOutput
 				turnPIDOff();
 			joystickDrive(shiftButton);
 			
-			//firstRunGoStraight = true;
+			firstRunGoStraight = true;
 		}
 	}
 	
@@ -127,8 +128,11 @@ public class TankDrive implements PIDOutput
 	{
 		checkUserShift(shiftButton);
 
-		double x = sensitivityControl(-j.getZ());
-		double y = sensitivityControl(-j.getY());
+		double posy = sensitivityControl(j.getRawAxis(3));
+        double negy = -sensitivityControl(j.getRawAxis(2));
+        
+        double x = sensitivityControl(-j.getRawAxis(0));
+        double y = posy + negy;
 
 		double left = (y-x);
 		double right = (y+x);
@@ -144,18 +148,18 @@ public class TankDrive implements PIDOutput
 			right = -1.0;
 
 		try
-		{
-			fr.set(right);
-			fl.set(left);
-			mr.set(right);
-			ml.set(left);
-			rr.set(right);
-			rl.set(left);
-		}
-		catch (Exception ex)
-		{
-			Repository.Logs.error("Failed to set drive motors", ex);
-		}
+        {
+            fr.set(right);
+            fl.set(left);
+            mr.set(right);
+            ml.set(left);
+            rr.set(right);
+            rl.set(left);
+        }
+        catch (Exception ex)
+        {
+            Repository.Logs.error("Failed to set drive motors", ex);
+        }
 	}
 	
 	public void autoRampParts(boolean forward, double direction, boolean target, double goalAngle)
@@ -283,6 +287,9 @@ public class TankDrive implements PIDOutput
 	
 	private double sensitivityControl(double input)
 	{
-		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
+		if(Math.abs(input)<DEAD_BAND){
+			input=0;
+		}
+		return (JOYSTICK_SENSITIVITY*Math.pow(input, 7))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }
