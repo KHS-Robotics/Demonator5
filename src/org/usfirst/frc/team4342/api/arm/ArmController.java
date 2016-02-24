@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmController 
 {
-	private static final double JOYSTICK_DEADBAND = 0.05;
+	private static final double JOYSTICK_DEADBAND = 0.1;
 	private static final double JOYSTICK_SENSITIVITY = 0.7;
 
 	private static final int TOP_WINDOW_SIZE = 180;
@@ -59,7 +59,7 @@ public class ArmController
 		);
 		
 		apidc.setInputRange(-500, 0);
-		apidc.setPercentTolerance(2);
+		apidc.setPercentTolerance(1);
 
 		disablePID();
 	}
@@ -133,7 +133,8 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 
-				armMotor.set(sensitivityControl(j.getY()));
+				armMotor.set(j.getY());
+				//armMotor.set(sensitivityControl(j.getY()));
 				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}

@@ -89,7 +89,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
-		Repository.DriveTrain.setBrakeMode();
+		Repository.DriveTrain.setCoastMode();
 		Repository.DriveTrain.enable();
 		
     	ComponentRunner.startAutomaticMode(tdc);
@@ -114,7 +114,7 @@ public class Robot extends IterativeRobot
     @Override
     public void disabledInit()
     {
-    	Repository.DriveTrain.setCoastMode();
+    	//Repository.DriveTrain.setCoastMode();
     	ComponentRunner.stopAutomaticMode(tdc);
     	ComponentRunner.stopAutomaticMode(sc);
     }

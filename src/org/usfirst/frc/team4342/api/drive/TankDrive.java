@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 
 public class TankDrive
 {
-	private static final double JOYSTICK_SENSITIVITY = 0.95;
+	private static double JOYSTICK_SENSITIVITY = 0.25;
 	private static final double DEAD_BAND = 0.08;
 	
 	private Joystick j;
@@ -60,7 +62,7 @@ public class TankDrive
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
-		angleControl.setAbsoluteTolerance(2);
+		angleControl.setAbsoluteTolerance(5);
 		angleControl.disable();
 		
 		driveTrain.setPIDController(angleControl);
@@ -78,24 +80,30 @@ public class TankDrive
 				firstRunGoStraight = false;
 			}
 			else
-				goStraight(j.getRawAxis(3));
+			{
+				goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
+			}
 		}
-		else if(false)
+		else if(j.getRawButton(angleButton))
 		{
 			goToAngle(0.0);
+			
+			firstRunGoStraight = false;
 		}
 		else if(j.getRawButton(autoForwardButton))
 		{
-			autoRampParts(true, 0.75, true, 50.0);
+			//autoRampParts(true, 0.75, true, 50.0);
+			autoRoughTerrain(true, 0.75,true, 50.0);
 		}
 		else if(j.getRawButton(autoReverseButton))
 		{
-			autoRampParts(false, 0.75, false, 0.0);
+			//autoRampParts(false, 0.75, false, 0.0);
+			autoRoughTerrain(false, 0.75, false, 0.0);
 		}
 		else
 		{
-			if (!firstRunGoStraight)
-				turnPIDOff();
+			
+			turnPIDOff();
 			joystickDrive(shiftButton);
 			
 			firstRunGoStraight = true;
@@ -104,6 +112,8 @@ public class TankDrive
 	
 	public void joystickDrive(int shiftButton)
 	{
+		resetAutoDefense();
+		
 		checkUserShift(shiftButton);
 
 		double posy = sensitivityControl(j.getRawAxis(3));
@@ -164,13 +174,15 @@ public class TankDrive
 		
 		if (state == DefenseState.APPROACH)
 		{
-			goToAngle(startAngle);
 			
 			if (firstRun)
 			{
+				Repository.DriveTrain.setBrakeMode();
+				
 				startingPitch = navX.getPitch();
 				minPitch = navX.getPitch();
 				maxPitch = navX.getPitch();
+				goToAngle(startAngle);
 				firstRun = false;
 			}
 			
@@ -179,8 +191,15 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 				
-			if(angleControl.onTarget())
+			SmartDashboard.putBoolean("on-target", isAtAngleSetpoint());
+			if(isAtAngleSetpoint())
+			{
 				state = DefenseState.CLIMB;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+			
+			SmartDashboard.putString("state-", "Approach");
 		}
 		else if (state == DefenseState.CLIMB)
 		{
@@ -191,13 +210,20 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if (minPitch <= -PITCH_WINDOW && currentPitch > minPitch && currentPitch > lastPitch)
+			if (minPitch <= -PITCH_WINDOW && currentPitch > minPitch)
 			{
 				state = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
 			}
+			
+			SmartDashboard.putString("state-", "Climb");
 		}
 		else if (state == DefenseState.PEAK)
 		{
+			if(target)
+				direction /= 2; 
+			
 			if(currentPitch < minPitch)
 				minPitch = currentPitch;
 			else if(currentPitch > maxPitch)
@@ -206,7 +232,11 @@ public class TankDrive
 			if (maxPitch >= PITCH_WINDOW && currentPitch < maxPitch && currentPitch < lastPitch)
 			{
 				state = DefenseState.DESCENT;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
 			}
+			
+			SmartDashboard.putString("state-", "Peak");
 		}
 		else if (state == DefenseState.DESCENT)
 		{
@@ -215,10 +245,14 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if ((currentPitch - startingPitch) < 10)
+			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
 			{
 				state = DefenseState.FINISHING;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
 			}
+			
+			SmartDashboard.putString("state-", "Descent");
 		}
 		else if (state == DefenseState.FINISHING)
 		{
@@ -227,11 +261,13 @@ public class TankDrive
 			{
 				goToAngle(goalAngle);
 				
-				if (angleControl.onTarget())
+				if (isAtAngleSetpoint())
 					state = DefenseState.FINISH;
 			}
 			else
 				state = DefenseState.FINISH;
+			
+			SmartDashboard.putString("state-", "Finishing");
 			
 		}
 		else if (state == DefenseState.FINISH)
@@ -240,9 +276,145 @@ public class TankDrive
 				goToAngle(goalAngle);
 			else
 				goStraight(-Math.abs(direction));
+			
+			SmartDashboard.putString("state-", "Finish");
+			
+			firstRun = true;
 		}
 		
 		lastPitch = currentPitch;
+	}
+	
+	public void autoRoughTerrain(boolean forward, double direction, boolean target, double goalAngle)
+	{
+		double startAngle = 0.0 + (forward ? 180.0 : 0.0);
+		double currentPitch = navX.getPitch();
+		
+		if (state == DefenseState.APPROACH)
+		{
+			
+			if (firstRun)
+			{
+				Repository.DriveTrain.setBrakeMode();
+				
+				startingPitch = navX.getPitch();
+				minPitch = navX.getPitch();
+				maxPitch = navX.getPitch();
+				goToAngle(startAngle);
+				firstRun = false;
+			}
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+				
+			SmartDashboard.putBoolean("on-target", isAtAngleSetpoint());
+			if(isAtAngleSetpoint())
+			{
+				state = DefenseState.CLIMB;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+			
+			SmartDashboard.putString("state-", "Approach");
+		}
+		else if (state == DefenseState.CLIMB)
+		{
+			goStraight(-Math.abs(direction));
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (minPitch <= -13 && currentPitch > minPitch)
+			{
+				state = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+			
+			SmartDashboard.putString("state-", "Climb");
+		}
+		else if (state == DefenseState.PEAK)
+		{
+			if(target)
+				direction /= 2; 
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (maxPitch >= 13 && currentPitch < maxPitch && currentPitch < lastPitch)
+			{
+				state = DefenseState.DESCENT;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+			
+			SmartDashboard.putString("state-", "Peak");
+		}
+		else if (state == DefenseState.DESCENT)
+		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
+			{
+				state = DefenseState.FINISHING;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+			
+			SmartDashboard.putString("state-", "Descent");
+		}
+		else if (state == DefenseState.FINISHING)
+		{
+			
+			if(target)
+			{
+				goToAngle(goalAngle);
+				
+				if (isAtAngleSetpoint())
+					state = DefenseState.FINISH;
+			}
+			else
+				state = DefenseState.FINISH;
+			
+			SmartDashboard.putString("state-", "Finishing");
+			
+		}
+		else if (state == DefenseState.FINISH)
+		{
+			if(target)
+				goToAngle(goalAngle);
+			else
+				goStraight(-Math.abs(direction));
+			
+			SmartDashboard.putString("state-", "Finish");
+			
+			firstRun = true;
+		}
+		
+		lastPitch = currentPitch;
+	}
+	
+	public void resetAutoDefense()
+	{
+		if(!(state == DefenseState.APPROACH))
+		{
+		
+			Repository.DriveTrain.setCoastMode(); //hack
+			Repository.DriveTrain.enable();
+
+		}
+		state = DefenseState.APPROACH;
+		SmartDashboard.putString("state-", "Approach");
+		
 	}
 	
 	public void goStraight(double direction)
@@ -276,6 +448,11 @@ public class TankDrive
 	{
 		if(angleControl.isEnabled())
 			angleControl.disable();
+	}
+	
+	public boolean isAtAngleSetpoint()
+	{
+		return (Math.abs(angleControl.getError()) < 5);
 	}
 	
 	public synchronized void goToSetpoint(double setpointAngle)
@@ -317,6 +494,6 @@ public class TankDrive
 		if(Math.abs(input)<DEAD_BAND){
 			input=0;
 		}
-		return (JOYSTICK_SENSITIVITY*Math.pow(input, 7))+((1-JOYSTICK_SENSITIVITY)*input);
+		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }
