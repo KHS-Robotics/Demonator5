@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -205,9 +206,9 @@ public class Repository
 	{
 		try
 		{
-			RightDriveEncoder = new Encoder(0, 1, true);
+			RightDriveEncoder = new Encoder(1, 0);
 			LeftDriveEncoder = new Encoder(2, 3);
-			ArmEncoder = new Encoder(4, 5, true);
+			ArmEncoder = new Encoder(4, 5);
 			RightMotorCounter = new Counter(6);
 			LeftMotorCounter = new Counter(7);
 			
@@ -216,7 +217,8 @@ public class Repository
 			LeftDriveEncoder.setDistancePerPulse(0.184);
 			
 			// 1 / (7*142)
-			ArmEncoder.setDistancePerPulse(0.001);
+			ArmEncoder.setDistancePerPulse(1);
+			ArmEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
 			
 			RightMotorCounter.setDistancePerPulse(0.05);
 			LeftMotorCounter.setDistancePerPulse(0.05);

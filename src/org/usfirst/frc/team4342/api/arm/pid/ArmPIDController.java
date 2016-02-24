@@ -43,10 +43,11 @@ public final class ArmPIDController extends PIDController
 		SmartDashboard.putNumber("Arm-Error", error);
 		SmartDashboard.putNumber("Arm-PidGet", input);
 		SmartDashboard.putNumber("Arm-Val", Repository.ArmMotor.get());
+		SmartDashboard.putNumber("Arm-Set", super.getSetpoint());
 		
-		if(error > 0)
+		if(error < 0)
 		{
-			if(enc.get() < 140 && this.getSetpoint() > 140)
+			if(enc.get() > -80)
 			{
 				super.setPID(kP, kI, kD);
 				super.calculate();
@@ -57,11 +58,11 @@ public final class ArmPIDController extends PIDController
 				super.calculate();
 			}
 		}
-		else if(error < 0)
+		else if(error > 0)
 		{
-			if(enc.get() < 140 && this.getSetpoint() < 140)
+			if(enc.get() < -80)
 			{
-				super.setPID(0, 0, 0);
+				super.setPID(kPd, kId, kDd);
 				super.calculate();
 			}
 			else

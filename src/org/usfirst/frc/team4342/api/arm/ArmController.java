@@ -58,47 +58,53 @@ public class ArmController
 			0.05
 		);
 		
-		apidc.setInputRange(0, 500);
-		apidc.setPercentTolerance(5);
+		apidc.setInputRange(-500, 0);
+		apidc.setPercentTolerance(2);
 
 		disablePID();
 	}
 
-	public void checkUser(int smartDashboardSetpointButton, int accumButton, int accumLiftButton, int safetyButton)
+	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumButton, int accumLiftButton, int safetyButton)
 	{
-		checkUserArm(smartDashboardSetpointButton);
+		checkUserArm(smartDashboardSetpointButton, brakeButton);
 		checkUserAccumulator(accumButton, accumLiftButton, safetyButton);
 	}
 
-	public void checkUserArm(int smartDashboardSetpointButton)
+	public void checkUserArm(int smartDashboardSetpointButton, int brakeButton)
 	{
+		if(enc.getDistance() > -8 && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			armMotor.set(0);
+			disablePID();
+			return;
+		}
+		else if(enc.getDistance() > -125 && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			armMotor.set(0.06);
+			disablePID();
+			return;
+		}
+		else if(enc.getDistance() < -400 && (j.getY() < 0 || armMotor.get() < 0))
+		{
+			armMotor.set(0);
+			disablePID();
+			return;
+		}
+
+		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+		{
+			enc.reset();
+			armMotor.set(0.0);
+			return;
+		}
+		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
+		{
+			armMotor.set(0.0);
+			return;
+		}
+		
 		if(!switchBox.getRawButton(smartDashboardSetpointButton))
 		{
-			if(enc.get() < 140 && (j.getY() > 0 || armMotor.get() > 0))
-			{
-				armMotor.set(0);
-				disablePID();
-				return;
-			}
-			else if(enc.get() > 375 && (j.getY() < 0 || armMotor.get() < 0))
-			{
-				armMotor.set(0);
-				disablePID();
-				return;
-			}
-
-			if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
-			{
-				enc.reset();
-				armMotor.set(0.0);
-				return;
-			}
-			else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
-			{
-				armMotor.set(0.0);
-				return;
-			}
-
 			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
 			{
 				checkButtonStatus();
@@ -108,15 +114,19 @@ public class ArmController
 					setSetpoint(setpoints.getSetpoint(buttonSelected));
 					enablePID();
 				}
-				else if(enc.get() > 140)
+				else if(!switchBox.getRawButton(brakeButton))
 				{
 					if(!autoHold)
 					{
-						setSetpoint(enc.get());
+						setSetpoint(-enc.getDistance());
 						enablePID();
 						autoHold = true;
 					}
-
+				}
+				else
+				{
+					stopOperatorAutoMove();
+					armMotor.set(0);
 				}
 			} 
 			else 
@@ -129,6 +139,8 @@ public class ArmController
 		}
 		else
 		{
+			stopOperatorAutoMove();
+			enablePID();
 			setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
 		}
 	}
@@ -152,7 +164,7 @@ public class ArmController
 
 	public void setSetpoint(double setpoint)
 	{
-		apidc.setSetpoint(setpoint);
+		apidc.setSetpoint(-setpoint);
 	}
 
 	public void stopAll()
@@ -267,7 +279,7 @@ public class ArmController
 	{
 		if(autoHold || buttonPressed)
 		{
-			apidc.disable();
+			disablePID();
 		}
 
 		autoHold = false;

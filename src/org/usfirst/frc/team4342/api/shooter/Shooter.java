@@ -22,10 +22,10 @@ public class Shooter
 		this.arm = arm;
 	}
 
-	public void handleTeleop(int driverShootButton, int safetyButton, int fireButton, int armBrakeButton, int accumButton, int accumLiftButton)
+	public void handleTeleop(int driverShootButton, int safetyButton, int fireButton, int smartDashboardButton, int armBrakeButton, int accumButton, int accumLiftButton)
 	{
 		shooter.checkUser(driverShootButton, safetyButton, fireButton, accumButton);
-		arm.checkUser(armBrakeButton, accumButton, accumLiftButton, safetyButton);
+		arm.checkUser(smartDashboardButton, armBrakeButton, accumButton, accumLiftButton, safetyButton);
 	}
 
 	public void handleAuto()
