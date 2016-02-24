@@ -18,7 +18,16 @@ public final class AutoRoutineLoader
 			
 			switch(id)
 			{
-				
+				case 0:
+					return AutoRoutine.RampParts;
+				case 1:
+					return AutoRoutine.RoughTerrain;
+				case 2:
+					return AutoRoutine.Moat;
+				case 3:
+					return AutoRoutine.LowBar;
+				case 4:
+					return AutoRoutine.RockWall;
 			}
 			
 			return AutoRoutine.Unknown;

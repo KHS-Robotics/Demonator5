@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
@@ -115,6 +116,8 @@ public class SmartDashboardUpdater
 				putCounterData();
 				
 				SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
+				SmartDashboard.putNumber("Auto-Step", AutoRoutinesRunner.getCurrentStep());
+				SmartDashboard.putString("Auto-Routine", AutoRoutinesRunner.getLastAutoRoutine().toString());
 
 				try
 				{
