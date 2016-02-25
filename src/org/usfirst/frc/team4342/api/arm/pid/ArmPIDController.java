@@ -31,6 +31,13 @@ public final class ArmPIDController extends PIDController
 	@Override
 	public void calculate()
 	{
+		if(enc.getDistance() > -25 || enc.getDistance() < -460)
+		{
+			super.setPID(0, 0, 0);
+			super.calculate();
+			return;
+		}
+		
 		double input;
 		
 		synchronized(this) 
@@ -42,12 +49,12 @@ public final class ArmPIDController extends PIDController
 		
 		SmartDashboard.putNumber("Arm-Error", error);
 		SmartDashboard.putNumber("Arm-PidGet", input);
-		SmartDashboard.putNumber("Arm-Val", Repository.ArmMotor.get());
+		SmartDashboard.putNumber("Arm-Get", Repository.ArmMotor.get());
 		SmartDashboard.putNumber("Arm-Set", super.getSetpoint());
 		
 		if(error < 0)
 		{
-			if(enc.get() > -80)
+			if(enc.getDistance() > -80)
 			{
 				super.setPID(kP, kI, kD);
 				super.calculate();
@@ -60,7 +67,7 @@ public final class ArmPIDController extends PIDController
 		}
 		else if(error > 0)
 		{
-			if(enc.get() < -80)
+			if(enc.getDistance() < -80)
 			{
 				super.setPID(kPd, kId, kDd);
 				super.calculate();

@@ -173,6 +173,10 @@ public class NavXLogger
 			writer.write(RETURN_FEED);
 		}
 		
+		/**
+		 * Good Lord Java... All I wanted was an HH:MM:SS in local time from UTC
+		 * @return the HH:MM:SS Java so "nicely" allows you to get in local time
+		 */
 		@SuppressWarnings("deprecation")
 		private String getCurrentTime()
 		{

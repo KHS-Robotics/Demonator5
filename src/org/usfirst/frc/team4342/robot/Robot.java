@@ -50,11 +50,9 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Arm-D-Down", 0.0);
 		
 		Repository.initializeAll();
-		
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
 		
 		tdc = new TankDriveComponent(Repository.TankDrive);
-		
 		sc = new ShootingComponent(Repository.Shooter);
 		
 		new Solenoid(2).set(true);
@@ -71,7 +69,11 @@ public class Robot extends IterativeRobot
     {
     	Repository.DriveTrain.setBrakeMode();
     	
+    	ComponentRunner.startAutomaticMode(tdc);
+    	ComponentRunner.startAutomaticMode(sc);
+    	
     	selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine("/home/lvuser/AutoRoutine.txt");
+    	AutoRoutinesRunner.reset();
     }
 
     /**

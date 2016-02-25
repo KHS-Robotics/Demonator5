@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class ShooterController 
 {
+	public enum ShooterState
+	{
+		LOADED, FIRING
+	}
+	
 	private Joystick driveStick, switchBox;
 	private CANTalon rightMotor, leftMotor;
 	private Solenoid ballPusher;
@@ -57,8 +62,6 @@ public class ShooterController
 		leftPID.setOutputRange(0.0, 1.0);
 		
 		enablePID();
-		
-		state = ballPusher.get() ? ShooterState.RELOADING : ShooterState.LOADED;
 	}
 	
 	public void checkUser(int driverShootButton, int safetyButton, int fireButton, int accumButton)
@@ -76,16 +79,14 @@ public class ShooterController
 			
 			driveShootLoops++;
 			
-			if(driveShootLoops > 20)
+			if(driveShootLoops > 10)
 			{
-				ballPusher.set(true);
+				setBallPusher(true);
 				
-				if(driveShootLoops > 30)
+				if(driveShootLoops > 20)
 				{
-					ballPusher.set(false);
-					leftPID.setSetpoint(0);
-					rightPID.setSetpoint(0);
-					disablePID();
+					setMotorsPID(0);
+					setBallPusher(false);
 					
 					driveShootLoops = 0;
 					driverShooting = false;
@@ -104,56 +105,56 @@ public class ShooterController
 					
 					if (switchBox.getRawButton(fireButton) && isAtSetpoint())
 					{
-						ballPusher.set(true);
-						
+						setBallPusher(true);
 						state = ShooterState.FIRING;
 					}
 				}
 				else if(switchBox.getRawButton(accumButton))
 				{
-					rightMotor.set(-0.5);
-					leftMotor.set(-0.5);
-					arm.getAccumMotor().set(1.0);
+					setMotors(-0.5);
+					setAccumulatorMotor(1);
 				}
 				else
 				{
-					leftPID.setSetpoint(0);
-					rightPID.setSetpoint(0);
-					disablePID();
-					rightMotor.set(0);
-					leftMotor.set(0);
-					arm.getAccumMotor().set(0);
+					stopAllMotors();
 				}
 			}
 			else if (state == ShooterState.FIRING)
 			{
 				if(numLoops > 50)//!ballSensor.get())
 				{
-					leftPID.setSetpoint(0);
-					rightPID.setSetpoint(0);
-					rightMotor.set(0);
-					leftMotor.set(0);
-					
+					setMotorsPID(0);
 					numLoops = 0;
+					setBallPusher(false);
 					
-					disablePID();
-					
-					state = ShooterState.RELOADING;
+					state = ShooterState.LOADED;
 				}
 				
 				numLoops++;
 			}
-			else if (state == ShooterState.RELOADING)
-			{
-				if(true)//ballSensor.get())
-				{
-					ballPusher.set(false);
-					
-					enablePID();
-					
-					state = ShooterState.LOADED;
-				}
+		}
+	}
+	
+	public void fire()
+	{
+		if(state == ShooterState.LOADED && !driverShooting)
+		{
+			enablePID();
+			setMotorsPID(85);
+			
+			while(!isAtSetpoint()) {
+				// Chillin' like a villain
 			}
+			
+			setBallPusher(true);
+			
+			int wait = 0;
+			while(wait < 10) {
+				wait++;
+			}
+			
+			setMotorsPID(0);
+			setBallPusher(false);
 		}
 	}
 	
@@ -163,8 +164,22 @@ public class ShooterController
 		leftMotor.set(output);
 	}
 	
+	public void setMotorsPID(double setpoint)
+	{
+		rightMotor.set(setpoint);
+		leftMotor.set(setpoint);
+	}
+	
+	public void setAccumulatorMotor(double output)
+	{
+		arm.getAccumMotor().set(output);
+	}
+	
 	public void setBallPusher(boolean on)
 	{
+		if(on && (rightMotor.get() <= 0 || leftMotor.get() <= 0))
+			return;
+		
 		ballPusher.set(on);
 	}
 	
@@ -194,11 +209,14 @@ public class ShooterController
 		return right && left;
 	}
 	
-	public void stopAll()
+	public void stopAllMotors()
 	{
+		if(rightPID.isEnabled() || leftPID.isEnabled())
+			disablePID();
+		
 		rightMotor.set(0);
 		leftMotor.set(0);
-		ballPusher.set(false);
+		arm.getAccumMotor().set(0);
 	}
 	
 	public ShooterState getState()

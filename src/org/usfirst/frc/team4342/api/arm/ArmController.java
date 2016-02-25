@@ -14,12 +14,7 @@ public class ArmController
 {
 	private static final double JOYSTICK_DEADBAND = 0.1;
 	private static final double JOYSTICK_SENSITIVITY = 0.7;
-
-	private static final int TOP_WINDOW_SIZE = 180;
-	private static final int BOTTOM_WINDOW_SIZE = 140;
-	private static final int START_TOP_WINDOW = 300;
-	private static final int START_BOTTOM_WINDOW = 140;
-
+	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
 	private Encoder enc;
@@ -132,10 +127,17 @@ public class ArmController
 			else 
 			{
 				stopOperatorAutoMove();
-
+				
+				if(j.getY() < 0)
+				{
+					// TODO: arm moves downwards too fast b/c gravity;
+					// need to divide the user's output by a respectable
+					// amount
+					armMotor.set(j.getY() / 3.0);
+					return;
+				}
+				
 				armMotor.set(j.getY());
-				//armMotor.set(sensitivityControl(j.getY()));
-				//armMotor.set(controlSpeed(sensitivityControl(j.getY()), enc.get()));
 			}
 		}
 		else
@@ -157,22 +159,15 @@ public class ArmController
 			accumMotor.set(0);
 		}
 	}
-
-	public boolean isAtAutoSetpoint()
-	{
-		return (enc.get() > apidc.getSetpoint()-3.0) || (enc.get() < apidc.getSetpoint()+3.0);
-	}
-
+	
 	public void setSetpoint(double setpoint)
 	{
 		apidc.setSetpoint(-setpoint);
 	}
 
-	public void stopAll()
+	public boolean isAtAutoSetpoint()
 	{
-		stopOperatorAutoMove();
-		armMotor.set(0);
-		accumMotor.set(0);
+		return (enc.get() > apidc.getSetpoint()-3.0) || (enc.get() < apidc.getSetpoint()+3.0);
 	}
 
 	public void enablePID()
@@ -230,52 +225,6 @@ public class ArmController
 		return -enc.getRate()*Math.cos(enc.getDistance()*Math.PI)*18;
 	}
 
-	/**
-	 * Decelerates the arm speed as it approaches the top or
-	 * bottom to prevent it from slamming harshly
-	 * @param input the input from the joysticks or autoMove
-	 * @param encCounts the current position of the elevator
-	 * @return the new output for the motors
-	 */
-	private double controlSpeed(double input, int encCounts) 
-	{
-		double output = input;
-
-		if(input < 0 && isInTopWindow(encCounts))
-		{
-			double penetration = (encCounts - START_TOP_WINDOW);
-			output = input - (penetration*(input/(TOP_WINDOW_SIZE)));
-
-			output = output > -.1 ? -.1 : output;
-		}
-		else if(input > 0 && isInBottomWindow(encCounts))
-		{
-			return 0.0;
-		}
-
-		return output;
-	}
-
-	/**
-	 * Used to determine if the arm is getting close to the bottom
-	 * @param encCounts the current arm position
-	 * @return true if within the window, false otherwise
-	 */
-	private boolean isInBottomWindow(int encCounts) 
-	{
-		return encCounts <= START_BOTTOM_WINDOW;
-	}
-
-	/**
-	 * Used to determine if the arm is getting close to the top
-	 * @param encCounts the current arm position
-	 * @return true if within the window, false otherwise
-	 */
-	private boolean isInTopWindow(int encCounts) 
-	{
-		return encCounts >= START_TOP_WINDOW;
-	}
-
 	private void stopOperatorAutoMove() 
 	{
 		if(autoHold || buttonPressed)
@@ -287,7 +236,14 @@ public class ArmController
 		buttonPressed = false;
 		buttonSelected = -1;
 	}
-
+	
+	public void stopAll()
+	{
+		stopOperatorAutoMove();
+		armMotor.set(0);
+		accumMotor.set(0);
+	}
+	
 	private double sensitivityControl(double input)
 	{
 		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);

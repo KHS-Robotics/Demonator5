@@ -31,7 +31,7 @@ public class Shooter
 	public void handleAuto()
 	{
 		arm.setSetpoint(autoSetpoint);
-		shooter.setMotors(autoMotorOutput);
+		shooter.setMotorsPID(autoMotorOutput);
 		shooter.setBallPusher(ballPushStatus);
 	}
 
@@ -40,7 +40,7 @@ public class Shooter
 		this.autoSetpoint = setpoint;
 	}
 	
-	public void setShooterMotors(double output)
+	public void setShooterMotorsPID(double output)
 	{
 		this.autoMotorOutput = output;
 	}
@@ -52,7 +52,7 @@ public class Shooter
 
 	public void stopAll()
 	{
-		shooter.stopAll();
+		shooter.stopAllMotors();
 		arm.stopAll();
 	}
 
