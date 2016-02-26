@@ -4,6 +4,8 @@ import org.usfirst.frc.team4342.api.arm.ArmController;
 import org.usfirst.frc.team4342.api.arm.LowBarStates;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Shooter 
 {
 	public static final double JOYSTICK_DEADBAND = 0.05;
@@ -106,6 +108,22 @@ public class Shooter
 				
 				state = LowBarStates.OVER;
 			}
+		}
+	}
+	
+	
+	public void autoFire() {
+		double botAngle = SmartDashboard.getNumber("Goal-Ang");
+		double armAngle = SmartDashboard.getNumber("Goal-Dist"); //plug into regression function/lookuptable
+		
+		Repository.ArmController.setAngle(armAngle);
+		Repository.TankDrive.goToAngle(botAngle);
+		
+		if(Repository.ArmController.isAtAutoSetpoint() && Repository.Navx.getYaw()<=botAngle+2 && Repository.Navx.getYaw()>=botAngle-2) {
+			Repository.ShooterController.enablePID();
+			Repository.Shooter.shooter.setMotorsPID(85);
+			if(Repository.Shooter.shooter.isAtSetpoint());
+				Repository.BallPusher.set(true);
 		}
 	}
 }
