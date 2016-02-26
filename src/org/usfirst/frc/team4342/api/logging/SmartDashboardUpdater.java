@@ -42,7 +42,7 @@ public class SmartDashboardUpdater
 	/**
 	 * Adds a talon to put on the Smart Dashboard
 	 * @param key the key to use when putting to the Smart Dashboard
-	 * @param talon the jagaur to get data from
+	 * @param talon the talon to get data from
 	 */
 	public static void addTalon(String key, CANTalon talon) 
 	{

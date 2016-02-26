@@ -111,19 +111,21 @@ public class Shooter
 		}
 	}
 	
-	
-	public void autoFire() {
+	public void autoFire() 
+	{
 		double botAngle = SmartDashboard.getNumber("Goal-Ang");
-		double armAngle = SmartDashboard.getNumber("Goal-Dist"); //plug into regression function/lookuptable
+		double armAngle = SmartDashboard.getNumber("Goal-Dist"); //plug into regression function/lookup table
 		
-		Repository.ArmController.setAngle(armAngle);
+		arm.setAngle(armAngle);
 		Repository.TankDrive.goToAngle(botAngle);
 		
-		if(Repository.ArmController.isAtAutoSetpoint() && Repository.Navx.getYaw()<=botAngle+2 && Repository.Navx.getYaw()>=botAngle-2) {
-			Repository.ShooterController.enablePID();
-			Repository.Shooter.shooter.setMotorsPID(85);
-			if(Repository.Shooter.shooter.isAtSetpoint());
-				Repository.BallPusher.set(true);
+		if(arm.isAtAutoSetpoint() && Repository.Navx.getYaw() <= botAngle+2 && Repository.Navx.getYaw() >= botAngle-2) 
+		{
+			shooter.enablePID();
+			shooter.setMotorsPID(85);
+			
+			if(shooter.isAtSetpoint());
+				shooter.setBallPusher(true);
 		}
 	}
 }
