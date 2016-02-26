@@ -167,7 +167,7 @@ public class ArmController
 
 	public boolean isAtAutoSetpoint()
 	{
-		return (enc.get() > apidc.getSetpoint()-3.0) || (enc.get() < apidc.getSetpoint()+3.0);
+		return (enc.getDistance() > apidc.getSetpoint()-3.0) || (enc.getDistance() < apidc.getSetpoint()+3.0);
 	}
 
 	public void enablePID()
