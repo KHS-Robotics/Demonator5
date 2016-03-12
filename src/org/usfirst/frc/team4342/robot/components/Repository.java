@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -193,6 +194,8 @@ public class Repository
 	{
 		try
 		{
+			new Solenoid(2).set(true);
+			new Solenoid(3).set(true);
 			Shifter = new DoubleSolenoid(4, 5);
 			BallPusher = new Solenoid(6);
 		}
@@ -255,6 +258,16 @@ public class Repository
 	
 	private static void initializeSmartDashboard()
 	{
+		SmartDashboard.putNumber("Goal-Dist", 0.0);
+		SmartDashboard.putNumber("Goal-Ang", 0.0);
+		
+		SmartDashboard.putNumber("Arm-P-Up", 0.0);
+		SmartDashboard.putNumber("Arm-I-Up", 0.0);
+		SmartDashboard.putNumber("Arm-D-Up", 0.0);
+		SmartDashboard.putNumber("Arm-P-Down", 0.0);
+		SmartDashboard.putNumber("Arm-I-Down", 0.0);
+		SmartDashboard.putNumber("Arm-D-Down", 0.0);
+		
 		SmartDashboardUpdater.addJoystick("Drive", DriveStick);
 		SmartDashboardUpdater.addJoystick("Shooter", ShooterStick);
 		

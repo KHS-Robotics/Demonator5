@@ -16,6 +16,15 @@ public class XboxController
 	
 	/**
 	 * Constructs a wrapper for a joystick for an Xbox Controller
+	 * @param port the joystick to wrap the class around
+	 */
+	public XboxController(int port)
+	{
+		this.j = new Joystick(port);
+	}
+	
+	/**
+	 * Constructs a wrapper for a joystick for an Xbox Controller
 	 * @param j the joystick to wrap the class around
 	 */
 	public XboxController(Joystick j)
@@ -149,6 +158,10 @@ public class XboxController
 		return -getRawAxis(5);
 	}
 	
+	/**
+	 * The Directional Pad on the bottom left
+	 * @return the current axis position on the Directional Pad
+	 */
 	public double getDirectionalPad()
 	{
 		return getRawAxis(6);

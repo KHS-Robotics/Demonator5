@@ -59,40 +59,44 @@ public class ArmController
 		disablePID();
 	}
 
-	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumButton, int accumLiftButton, int safetyButton)
+	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumButton)
 	{
 		checkUserArm(smartDashboardSetpointButton, brakeButton);
-		checkUserAccumulator(accumButton, accumLiftButton, safetyButton);
+		checkUserAccumulator(accumButton);
 	}
 
 	public void checkUserArm(int smartDashboardSetpointButton, int brakeButton)
 	{
-		if(enc.getDistance() > -8 && (j.getY() > 0 || armMotor.get() > 0))
+		double y = -j.getY();
+		double encDist = Math.abs(enc.getDistance());
+		double currentOutput = armMotor.get();
+		
+		if(encDist < 8 && (y < 0 || currentOutput < 0))
 		{
 			armMotor.set(0);
 			disablePID();
 			return;
 		}
-		else if(enc.getDistance() > -125 && (j.getY() > 0 || armMotor.get() > 0))
+		else if(encDist < 125 && (y < 0 || currentOutput < 0))
 		{
 			armMotor.set(0.06);
 			disablePID();
 			return;
 		}
-		else if(enc.getDistance() < -400 && (j.getY() < 0 || armMotor.get() < 0))
+		else if(enc.getDistance() > 400 && (y > 0 || currentOutput > 0))
 		{
 			armMotor.set(0);
 			disablePID();
 			return;
 		}
 
-		if(topLS.get() && (j.getY() > 0 || armMotor.get() > 0))
+		if(topLS.get() && (y < 0 || currentOutput < 0))
 		{
 			enc.reset();
 			armMotor.set(0.0);
 			return;
 		}
-		else if(botLS.get() && (j.getY() < 0 || armMotor.get() < 0))
+		else if(botLS.get() && (y > 0 || currentOutput > 0))
 		{
 			armMotor.set(0.0);
 			return;
@@ -100,7 +104,7 @@ public class ArmController
 		
 		if(!switchBox.getRawButton(smartDashboardSetpointButton))
 		{
-			if(Math.abs(j.getY()) < JOYSTICK_DEADBAND) 
+			if(Math.abs(y) < JOYSTICK_DEADBAND) 
 			{
 				checkButtonStatus();
 
@@ -113,7 +117,7 @@ public class ArmController
 				{
 					if(!autoHold)
 					{
-						setSetpoint(-enc.getDistance());
+						setSetpoint(encDist);
 						enablePID();
 						autoHold = true;
 					}
@@ -128,12 +132,9 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				if(j.getY() < 0)
+				if(j.getY() > 0 && encDist > 190)
 				{
-					// TODO: arm moves downwards too fast b/c gravity;
-					// need to divide the user's output by a respectable
-					// amount
-					armMotor.set(j.getY() / 3.0);
+					armMotor.set(j.getY() / 4.0);
 					return;
 				}
 				
@@ -148,7 +149,7 @@ public class ArmController
 		}
 	}
 
-	public void checkUserAccumulator(int accumButton, int accumLiftButton, int fireSafetyButton)
+	public void checkUserAccumulator(int accumButton)
 	{
 		if(j.getRawButton(accumButton) || switchBox.getRawButton(accumButton))
 		{
