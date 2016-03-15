@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
+import org.usfirst.frc.team4342.api.drive.DefenseState;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
@@ -28,6 +29,7 @@ public class SmartDashboardUpdater
 	private static Map<String, DigitalInput> limitSwitches = new HashMap<String, DigitalInput>();
 	private static Map<String, Encoder> encoders = new HashMap<String, Encoder>();
 	private static Map<String, Counter> counters = new HashMap<String, Counter>();
+	private static Map<String, DefenseState> defenseStates = new HashMap<String, DefenseState>();
 
 	/**
 	 * Adds a joystick to put on the Smart Dashboard
@@ -68,6 +70,11 @@ public class SmartDashboardUpdater
 	{
 		counters.put(key, counter);
 	}
+	
+	public static void addDefenseState(String key, DefenseState state)
+	{
+		defenseStates.put(key, state);
+	}
 
 	/**
 	 * Starts updating the Smart Dashboard
@@ -92,6 +99,7 @@ public class SmartDashboardUpdater
 		private boolean loggedNavx;
 		private boolean loggedEncoders;
 		private boolean loggedCounters;
+		private boolean loggedDefenseStates;
 
 		private MultiLogger multiLog;
 
@@ -114,6 +122,7 @@ public class SmartDashboardUpdater
 				putNavXData();
 				putEncoderData();
 				putCounterData();
+				putDefenseStates();
 				
 				SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
 				SmartDashboard.putNumber("Auto-Step", AutoRoutinesRunner.getCurrentStep());
@@ -291,6 +300,31 @@ public class SmartDashboardUpdater
 				{
 					multiLog.error("Error while putting Counter data", ex);
 					loggedCounters = true;
+				}
+			}
+		}
+		
+		/**
+		 * Puts defense data to the Smart Dashboard
+		 */
+		public void putDefenseStates()
+		{
+			try
+			{
+				for(Entry<String, DefenseState> entry : defenseStates.entrySet())
+				{
+					String key = entry.getKey();
+					DefenseState state = entry.getValue();
+					
+					SmartDashboard.putString(key, state.toString());
+				}
+			}
+			catch(Exception ex)
+			{
+				if(!loggedDefenseStates)
+				{
+					multiLog.error("Error while putting Defense State data", ex);
+					loggedDefenseStates = true;
 				}
 			}
 		}

@@ -292,5 +292,11 @@ public class Repository
 		
 		SmartDashboardUpdater.addCounter("Shooter-R", RightMotorCounter);
 		SmartDashboardUpdater.addCounter("Shooter-L", LeftMotorCounter);
+		
+		SmartDashboardUpdater.addDefenseState(TankDrive.getRampPartsState().toString(), TankDrive.getRampPartsState());
+		SmartDashboardUpdater.addDefenseState(TankDrive.getRoughTerrainState().toString(), TankDrive.getRoughTerrainState());
+		SmartDashboardUpdater.addDefenseState(TankDrive.getMoatState().toString(), TankDrive.getMoatState());
+		SmartDashboardUpdater.addDefenseState(TankDrive.getLowBarState().toString(), TankDrive.getLowBarState());
+		SmartDashboardUpdater.addDefenseState(TankDrive.getRockWallState().toString(), TankDrive.getRockWallState());
 	}
 }

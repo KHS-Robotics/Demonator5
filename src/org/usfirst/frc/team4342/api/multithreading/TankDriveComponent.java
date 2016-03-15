@@ -32,10 +32,6 @@ public class TankDriveComponent extends Component
 				{
 					td.drive(5, 10, 3, 5, 6);
 				}
-				else if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isAutonomous())
-				{
-					
-				}
 				
 				Thread.sleep(Component.SLEEP_MILLIS);
 			}

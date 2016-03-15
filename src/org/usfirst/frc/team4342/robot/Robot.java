@@ -15,7 +15,8 @@ import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
  * 
- * @see edu.wpi.first.wpilibj.IterativeRobot;
+ * @see edu.wpi.first.wpilibj.IterativeRobot
+ * @see edu.wpi.first.wpilibj.RobotBase
  * 
  * @author Ernie Wilson
  * @author Katie Schuetz

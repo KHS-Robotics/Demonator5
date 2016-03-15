@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.HashMap;
 
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 
@@ -28,14 +28,21 @@ public class TankDrive
 	private DoubleSolenoid shifter;
 	private Encoder encLeft, encRight;
 	
-	private PIDController angleControl;
-	private boolean firstRunPID, firstRunGoStraight = true;
+	private double offset;
 	
-	private boolean autoStepFinished;
-	private DefenseState state;
-	private double startingPitch = 0.0, minPitch = 0.0, maxPitch = 0.0, lastPitch = 0.0; 
+	private PIDController angleControl;
+	private boolean firstRunGoStraight = true;
+	
+	private boolean firstRunAutoMoveDist = true;
+	private double targetEncCounts, yaw;
+	
+	private DefenseState rampPartsState, roughTerrainState, moatState, lowBarState, rockWallState;
+	private double startingPitch, minPitch, maxPitch, lastPitch; 
 	private boolean firstRun = true;
-	private final double PITCH_WINDOW = 17;
+	
+	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 12;
+	
+	private HashMap<Integer, Double> POVLookupTable;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
 					Encoder encLeft, Encoder encRight)
@@ -62,16 +69,36 @@ public class TankDrive
 		angleControl.setContinuous();
 		angleControl.setInputRange(-180.0, 180.0);
 		angleControl.setOutputRange(-1.0, 1.0);
-		angleControl.setAbsoluteTolerance(5);
+		angleControl.setAbsoluteTolerance(3);
 		angleControl.disable();
 		
 		driveTrain.setPIDController(angleControl);
+		
+		POVLookupTable = new HashMap<Integer, Double>();
+		POVLookupTable.put(0, 0.0);
+		POVLookupTable.put(90, 45.0);
+		POVLookupTable.put(180, 180.0);
+		POVLookupTable.put(270, -45.0);
 	}
 	
 	public synchronized void drive(int shiftButton, int straightButton, int angleButton, int autoForwardButton,
 								   int autoReverseButton)
 	{
-		if(j.getRawButton(straightButton))
+		int pov = j.getPOV();
+		if(POVLookupTable.containsKey(pov))
+		{
+			if (firstRunGoStraight)
+			{
+				goToSetpoint(POVLookupTable.get(pov));
+				
+				firstRunGoStraight = false;
+			}
+			else
+			{
+				goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
+			}
+		}
+		else if(j.getRawButton(angleButton))
 		{
 			if (firstRunGoStraight)
 			{
@@ -84,25 +111,8 @@ public class TankDrive
 				goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 			}
 		}
-		else if(j.getRawButton(angleButton))
-		{
-			goToAngle(0.0);
-			
-			firstRunGoStraight = false;
-		}
-		else if(j.getRawButton(autoForwardButton))
-		{
-			//autoRampParts(true, 0.75, true, 50.0);
-			autoRoughTerrain(true, 0.75,true, 50.0);
-		}
-		else if(j.getRawButton(autoReverseButton))
-		{
-			//autoRampParts(false, 0.75, false, 0.0);
-			autoRoughTerrain(false, 0.75, false, 0.0);
-		}
 		else
 		{
-			
 			turnPIDOff();
 			joystickDrive(shiftButton);
 			
@@ -112,8 +122,6 @@ public class TankDrive
 	
 	public void joystickDrive(int shiftButton)
 	{
-		resetAutoDefense();
-		
 		checkUserShift(shiftButton);
 
 		double posy = sensitivityControl(j.getRawAxis(3));
@@ -135,49 +143,19 @@ public class TankDrive
 		{
 			Repository.Logs.error("Failed to set drive motors", ex);
 		}
-		
-//		double x = sensitivityControl(-j.getZ());
-//		double y = sensitivityControl(-j.getY());
-//
-//		double left = (y-x);
-//		double right = (y+x);
-//
-//		if (left > 1.0)
-//			left = 1.0;
-//		else if (left < -1.0)
-//			left = -1.0;
-//
-//		if (right > 1.0)
-//			right = 1.0;
-//		else if (right < -1.0)
-//			right = -1.0;
-//
-//		try
-//		{
-//			fr.set(right);
-//			fl.set(left);
-//			mr.set(right);
-//			ml.set(left);
-//			rr.set(right);
-//			rl.set(left);
-//		}
-//		catch (Exception ex)
-//		{
-//			Repository.Logs.error("Failed to set drive motors", ex);
-//		}
 	}
 	
-	public void autoRampParts(boolean forward, double direction, boolean target, double goalAngle)
+	public void autoRampParts(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 180.0 : 0.0);
+		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
 		double currentPitch = navX.getPitch();
+		double direction = 0.75;
 		
-		if (state == DefenseState.APPROACH)
+		if (rampPartsState == DefenseState.APPROACH)
 		{
-			
 			if (firstRun)
 			{
-				Repository.DriveTrain.setBrakeMode();
+				driveTrain.setBrakeMode();
 				
 				startingPitch = navX.getPitch();
 				minPitch = navX.getPitch();
@@ -190,36 +168,34 @@ public class TankDrive
 				minPitch = currentPitch;
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
-				
-			SmartDashboard.putBoolean("on-target", isAtAngleSetpoint());
+			
 			if(isAtAngleSetpoint())
 			{
-				state = DefenseState.CLIMB;
+				rampPartsState = DefenseState.CLIMB;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Approach");
 		}
-		else if (state == DefenseState.CLIMB)
+		else if (rampPartsState == DefenseState.CLIMB)
 		{
-			goStraight(-Math.abs(direction));
+			if(forward)
+				goStraight(direction);
+			else
+				goStraight(-direction);
 			
 			if(currentPitch < minPitch)
 				minPitch = currentPitch;
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if (minPitch <= -PITCH_WINDOW && currentPitch > minPitch)
+			if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
 			{
-				state = DefenseState.PEAK;
+				rampPartsState = DefenseState.PEAK;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Climb");
 		}
-		else if (state == DefenseState.PEAK)
+		else if (rampPartsState == DefenseState.PEAK)
 		{
 			if(target)
 				direction /= 2; 
@@ -229,16 +205,14 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if (maxPitch >= PITCH_WINDOW && currentPitch < maxPitch && currentPitch < lastPitch)
+			if (maxPitch >= RampPartsPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 			{
-				state = DefenseState.DESCENT;
+				rampPartsState = DefenseState.DESCENT;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Peak");
 		}
-		else if (state == DefenseState.DESCENT)
+		else if (rampPartsState == DefenseState.DESCENT)
 		{
 			if(currentPitch < minPitch)
 				minPitch = currentPitch;
@@ -247,14 +221,12 @@ public class TankDrive
 			
 			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
 			{
-				state = DefenseState.FINISHING;
+				rampPartsState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Descent");
 		}
-		else if (state == DefenseState.FINISHING)
+		else if (rampPartsState == DefenseState.FINISHING)
 		{
 			
 			if(target)
@@ -262,40 +234,32 @@ public class TankDrive
 				goToAngle(goalAngle);
 				
 				if (isAtAngleSetpoint())
-					state = DefenseState.FINISH;
+					rampPartsState = DefenseState.FINISH;
 			}
 			else
-				state = DefenseState.FINISH;
-			
-			SmartDashboard.putString("state-", "Finishing");
+				rampPartsState = DefenseState.FINISH;
 			
 		}
-		else if (state == DefenseState.FINISH)
+		else if (rampPartsState == DefenseState.FINISH)
 		{
-			if(target)
-				goToAngle(goalAngle);
-			else
-				goStraight(-Math.abs(direction));
-			
-			SmartDashboard.putString("state-", "Finish");
-			
+			stopAll();
 			firstRun = true;
 		}
 		
 		lastPitch = currentPitch;
 	}
 	
-	public void autoRoughTerrain(boolean forward, double direction, boolean target, double goalAngle)
+	public void autoRoughTerrain(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 180.0 : 0.0);
+		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
 		double currentPitch = navX.getPitch();
+		double direction = 0.75;
 		
-		if (state == DefenseState.APPROACH)
+		if (roughTerrainState == DefenseState.APPROACH)
 		{
-			
 			if (firstRun)
 			{
-				Repository.DriveTrain.setBrakeMode();
+				driveTrain.setBrakeMode();
 				
 				startingPitch = navX.getPitch();
 				minPitch = navX.getPitch();
@@ -308,36 +272,340 @@ public class TankDrive
 				minPitch = currentPitch;
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
-				
-			SmartDashboard.putBoolean("on-target", isAtAngleSetpoint());
+			
 			if(isAtAngleSetpoint())
 			{
-				state = DefenseState.CLIMB;
+				roughTerrainState = DefenseState.CLIMB;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Approach");
 		}
-		else if (state == DefenseState.CLIMB)
+		else if (roughTerrainState == DefenseState.CLIMB)
 		{
-			goStraight(-Math.abs(direction));
+			if(forward)
+				goStraight(direction);
+			else
+				goStraight(-direction);
 			
 			if(currentPitch < minPitch)
 				minPitch = currentPitch;
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if (minPitch <= -13 && currentPitch > minPitch)
+			if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
 			{
-				state = DefenseState.PEAK;
+				roughTerrainState = DefenseState.PEAK;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Climb");
 		}
-		else if (state == DefenseState.PEAK)
+		else if (roughTerrainState == DefenseState.PEAK)
+		{
+			if(target)
+				direction /= 2;
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+			{
+				roughTerrainState = DefenseState.DESCENT;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (roughTerrainState == DefenseState.DESCENT)
+		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
+			{
+				roughTerrainState = DefenseState.FINISHING;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (roughTerrainState == DefenseState.FINISHING)
+		{
+			if(target)
+			{
+				goToAngle(goalAngle);
+				
+				if (isAtAngleSetpoint())
+					roughTerrainState = DefenseState.FINISH;
+			}
+			else
+				roughTerrainState = DefenseState.FINISH;
+		}
+		else if (roughTerrainState == DefenseState.FINISH)
+		{
+			stopAll();
+			firstRun = true;
+		}
+		
+		lastPitch = currentPitch;
+	}
+	
+	public void autoMoat(boolean forward, boolean target, double goalAngle)
+	{
+		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double currentPitch = navX.getPitch();
+		double direction = 0.75;
+		
+		if (moatState == DefenseState.APPROACH)
+		{
+			if (firstRun)
+			{
+				driveTrain.setBrakeMode();
+				
+				startingPitch = navX.getPitch();
+				minPitch = navX.getPitch();
+				maxPitch = navX.getPitch();
+				goToAngle(startAngle);
+				firstRun = false;
+			}
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if(isAtAngleSetpoint())
+			{
+				moatState = DefenseState.CLIMB;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (moatState == DefenseState.CLIMB)
+		{
+			if(forward)
+				goStraight(direction);
+			else
+				goStraight(-direction);
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (minPitch <= -MoatPitch && currentPitch > minPitch)
+			{
+				moatState = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (moatState == DefenseState.PEAK)
+		{
+			if(target)
+				direction /= 2;
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+			{
+				moatState = DefenseState.DESCENT;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (moatState == DefenseState.DESCENT)
+		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
+			{
+				moatState = DefenseState.FINISHING;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (moatState == DefenseState.FINISHING)
+		{
+			if(target)
+			{
+				goToAngle(goalAngle);
+				
+				if (isAtAngleSetpoint())
+					moatState = DefenseState.FINISH;
+			}
+			else
+				moatState = DefenseState.FINISH;
+		}
+		else if (roughTerrainState == DefenseState.FINISH)
+		{
+			stopAll();
+			firstRun = true;
+		}
+		
+		lastPitch = currentPitch;
+	}
+	
+	public void autoLowBar(boolean forward, boolean target, double goalAngle)
+	{
+		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double currentPitch = navX.getPitch();
+		double direction = 0.75;
+		
+		if (lowBarState == DefenseState.APPROACH)
+		{
+			if (firstRun)
+			{
+				driveTrain.setBrakeMode();
+				
+				startingPitch = navX.getPitch();
+				minPitch = navX.getPitch();
+				maxPitch = navX.getPitch();
+				goToAngle(startAngle);
+				firstRun = false;
+			}
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if(isAtAngleSetpoint())
+			{
+				lowBarState = DefenseState.CLIMB;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (lowBarState == DefenseState.CLIMB)
+		{
+			if(forward)
+				goStraight(direction);
+			else
+				goStraight(-direction);
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (minPitch <= -LowBarPitch && currentPitch > minPitch)
+			{
+				lowBarState = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (lowBarState == DefenseState.PEAK)
+		{
+			if(target)
+				direction /= 2;
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+			{
+				lowBarState = DefenseState.DESCENT;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (lowBarState == DefenseState.DESCENT)
+		{
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
+			{
+				lowBarState = DefenseState.FINISHING;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (lowBarState == DefenseState.FINISHING)
+		{
+			if(target)
+			{
+				goToAngle(goalAngle);
+				
+				if (isAtAngleSetpoint())
+					lowBarState = DefenseState.FINISH;
+			}
+			else
+				lowBarState = DefenseState.FINISH;
+		}
+		else if (lowBarState == DefenseState.FINISH)
+		{
+			stopAll();
+			firstRun = true;
+		}
+		
+		lastPitch = currentPitch;
+	}
+	
+	public void autoRockWall(boolean forward, boolean target, double goalAngle)
+	{
+		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double currentPitch = navX.getPitch();
+		double direction = 0.75;
+		
+		if (rockWallState == DefenseState.APPROACH)
+		{
+			if (firstRun)
+			{
+				driveTrain.setBrakeMode();
+				
+				startingPitch = navX.getPitch();
+				minPitch = navX.getPitch();
+				maxPitch = navX.getPitch();
+				goToAngle(startAngle);
+				firstRun = false;
+			}
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if(isAtAngleSetpoint())
+			{
+				rockWallState = DefenseState.CLIMB;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (rockWallState == DefenseState.CLIMB)
+		{
+			if(forward)
+				goStraight(direction);
+			else
+				goStraight(-direction);
+			
+			if(currentPitch < minPitch)
+				minPitch = currentPitch;
+			else if(currentPitch > maxPitch)
+				maxPitch = currentPitch;
+			
+			if (minPitch <= -RockWallPitch && currentPitch > minPitch)
+			{
+				rockWallState = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+			}
+		}
+		else if (rockWallState == DefenseState.PEAK)
 		{
 			if(target)
 				direction /= 2; 
@@ -347,16 +615,14 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if (maxPitch >= 13 && currentPitch < maxPitch && currentPitch < lastPitch)
+			if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 			{
-				state = DefenseState.DESCENT;
+				rockWallState = DefenseState.DESCENT;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Peak");
 		}
-		else if (state == DefenseState.DESCENT)
+		else if (rockWallState == DefenseState.DESCENT)
 		{
 			if(currentPitch < minPitch)
 				minPitch = currentPitch;
@@ -365,14 +631,12 @@ public class TankDrive
 			
 			if (Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4)
 			{
-				state = DefenseState.FINISHING;
+				rockWallState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
 			}
-			
-			SmartDashboard.putString("state-", "Descent");
 		}
-		else if (state == DefenseState.FINISHING)
+		else if (rockWallState == DefenseState.FINISHING)
 		{
 			
 			if(target)
@@ -380,41 +644,116 @@ public class TankDrive
 				goToAngle(goalAngle);
 				
 				if (isAtAngleSetpoint())
-					state = DefenseState.FINISH;
+					rockWallState = DefenseState.FINISH;
 			}
 			else
-				state = DefenseState.FINISH;
-			
-			SmartDashboard.putString("state-", "Finishing");
+				rockWallState = DefenseState.FINISH;
 			
 		}
-		else if (state == DefenseState.FINISH)
+		else if (rockWallState == DefenseState.FINISH)
 		{
-			if(target)
-				goToAngle(goalAngle);
-			else
-				goStraight(-Math.abs(direction));
-			
-			SmartDashboard.putString("state-", "Finish");
-			
+			stopAll();
 			firstRun = true;
 		}
 		
 		lastPitch = currentPitch;
+	}
+	
+	public synchronized boolean autoMoveDist(double output, double inches)
+	{
+		if(firstRunAutoMoveDist)
+		{
+			driveTrain.setBrakeMode();
+			targetEncCounts = getCurrentEncoderCounts() + Math.abs(inches);
+			yaw = getYaw();
+			firstRunAutoMoveDist = false;
+		}
+		
+		if(getCurrentEncoderCounts() >= targetEncCounts)
+		{
+			stopAll();
+			firstRunAutoMoveDist = true;
+			return true;
+		}
+		
+		goStraight(output, yaw);
+		
+		return false;
+	}
+	
+	public synchronized double getCurrentEncoderCounts()
+	{
+		return Math.abs(encLeft.getDistance()) + Math.abs(encRight.getDistance());
+	}
+	
+	public synchronized double getYaw()
+	{
+        double offsettedValue = (double) (navX.getYaw() - offset);
+        return normalizeYaw(offsettedValue);
 	}
 	
 	public void resetAutoDefense()
 	{
-		if(!(state == DefenseState.APPROACH))
-		{
+		rampPartsState = DefenseState.APPROACH;
+		roughTerrainState = DefenseState.APPROACH;
+		moatState = DefenseState.APPROACH;
+		lowBarState = DefenseState.APPROACH;
+		rockWallState = DefenseState.APPROACH;
+	}
+	
+	public DefenseState getRampPartsState()
+	{
+		return rampPartsState;
+	}
+	
+	public DefenseState getRoughTerrainState()
+	{
+		return roughTerrainState;
+	}
+	
+	public DefenseState getMoatState()
+	{
+		return moatState;
+	}
+	
+	public DefenseState getLowBarState()
+	{
+		return lowBarState;
+	}
+	
+	public DefenseState getRockWallState()
+	{
+		return rockWallState;
+	}
+	
+	public double normalizeYaw(double yaw)
+	{
+		if (yaw < -180)
+			yaw += 360;
+        if (yaw > 180)
+        	yaw -= 360;
+        
+        return yaw;
+	}
+	
+	public void setYawOffset(double offset)
+	{
+		if(this.offset == offset)
+			return;
 		
-			Repository.DriveTrain.setCoastMode(); //hack
-			Repository.DriveTrain.enable();
-
-		}
-		state = DefenseState.APPROACH;
-		SmartDashboard.putString("state-", "Approach");
+		POVLookupTable.clear();
 		
+		this.offset = offset;
+		
+		POVLookupTable.put(0, normalizeYaw(0.0 + offset));
+		POVLookupTable.put(90, normalizeYaw(45.0 + offset));
+		POVLookupTable.put(180, normalizeYaw(180.0 + offset));
+		POVLookupTable.put(270, normalizeYaw(-45.0 + offset));
+	}
+	
+	public double getOffset()
+	{
+		return offset;
 	}
 	
 	public void goStraight(double direction)
@@ -436,6 +775,7 @@ public class TankDrive
 	
 	public synchronized void stopAll()
 	{
+		turnPIDOff();
 		driveTrain.stopAll();
 	}
 	
@@ -452,7 +792,7 @@ public class TankDrive
 	
 	public boolean isAtAngleSetpoint()
 	{
-		return (Math.abs(angleControl.getError()) < 5);
+		return Math.abs(angleControl.getError()) < 3;
 	}
 	
 	public synchronized void goToSetpoint(double setpointAngle)
@@ -476,11 +816,6 @@ public class TankDrive
 		return driveTrain.getDirection();
 	}
 	
-	public synchronized boolean isAutoStepFinished()
-	{
-		return autoStepFinished;
-	}
-	
 	private synchronized void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
@@ -491,9 +826,8 @@ public class TankDrive
 	
 	private double sensitivityControl(double input)
 	{
-		if(Math.abs(input)<DEAD_BAND){
-			input=0;
-		}
+		if(Math.abs(input) < DEAD_BAND)
+			input = 0;
 		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }

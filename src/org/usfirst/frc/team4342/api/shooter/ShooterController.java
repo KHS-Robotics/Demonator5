@@ -116,12 +116,13 @@ public class ShooterController
 				}
 				else
 				{
+					setBallPusher(false);
 					stopAllMotors();
 				}
 			}
 			else if (state == ShooterState.FIRING)
 			{
-				if(numLoops > 50)//!ballSensor.get())
+				if(numLoops > 25)//!ballSensor.get())
 				{
 					setMotorsPID(0);
 					numLoops = 0;
@@ -147,14 +148,6 @@ public class ShooterController
 			}
 			
 			setBallPusher(true);
-			
-			int wait = 0;
-			while(wait < 10) {
-				wait++;
-			}
-			
-			setMotorsPID(0);
-			setBallPusher(false);
 		}
 	}
 	
