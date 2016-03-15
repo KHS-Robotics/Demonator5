@@ -25,6 +25,8 @@ public final class AutoRoutineLoader
 			case 3:
 				return AutoRoutine.LowBar;
 			case 4:
+				return AutoRoutine.LowBarAndShoot;
+			case 5:
 				return AutoRoutine.RockWall;
 		}
 		

@@ -1,10 +1,6 @@
 package org.usfirst.frc.team4342.api.shooter;
 
 import org.usfirst.frc.team4342.api.arm.ArmController;
-import org.usfirst.frc.team4342.api.arm.LowBarStates;
-import org.usfirst.frc.team4342.robot.components.Repository;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter 
 {
@@ -16,7 +12,6 @@ public class Shooter
 	private boolean ballPushStatus;
 	private double autoMotorOutput;
 	private int autoSetpoint;
-	private LowBarStates state = LowBarStates.OVER;
 
 	public Shooter(ShooterController shooter, ArmController arm)
 	{
@@ -51,81 +46,20 @@ public class Shooter
 	{
 		this.ballPushStatus = on;
 	}
+	
+	public boolean armIsAtSetpoint()
+	{
+		return arm.isAtAutoSetpoint();
+	}
+	
+	public boolean shooterIsAtSetpoint()
+	{
+		return shooter.isAtSetpoint();
+	}
 
 	public void stopAll()
 	{
 		shooter.stopAllMotors();
 		arm.stopAll();
-	}
-
-	public void shootFromLowBar(int button)
-	{
-		if((Repository.Navx.getPitch() - 0.05) < 0.0 && Repository.DriveStick.getRawButton(button))
-		{
-			if(state == LowBarStates.OVER)
-			{
-				Repository.TankDrive.goStraight(-0.2, 0.0);
-
-				if (Repository.Navx.getPitch() < 0.0)
-					state = LowBarStates.BACKED_UP;
-			}
-			else if(state == LowBarStates.BACKED_UP)
-			{
-				Repository.DriveTrain.setCoastMode();
-
-				if((Repository.Navx.getPitch() - 0.05) < 0.0)
-					state = LowBarStates.STOP;
-			}
-			else if(state == LowBarStates.STOP)
-			{
-				Repository.DriveTrain.setBrakeMode();
-
-				state = LowBarStates.TURN;
-			}
-			else if(state == LowBarStates.TURN)
-			{
-				Repository.TankDrive.goToAngle(54.14);
-
-				if(Repository.Navx.getYaw() >= 53.5 || Repository.Navx.getYaw() <= 55.5) 
-				{
-					state = LowBarStates.AIM;
-				}
-			}
-			else if(state == LowBarStates.AIM)
-			{
-				Repository.ArmController.setSetpoint(361.89); //25.42
-
-				if(Repository.ArmController.isAtAutoSetpoint())
-					state = LowBarStates.SHOOT;
-			}
-			else if(state == LowBarStates.SHOOT)
-			{
-				Repository.Shooter.shooter.setMotors(0.85);
-				
-				
-				Repository.BallPusher.set(ballPushStatus);
-				
-				
-				state = LowBarStates.OVER;
-			}
-		}
-	}
-	
-	public void autoFire() 
-	{
-		double botAngle = SmartDashboard.getNumber("Goal-Ang");
-		double armAngle = SmartDashboard.getNumber("Goal-Dist"); //plug into regression function/lookup table
-		
-		arm.setAngle(armAngle);
-		Repository.TankDrive.goToAngle(botAngle);
-		
-		if(arm.isAtAutoSetpoint() && Repository.Navx.getYaw() <= botAngle+2 && Repository.Navx.getYaw() >= botAngle-2) 
-		{
-			shooter.enablePID();
-			shooter.setMotorsPID(85);
-			
-			if(shooter.isAtSetpoint());
-				shooter.setBallPusher(true);
-		}
 	}
 }

@@ -145,7 +145,7 @@ public class TankDrive
 		}
 	}
 	
-	public void autoRampParts(boolean forward, boolean target, double goalAngle)
+	public boolean autoRampParts(boolean forward, boolean target, double goalAngle)
 	{
 		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
@@ -244,12 +244,16 @@ public class TankDrive
 		{
 			stopAll();
 			firstRun = true;
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
+		
+		return false;
 	}
 	
-	public void autoRoughTerrain(boolean forward, boolean target, double goalAngle)
+	public boolean autoRoughTerrain(boolean forward, boolean target, double goalAngle)
 	{
 		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
@@ -346,12 +350,16 @@ public class TankDrive
 		{
 			stopAll();
 			firstRun = true;
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
+		
+		return false;
 	}
 	
-	public void autoMoat(boolean forward, boolean target, double goalAngle)
+	public boolean autoMoat(boolean forward, boolean target, double goalAngle)
 	{
 		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
@@ -448,12 +456,16 @@ public class TankDrive
 		{
 			stopAll();
 			firstRun = true;
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
+		
+		return false;
 	}
 	
-	public void autoLowBar(boolean forward, boolean target, double goalAngle)
+	public boolean autoLowBar(boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle)
 	{
 		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
@@ -477,7 +489,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(isAtAngleSetpoint())
+			if(isAtAngleSetpoint() && armIsAtSetpoint)
 			{
 				lowBarState = DefenseState.CLIMB;
 				minPitch = currentPitch;
@@ -550,12 +562,16 @@ public class TankDrive
 		{
 			stopAll();
 			firstRun = true;
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
+		
+		return false;
 	}
 	
-	public void autoRockWall(boolean forward, boolean target, double goalAngle)
+	public boolean autoRockWall(boolean forward, boolean target, double goalAngle)
 	{
 		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
@@ -654,9 +670,13 @@ public class TankDrive
 		{
 			stopAll();
 			firstRun = true;
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
+		
+		return false;
 	}
 	
 	public synchronized boolean autoMoveDist(double output, double inches)

@@ -3,13 +3,10 @@ package org.usfirst.frc.team4342.api.autonomous;
 import static org.usfirst.frc.team4342.robot.components.Repository.Logs;
 import static org.usfirst.frc.team4342.robot.components.Repository.Shooter;
 import static org.usfirst.frc.team4342.robot.components.Repository.TankDrive;
-import static org.usfirst.frc.team4342.robot.components.Repository.DriveTrain;
 
 public class AutoRoutinesRunner 
 {
 	private AutoRoutinesRunner() {}
-	
-	private static double yawOffset;
 	
 	private static boolean errored;
 	private static AutoRoutine lastRoutine;
@@ -24,20 +21,28 @@ public class AutoRoutinesRunner
 			switch(routine)
 			{
 				case RampParts:
-					break;
+					executeRampPartsRoutine();
+				break;
 				case RoughTerrain:
-					break;
+					executeRoughTerrainRoutine();
+				break;
 				case Moat:
-					break;
+					executeMoatRoutine();
+				break;
 				case LowBar:
-					break;
+					executeLowBarRoutine();
+				break;
+				case LowBarAndShoot:
+					executeLowBarAndShootRoutine();
+				break;
 				case RockWall:
-					break;
+					executeRockWallRoutine();
+				break;
 				default:
 					if(!errored)
 						Logs.warning("Unknown auto routine selected (Value=" + routine.getId());
 					errored = true;
-					break;
+				break;
 			}
 		}
 		catch(Exception ex)
@@ -66,16 +71,89 @@ public class AutoRoutinesRunner
 		return currentStep;
 	}
 	
-	public static double getYawOffset()
-	{
-		return yawOffset;
-	}
-	
-	public static void executeRampPartsRoutine()
+	private static void executeRampPartsRoutine()
 	{
 		if(currentStep == 0)
 		{
+			if(TankDrive.autoRampParts(true, true, 0))
+			{
+				currentStep++;
+			}
+		}
+	}
+	
+	private static void executeRoughTerrainRoutine()
+	{
+		if(currentStep == 0)
+		{
+			if(TankDrive.autoRoughTerrain(true, true, 0))
+			{
+				currentStep++;
+			}
+		}
+	}
+	
+	private static void executeMoatRoutine()
+	{
+		if(currentStep == 0)
+		{
+			if(TankDrive.autoMoat(true, true, 0))
+			{
+				currentStep++;
+			}
+		}
+	}
+	
+	private static void executeLowBarRoutine()
+	{
+		if(currentStep == 0)
+		{
+			Shooter.setArmSetpoint(400);
 			
+			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
+			{
+				currentStep++;
+			}
+		}
+	}
+	
+	private static void executeLowBarAndShootRoutine()
+	{
+		if(currentStep == 0)
+		{
+			Shooter.setArmSetpoint(400);
+			
+			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
+			{
+				currentStep++;
+			}
+		}
+		else if(currentStep == 1)
+		{
+			Shooter.setShooterMotorsPID(85);
+			Shooter.setArmSetpoint(300);
+			
+			if(Shooter.shooterIsAtSetpoint() && Shooter.armIsAtSetpoint())
+			{
+				Shooter.setBallPusher(true);
+				numLoops++;
+
+				if(numLoops > 10)
+				{
+					currentStep++;
+				}
+			}
+		}
+	}
+	
+	private static void executeRockWallRoutine()
+	{
+		if(currentStep == 0)
+		{
+			if(TankDrive.autoRockWall(true, true, 0))
+			{
+				currentStep++;
+			}
 		}
 	}
 }

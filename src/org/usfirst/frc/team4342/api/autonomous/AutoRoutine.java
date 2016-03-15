@@ -7,7 +7,8 @@ public enum AutoRoutine
 	RoughTerrain(1),
 	Moat(2),
 	LowBar(3),
-	RockWall(4);
+	LowBarAndShoot(4),
+	RockWall(5);
 	
 	private final int id;
 	
