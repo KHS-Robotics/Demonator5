@@ -6,15 +6,37 @@ import java.io.IOException;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public final class AutoRoutineLoader 
 {
 	private AutoRoutineLoader() {}
+	
+	public static AutoRoutine getAutoRoutine(int id)
+	{
+		switch(id)
+		{
+			case 0:
+				return AutoRoutine.RampParts;
+			case 1:
+				return AutoRoutine.RoughTerrain;
+			case 2:
+				return AutoRoutine.Moat;
+			case 3:
+				return AutoRoutine.LowBar;
+			case 4:
+				return AutoRoutine.RockWall;
+		}
+		
+		return AutoRoutine.Unknown;
+	}
 	
 	public static AutoRoutine getAutoRoutine(String path)
 	{
 		try
 		{
 			int id = loadFromTxtFile(path);
+			SmartDashboard.putNumber("Auto-Routine", id);
 			
 			switch(id)
 			{

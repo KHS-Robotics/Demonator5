@@ -3,6 +3,7 @@ package org.usfirst.frc.team4342.robot;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
@@ -36,6 +37,8 @@ public class Robot extends IterativeRobot
     {
 		Repository.initializeAll();
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
+
+		selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine("/home/lvuser/AutoRoutine.txt");
 		
 		ComponentRunner.startAutomaticMode(new TankDriveComponent(Repository.TankDrive));
     	ComponentRunner.startAutomaticMode(new ShootingComponent(Repository.Shooter));
@@ -52,7 +55,8 @@ public class Robot extends IterativeRobot
     	Repository.DriveTrain.setBrakeMode();
     	Repository.DriveTrain.enable();
     	
-    	selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine("/home/lvuser/AutoRoutine.txt");
+    	selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine((int)SmartDashboard.getNumber("Auto-Routine"));
+    	
     	AutoRoutinesRunner.reset();
     }
 

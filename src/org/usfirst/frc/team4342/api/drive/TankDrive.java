@@ -147,7 +147,7 @@ public class TankDrive
 	
 	public void autoRampParts(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -251,7 +251,7 @@ public class TankDrive
 	
 	public void autoRoughTerrain(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -353,7 +353,7 @@ public class TankDrive
 	
 	public void autoMoat(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -455,7 +455,7 @@ public class TankDrive
 	
 	public void autoLowBar(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -557,7 +557,7 @@ public class TankDrive
 	
 	public void autoRockWall(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = 0.0 + (forward ? 0.0 : 180.0);
+		double startAngle = forward ? 0.0 : 180.0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -792,12 +792,12 @@ public class TankDrive
 	
 	public boolean isAtAngleSetpoint()
 	{
-		return Math.abs(angleControl.getError()) < 3;
+		return Math.abs(angleControl.getError()) <= 3;
 	}
 	
 	public synchronized void goToSetpoint(double setpointAngle)
 	{
-		angleControl.setSetpoint(setpointAngle);
+		angleControl.setSetpoint(normalizeYaw(setpointAngle + offset));
 		turnPIDOn();
 	}
 	
