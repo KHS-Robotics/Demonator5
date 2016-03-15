@@ -39,7 +39,7 @@ public class TankDrive
 	private boolean firstRunAutoMoveDist = true;
 	private double targetEncCounts, yaw;
 	
-	private DefenseState rampPartsState, roughTerrainState, moatState, lowBarState, rockWallState;
+	private DefenseState rampPartsState = DefenseState.APPROACH, roughTerrainState= DefenseState.APPROACH, moatState= DefenseState.APPROACH, lowBarState= DefenseState.APPROACH, rockWallState= DefenseState.APPROACH;
 	private double startingPitch, minPitch, maxPitch, lastPitch;
 	private boolean loggedRP, loggedRT, loggedM, loggedLB, loggedRW;
 	private boolean firstRun = true;

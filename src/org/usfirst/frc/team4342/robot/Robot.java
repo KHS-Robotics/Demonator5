@@ -80,6 +80,15 @@ public class Robot extends IterativeRobot
 		Repository.DriveTrain.enable();
     }
 	
+	@Override
+	public void teleopPeriodic()
+	{
+		if(Repository.SwitchBox.getRawButton(9))
+		{
+			Repository.Navx.reset();
+		}
+	}
+	
 	/**
 	 * This function is run when the robot is first starting disabled
 	 */

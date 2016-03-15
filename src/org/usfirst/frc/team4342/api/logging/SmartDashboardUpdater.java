@@ -114,7 +114,7 @@ public class SmartDashboardUpdater
 		@Override
 		public void run() 
 		{
-			while(true) 
+			while(true)
 			{
 				putJoystickData();
 				putTalonData();
@@ -135,7 +135,6 @@ public class SmartDashboardUpdater
 				catch(Exception ex)
 				{
 					multiLog.error("Unexpected error while putting data to SmartDashboard", ex);
-					break;
 				}
 			}
 		}

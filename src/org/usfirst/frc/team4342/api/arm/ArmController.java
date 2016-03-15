@@ -85,7 +85,7 @@ public class ArmController
 			disablePID();
 			return;
 		}
-		else if(enc.getDistance() > 400 && (y > 0 || currentOutput > 0))
+		else if(encDist > 400 && (y > 0 || currentOutput > 0))
 		{
 			armMotor.set(0);
 			disablePID();
@@ -134,7 +134,7 @@ public class ArmController
 			{
 				stopOperatorAutoMove();
 				
-				if(j.getY() > 0 && encDist > 190)
+				if(y > 0 && encDist > 190)
 				{
 					armMotor.set(j.getY() / 4.0);
 					return;
