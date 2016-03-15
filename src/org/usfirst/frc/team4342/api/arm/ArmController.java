@@ -14,6 +14,8 @@ public class ArmController
 {
 	private static final double JOYSTICK_DEADBAND = 0.1;
 	private static final double JOYSTICK_SENSITIVITY = 0.7;
+	private static final double ARM_ARC_ANGLE = 140;
+	private static final double DISTANCE_PER_PULSE = 1 / (7*142);
 	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;
@@ -168,7 +170,7 @@ public class ArmController
 
 	public boolean isAtAutoSetpoint()
 	{
-		return (enc.getDistance() > apidc.getSetpoint()-3.0) && (enc.getDistance() < apidc.getSetpoint()+3.0);
+		return Math.abs(apidc.getError()) < 5;
 	}
 
 	public void enablePID()
@@ -200,12 +202,16 @@ public class ArmController
 
 	public void setAngle(double angle)
 	{
-		setSetpoint(angle / 360.0);
+		double relativeArmAngle = ARM_ARC_ANGLE - angle;
+		double raw = relativeArmAngle / (90*DISTANCE_PER_PULSE);
+		double distance = raw * .25 * DISTANCE_PER_PULSE;
+		
+		setSetpoint(distance);
 	}
 
 	public double getAngle()
 	{
-		return enc.getDistance() * 360;
+		return (enc.getRaw() * 0.25 * DISTANCE_PER_PULSE) * 360;
 	}
 
 	private void checkButtonStatus()

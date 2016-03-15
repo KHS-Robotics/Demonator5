@@ -72,14 +72,12 @@ public class ShooterController
 			
 			enablePID();
 			
-			// set these to 100 to get them spinning faster (more error)
-			// Don't worry it's only for a split second
-			leftPID.setSetpoint(100);
-			rightPID.setSetpoint(100);
+			leftPID.setSetpoint(75);
+			rightPID.setSetpoint(75);
 			
 			driveShootLoops++;
 			
-			if(driveShootLoops > 10)
+			if(driveShootLoops > 5)
 			{
 				setBallPusher(true);
 				
@@ -196,8 +194,8 @@ public class ShooterController
 	
 	public boolean isAtSetpoint()
 	{
-		boolean right = (rightMotorCounter.getRate() > rightPID.getSetpoint() - 2.0 || rightMotorCounter.getRate() < rightPID.getSetpoint() + 2.0);
-		boolean left = (leftMotorCounter.getRate() > leftPID.getSetpoint() - 2.0 || leftMotorCounter.getRate() < leftPID.getSetpoint() + 2.0);
+		boolean right = Math.abs(rightPID.getError()) < 2;
+		boolean left = Math.abs(leftPID.getError()) < 2;
 		
 		return right && left;
 	}
