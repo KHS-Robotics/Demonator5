@@ -15,7 +15,7 @@ public class ArmController
 	private static final double JOYSTICK_DEADBAND = 0.1;
 	private static final double JOYSTICK_SENSITIVITY = 0.7;
 	private static final double ARM_ARC_ANGLE = 140;
-	private static final double DISTANCE_PER_PULSE = 1 / (7*142);
+	private static final double DISTANCE_PER_PULSE = 1 / 944; // 1 / (7 distance per pulse * 142 gear ratio)
 	
 	private Joystick j, switchBox;
 	private CANTalon armMotor, accumMotor;

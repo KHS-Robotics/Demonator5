@@ -10,7 +10,7 @@ public class AutoRoutinesRunner
 	
 	private static boolean errored, finished;
 	private static AutoRoutine lastRoutine;
-	private static int currentStep;
+	private static int currentStep, numLoops;
 	
 	/**
 	 * 
@@ -66,6 +66,7 @@ public class AutoRoutinesRunner
 		finished = false;
 		errored = false;
 		currentStep = 0;
+		numLoops = 0;
 	}
 	
 	public static AutoRoutine getLastAutoRoutine()
@@ -92,7 +93,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRampParts(true, false, false, true, 0))
+			if(TankDrive.autoRampParts(true, true, 0))
 			{
 				currentStep++;
 				finished = true;
@@ -104,7 +105,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRoughTerrain(false, false, true, true, 0))
+			if(TankDrive.autoRoughTerrain(true, true, 0))
 			{
 				currentStep++;
 				finished = true;
@@ -116,7 +117,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoMoat(false, false, true, true, 0))
+			if(TankDrive.autoMoat(true, true, 0))
 			{
 				currentStep++;
 				finished = true;
@@ -128,9 +129,9 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			Shooter.setArmSetpoint(400);
+			Shooter.setArmSetpoint(Shooter.LOW_BAR_ENC_DIST);
 			
-			if(TankDrive.autoLowBar(false, false, true, true, Shooter.armIsAtSetpoint(), 0))
+			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
 			{
 				currentStep++;
 				finished = true;
@@ -142,7 +143,69 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRockWall(false, false, true, true, 0))
+			if(TankDrive.autoRockWall(true, true, 0))
+			{
+				currentStep++;
+				finished = true;
+			}
+		}
+	}
+	
+	private static void executeLowBarAndShootBatterRoutine()
+	{
+		if(currentStep == 0)
+		{
+			Shooter.setArmSetpoint(Shooter.LOW_BAR_ENC_DIST);
+			
+			if(TankDrive.autoLowBar(true, Shooter.armIsAtSetpoint(), true, 0))
+			{
+				Shooter.setArmSetpoint(Shooter.LOW_BAR_SHOOT_ANGLE);
+				currentStep++;
+			}
+		}
+		else if(currentStep == 1)
+		{
+			if(TankDrive.autoMoveDist(0.75, TankDrive.LOW_BAR_DIST_INCHES))
+			{
+				TankDrive.goToAngle(TankDrive.LOW_BAR_YAW);
+				Shooter.setShooterMotorsPID(85);
+				currentStep++;
+			}
+		}
+		else if(currentStep == 2)
+		{
+			if(TankDrive.isAtAngleSetpoint() && Shooter.armIsAtSetpoint() && Shooter.shooterIsAtSetpoint())
+			{
+				Shooter.setBallPusher(true);
+				currentStep++;
+			}
+		}
+		else if(currentStep == 3)
+		{
+			if(numLoops >= 10)
+			{
+				TankDrive.goToAngle(180);
+				Shooter.setArmSetpoint(Shooter.LOW_BAR_ENC_DIST);
+				Shooter.setShooterMotorsPID(0);
+				Shooter.setBallPusher(false);
+				
+				currentStep++;
+			}
+			
+			numLoops++;
+		}
+		else if(currentStep == 4)
+		{
+			if(TankDrive.isAtAngleSetpoint() && Shooter.armIsAtSetpoint())
+			{
+				TankDrive.autoMoveDist(0.75, TankDrive.LOW_BAR_DIST_INCHES);
+				TankDrive.resetLowBarState();
+				currentStep++;
+			}
+		}
+		else if(currentStep == 5)
+		{
+			if(TankDrive.autoLowBar(true, true, false, 0))
 			{
 				currentStep++;
 				finished = true;

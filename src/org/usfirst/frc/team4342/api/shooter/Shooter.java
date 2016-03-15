@@ -5,13 +5,15 @@ import org.usfirst.frc.team4342.api.arm.ArmController;
 public class Shooter 
 {
 	public static final double JOYSTICK_DEADBAND = 0.05;
+	public static final double BATTER_ANGLE = 63.67, LOW_BAR_SHOOT_ANGLE = 27; //TODO: angle -> encoder distance
+	public static final double LOW_BAR_ENC_DIST = 400;
 
 	private ShooterController shooter;
 	private ArmController arm;
 
 	private boolean ballPushStatus;
-	private double autoMotorOutput;
-	private int autoSetpoint;
+	private double autoShooterSetpoint;
+	private double autoArmSetpoint;
 
 	public Shooter(ShooterController shooter, ArmController arm)
 	{
@@ -27,19 +29,19 @@ public class Shooter
 
 	public void handleAuto()
 	{
-		arm.setSetpoint(autoSetpoint);
-		shooter.setMotorsPID(autoMotorOutput);
+		arm.setSetpoint(autoArmSetpoint);
+		shooter.setMotorsPID(autoShooterSetpoint);
 		shooter.setBallPusher(ballPushStatus);
 	}
 
-	public void setArmSetpoint(int setpoint)
+	public void setArmSetpoint(double setpoint)
 	{
-		this.autoSetpoint = setpoint;
+		this.autoArmSetpoint = setpoint;
 	}
 	
-	public void setShooterMotorsPID(double output)
+	public void setShooterMotorsPID(double setpoint)
 	{
-		this.autoMotorOutput = output;
+		this.autoShooterSetpoint = setpoint;
 	}
 
 	public void setBallPusher(boolean on)

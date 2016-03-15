@@ -19,6 +19,7 @@ import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
  * @see edu.wpi.first.wpilibj.IterativeRobot
  * @see edu.wpi.first.wpilibj.RobotBase
  * 
+ * @author Brian Lucas
  * @author Ernie Wilson
  * @author Katie Schuetz
  * @author Payton DuLong
@@ -78,5 +79,23 @@ public class Robot extends IterativeRobot
 		Repository.DriveTrain.setCoastMode();
 		Repository.DriveTrain.enable();
     }
+	
+	/**
+	 * This function is run when the robot is first starting disabled
+	 */
+	@Override
+	public void disabledInit()
+	{
+		SmartDashboard.putNumber("Yaw-Offset", 0.0);
+	}
+	
+	/**
+	 * This function is called periodically during disabled
+	 */
+	@Override
+	public void disabledPeriodic()
+	{
+		Repository.TankDrive.setYawOffset(SmartDashboard.getNumber("Yaw-Offset"));
+	}
 }
 

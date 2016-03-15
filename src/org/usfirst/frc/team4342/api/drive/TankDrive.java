@@ -20,6 +20,9 @@ public class TankDrive
 {
 	private static double JOYSTICK_SENSITIVITY = 0.25;
 	private static final double DEAD_BAND = 0.08;
+	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0;
+	public static final double LOW_BAR_DIST_INCHES = 100;
+	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -77,9 +80,9 @@ public class TankDrive
 		
 		POVLookupTable = new HashMap<Integer, Double>();
 		POVLookupTable.put(0, 0.0);
-		POVLookupTable.put(90, 45.0);
+		POVLookupTable.put(90, BATTER_YAW);
 		POVLookupTable.put(180, 180.0);
-		POVLookupTable.put(270, -45.0);
+		POVLookupTable.put(270, -BATTER_YAW);
 	}
 	
 	public synchronized void drive(int shiftButton, int straightButton, int angleButton, int autoForwardButton,
@@ -146,13 +149,11 @@ public class TankDrive
 		}
 	}
 	
-	public boolean autoRampParts(boolean startingTurnedAround, boolean turnAround, boolean forward, boolean target, double goalAngle)
+	public boolean autoRampParts(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = turnAround ? offset : normalizeYaw(offset + 180.0);
+		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
-		
-		boolean backwards = (turnAround && !startingTurnedAround) || (!turnAround && startingTurnedAround);
 		
 		if (rampPartsState == DefenseState.APPROACH)
 		{
@@ -191,7 +192,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (maxPitch >= RampPartsPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
@@ -220,7 +221,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
 				{
@@ -251,7 +252,6 @@ public class TankDrive
 				rampPartsState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
-				setYawOffset(startingTurnedAround ? 180.0 : 0.0);
 			}
 		}
 		else if (rampPartsState == DefenseState.FINISHING)
@@ -291,13 +291,11 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoRoughTerrain(boolean startingTurnedAround, boolean turnAround, boolean forward, boolean target, double goalAngle)
+	public boolean autoRoughTerrain(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = turnAround ? offset : normalizeYaw(offset + 180.0);
+		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
-		
-		boolean backwards = (turnAround && !startingTurnedAround) || (!turnAround && startingTurnedAround);
 		
 		if (roughTerrainState == DefenseState.APPROACH)
 		{
@@ -336,7 +334,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
@@ -365,7 +363,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
 				{
@@ -396,7 +394,6 @@ public class TankDrive
 				roughTerrainState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
-				setYawOffset(startingTurnedAround ? 180.0 : 0.0);
 			}
 		}
 		else if (roughTerrainState == DefenseState.FINISHING)
@@ -431,13 +428,11 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoMoat(boolean startingTurnedAround, boolean turnAround, boolean forward, boolean target, double goalAngle)
+	public boolean autoMoat(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = turnAround ? offset : normalizeYaw(offset + 180.0);
+		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
-		
-		boolean backwards = (turnAround && !startingTurnedAround) || (!turnAround && startingTurnedAround);
 		
 		if (moatState == DefenseState.APPROACH)
 		{
@@ -476,7 +471,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
@@ -505,7 +500,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (minPitch <= -MoatPitch && currentPitch > minPitch)
 				{
@@ -536,7 +531,6 @@ public class TankDrive
 				moatState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
-				setYawOffset(startingTurnedAround ? 180.0 : 0.0);
 			}
 		}
 		else if (moatState == DefenseState.FINISHING)
@@ -573,13 +567,11 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoLowBar(boolean startingTurnedAround, boolean turnAround, boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle)
+	public boolean autoLowBar(boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle)
 	{
-		double startAngle = turnAround ? offset : normalizeYaw(offset + 180.0);
+		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
-		
-		boolean backwards = (turnAround && !startingTurnedAround) || (!turnAround && startingTurnedAround);
 		
 		if (lowBarState == DefenseState.APPROACH)
 		{
@@ -618,7 +610,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
@@ -647,7 +639,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (minPitch <= -LowBarPitch && currentPitch > minPitch)
 				{
@@ -678,7 +670,6 @@ public class TankDrive
 				lowBarState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
-				setYawOffset(startingTurnedAround ? 180.0 : 0.0);
 			}
 		}
 		else if (lowBarState == DefenseState.FINISHING)
@@ -715,13 +706,11 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoRockWall(boolean startingTurnedAround, boolean turnAround, boolean forward, boolean target, double goalAngle)
+	public boolean autoRockWall(boolean forward, boolean target, double goalAngle)
 	{
-		double startAngle = turnAround ? offset : normalizeYaw(offset + 180.0);
+		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
-		
-		boolean backwards = (turnAround && !startingTurnedAround) || (!turnAround && startingTurnedAround);
 		
 		if (rockWallState == DefenseState.APPROACH)
 		{
@@ -760,7 +749,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
@@ -789,7 +778,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(backwards)
+			if(!forward)
 			{
 				if (minPitch <= -RockWallPitch && currentPitch > minPitch)
 				{
@@ -820,7 +809,6 @@ public class TankDrive
 				rockWallState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
-				setYawOffset(startingTurnedAround ? 180.0 : 0.0);
 			}
 		}
 		else if (rockWallState == DefenseState.FINISHING)
@@ -912,9 +900,9 @@ public class TankDrive
 		this.offset = normalizeYaw(offset);
 		
 		POVLookupTable.put(0, normalizeYaw(0.0 + offset));
-		POVLookupTable.put(90, normalizeYaw(45.0 + offset));
+		POVLookupTable.put(90, normalizeYaw(BATTER_YAW + offset));
 		POVLookupTable.put(180, normalizeYaw(180.0 + offset));
-		POVLookupTable.put(270, normalizeYaw(-45.0 + offset));
+		POVLookupTable.put(270, normalizeYaw(-BATTER_YAW + offset));
 	}
 	
 	public void resetYawOffset()
@@ -945,9 +933,21 @@ public class TankDrive
 		rockWallState = DefenseState.APPROACH;
 	}
 	
+	public void resetRampPartsState()
+	{
+		loggedRP = false;
+		rampPartsState = DefenseState.APPROACH;
+	}
+	
 	public DefenseState getRampPartsState()
 	{
 		return rampPartsState;
+	}
+	
+	public void resetRoughTerrainState()
+	{
+		loggedRT = false;
+		roughTerrainState = DefenseState.APPROACH;
 	}
 	
 	public DefenseState getRoughTerrainState()
@@ -955,14 +955,32 @@ public class TankDrive
 		return roughTerrainState;
 	}
 	
+	public void resetMoatState()
+	{
+		loggedM = false;
+		moatState = DefenseState.APPROACH;
+	}
+	
 	public DefenseState getMoatState()
 	{
 		return moatState;
 	}
 	
+	public void resetLowBarState()
+	{
+		loggedLB = false;
+		lowBarState = DefenseState.APPROACH;
+	}
+	
 	public DefenseState getLowBarState()
 	{
 		return lowBarState;
+	}
+	
+	public void resetRockWallState()
+	{
+		loggedRW = false;
+		rockWallState = DefenseState.APPROACH;
 	}
 	
 	public DefenseState getRockWallState()
