@@ -37,7 +37,8 @@ public class TankDrive
 	private double targetEncCounts, yaw;
 	
 	private DefenseState rampPartsState, roughTerrainState, moatState, lowBarState, rockWallState;
-	private double startingPitch, minPitch, maxPitch, lastPitch; 
+	private double startingPitch, minPitch, maxPitch, lastPitch;
+	private boolean loggedRP, loggedRT, loggedM, loggedLB, loggedRW;
 	private boolean firstRun = true;
 	
 	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 12;
@@ -145,9 +146,9 @@ public class TankDrive
 		}
 	}
 	
-	public boolean autoRampParts(boolean forward, boolean target, double goalAngle)
+	public boolean autoRampParts(boolean turnAround, boolean forward, boolean target, double goalAngle, double offsetYaw)
 	{
-		double startAngle = forward ? 0.0 : 180.0;
+		double startAngle = turnAround ? normalizeYaw(offset) : normalizeYaw(offset + 180.0);
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -224,6 +225,7 @@ public class TankDrive
 				rampPartsState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+				offset = offsetYaw;
 			}
 		}
 		else if (rampPartsState == DefenseState.FINISHING)
@@ -231,7 +233,7 @@ public class TankDrive
 			
 			if(target)
 			{
-				goToAngle(goalAngle);
+				goToAngle(normalizeYaw(getYaw() - goalAngle));
 				
 				if (isAtAngleSetpoint())
 					rampPartsState = DefenseState.FINISH;
@@ -242,8 +244,18 @@ public class TankDrive
 		}
 		else if (rampPartsState == DefenseState.FINISH)
 		{
-			stopAll();
-			firstRun = true;
+			if(!firstRun)
+			{
+				stopAll();
+				firstRun = true;
+			}
+			else
+			{
+				if(!loggedRP)
+					Repository.Logs.warning("Need to reset ramp parts routine");
+				loggedRP = true;
+			}
+			
 			
 			return true;
 		}
@@ -253,9 +265,9 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoRoughTerrain(boolean forward, boolean target, double goalAngle)
+	public boolean autoRoughTerrain(boolean turnAround, boolean forward, boolean target, double goalAngle, double offsetYaw)
 	{
-		double startAngle = forward ? 0.0 : 180.0;
+		double startAngle = turnAround ? normalizeYaw(offset) : normalizeYaw(offset + 180.0);
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -332,13 +344,14 @@ public class TankDrive
 				roughTerrainState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+				offset = offsetYaw;
 			}
 		}
 		else if (roughTerrainState == DefenseState.FINISHING)
 		{
 			if(target)
 			{
-				goToAngle(goalAngle);
+				goToAngle(normalizeYaw(getYaw() - goalAngle));
 				
 				if (isAtAngleSetpoint())
 					roughTerrainState = DefenseState.FINISH;
@@ -348,10 +361,17 @@ public class TankDrive
 		}
 		else if (roughTerrainState == DefenseState.FINISH)
 		{
-			stopAll();
-			firstRun = true;
-			
-			return true;
+			if(!firstRun)
+			{
+				stopAll();
+				firstRun = true;
+			}
+			else
+			{
+				if(!loggedRT)
+					Repository.Logs.warning("Need to reset rough terrain routine");
+				loggedRT = true;
+			}
 		}
 		
 		lastPitch = currentPitch;
@@ -359,9 +379,9 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoMoat(boolean forward, boolean target, double goalAngle)
+	public boolean autoMoat(boolean turnAround, boolean forward, boolean target, double goalAngle, double offsetYaw)
 	{
-		double startAngle = forward ? 0.0 : 180.0;
+		double startAngle = turnAround ? normalizeYaw(offset) : normalizeYaw(offset + 180.0);
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -438,13 +458,14 @@ public class TankDrive
 				moatState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+				offset = offsetYaw;
 			}
 		}
 		else if (moatState == DefenseState.FINISHING)
 		{
 			if(target)
 			{
-				goToAngle(goalAngle);
+				goToAngle(normalizeYaw(getYaw() - goalAngle));
 				
 				if (isAtAngleSetpoint())
 					moatState = DefenseState.FINISH;
@@ -454,8 +475,17 @@ public class TankDrive
 		}
 		else if (roughTerrainState == DefenseState.FINISH)
 		{
-			stopAll();
-			firstRun = true;
+			if(!firstRun)
+			{
+				stopAll();
+				firstRun = true;
+			}
+			else
+			{
+				if(!loggedM)
+					Repository.Logs.warning("Need to reset ramp parts routine");
+				loggedM = true;
+			}
 			
 			return true;
 		}
@@ -465,9 +495,9 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoLowBar(boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle)
+	public boolean autoLowBar(boolean turnAround, boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle, double offsetYaw)
 	{
-		double startAngle = forward ? 0.0 : 180.0;
+		double startAngle = turnAround ? normalizeYaw(offset) : normalizeYaw(offset + 180.0);
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -544,13 +574,14 @@ public class TankDrive
 				lowBarState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+				offset = offsetYaw;
 			}
 		}
 		else if (lowBarState == DefenseState.FINISHING)
 		{
 			if(target)
 			{
-				goToAngle(goalAngle);
+				goToAngle(normalizeYaw(getYaw() - goalAngle));
 				
 				if (isAtAngleSetpoint())
 					lowBarState = DefenseState.FINISH;
@@ -560,8 +591,17 @@ public class TankDrive
 		}
 		else if (lowBarState == DefenseState.FINISH)
 		{
-			stopAll();
-			firstRun = true;
+			if(!firstRun)
+			{
+				stopAll();
+				firstRun = true;
+			}
+			else
+			{
+				if(!loggedLB)
+					Repository.Logs.warning("Need to reset ramp parts routine");
+				loggedLB = true;
+			}
 			
 			return true;
 		}
@@ -571,9 +611,9 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoRockWall(boolean forward, boolean target, double goalAngle)
+	public boolean autoRockWall(boolean turnAround, boolean forward, boolean target, double goalAngle, double offsetYaw)
 	{
-		double startAngle = forward ? 0.0 : 180.0;
+		double startAngle = turnAround ? normalizeYaw(offset) : normalizeYaw(offset + 180.0);
 		double currentPitch = navX.getPitch();
 		double direction = 0.75;
 		
@@ -650,6 +690,7 @@ public class TankDrive
 				rockWallState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+				offset = offsetYaw;
 			}
 		}
 		else if (rockWallState == DefenseState.FINISHING)
@@ -657,7 +698,7 @@ public class TankDrive
 			
 			if(target)
 			{
-				goToAngle(goalAngle);
+				goToAngle(normalizeYaw(getYaw() - goalAngle));
 				
 				if (isAtAngleSetpoint())
 					rockWallState = DefenseState.FINISH;
@@ -668,8 +709,17 @@ public class TankDrive
 		}
 		else if (rockWallState == DefenseState.FINISH)
 		{
-			stopAll();
-			firstRun = true;
+			if(!firstRun)
+			{
+				stopAll();
+				firstRun = true;
+			}
+			else
+			{
+				if(!loggedRW)
+					Repository.Logs.warning("Need to reset ramp parts routine");
+				loggedRW = true;
+			}
 			
 			return true;
 		}
@@ -712,6 +762,36 @@ public class TankDrive
         return normalizeYaw(offsettedValue);
 	}
 	
+	public double normalizeYaw(double yaw)
+	{
+		if (yaw < -180)
+			yaw += 360;
+        if (yaw > 180)
+        	yaw -= 360;
+        
+        return yaw;
+	}
+	
+	public void setYawOffset(double offset)
+	{
+		if(this.offset == offset)
+			return;
+		
+		POVLookupTable.clear();
+		
+		this.offset = offset;
+		
+		POVLookupTable.put(0, normalizeYaw(0.0 + offset));
+		POVLookupTable.put(90, normalizeYaw(45.0 + offset));
+		POVLookupTable.put(180, normalizeYaw(180.0 + offset));
+		POVLookupTable.put(270, normalizeYaw(-45.0 + offset));
+	}
+	
+	public double getOffset()
+	{
+		return offset;
+	}
+	
 	public void resetAutoDefense()
 	{
 		rampPartsState = DefenseState.APPROACH;
@@ -744,36 +824,6 @@ public class TankDrive
 	public DefenseState getRockWallState()
 	{
 		return rockWallState;
-	}
-	
-	public double normalizeYaw(double yaw)
-	{
-		if (yaw < -180)
-			yaw += 360;
-        if (yaw > 180)
-        	yaw -= 360;
-        
-        return yaw;
-	}
-	
-	public void setYawOffset(double offset)
-	{
-		if(this.offset == offset)
-			return;
-		
-		POVLookupTable.clear();
-		
-		this.offset = offset;
-		
-		POVLookupTable.put(0, normalizeYaw(0.0 + offset));
-		POVLookupTable.put(90, normalizeYaw(45.0 + offset));
-		POVLookupTable.put(180, normalizeYaw(180.0 + offset));
-		POVLookupTable.put(270, normalizeYaw(-45.0 + offset));
-	}
-	
-	public double getOffset()
-	{
-		return offset;
 	}
 	
 	public void goStraight(double direction)

@@ -72,7 +72,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRampParts(true, true, 0))
+			if(TankDrive.autoRampParts(false, false, true, 0, 180.0))
 			{
 				currentStep++;
 			}
@@ -83,7 +83,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRoughTerrain(true, true, 0))
+			if(TankDrive.autoRoughTerrain(false, true, true, 0, 0))
 			{
 				currentStep++;
 			}
@@ -94,7 +94,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoMoat(true, true, 0))
+			if(TankDrive.autoMoat(false, true, true, 0, 0))
 			{
 				currentStep++;
 			}
@@ -107,7 +107,7 @@ public class AutoRoutinesRunner
 		{
 			Shooter.setArmSetpoint(400);
 			
-			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
+			if(TankDrive.autoLowBar(false, true, true, Shooter.armIsAtSetpoint(), 0, 0))
 			{
 				currentStep++;
 			}
@@ -118,7 +118,7 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRockWall(true, true, 0))
+			if(TankDrive.autoRockWall(false, true, true, 0, 0))
 			{
 				currentStep++;
 			}
