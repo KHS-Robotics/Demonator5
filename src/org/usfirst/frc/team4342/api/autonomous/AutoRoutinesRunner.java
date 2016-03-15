@@ -8,11 +8,16 @@ public class AutoRoutinesRunner
 {
 	private AutoRoutinesRunner() {}
 	
-	private static boolean errored;
+	private static boolean errored, finished;
 	private static AutoRoutine lastRoutine;
 	private static int currentStep;
 	
-	public static void execute(AutoRoutine routine)
+	/**
+	 * 
+	 * @param routine the routine to execute
+	 * @return true if the routine is finished; false otherwise
+	 */
+	public static boolean execute(AutoRoutine routine)
 	{
 		try
 		{
@@ -41,6 +46,8 @@ public class AutoRoutinesRunner
 					errored = true;
 				break;
 			}
+			
+			return finished;
 		}
 		catch(Exception ex)
 		{
@@ -49,11 +56,14 @@ public class AutoRoutinesRunner
 				Logs.error("Unexpected error while executing " + routine.toString() + " auto routine", ex);
 				errored = true;
 			}
+			
+			return false;
 		}
 	}
 	
 	public static void reset()
 	{
+		finished = false;
 		errored = false;
 		currentStep = 0;
 	}
@@ -68,13 +78,24 @@ public class AutoRoutinesRunner
 		return currentStep;
 	}
 	
+	public static boolean hasErrored()
+	{
+		return errored;
+	}
+	
+	public static boolean isFinished()
+	{
+		return finished;
+	}
+	
 	private static void executeRampPartsRoutine()
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRampParts(false, false, true, 0, 180.0))
+			if(TankDrive.autoRampParts(true, false, false, true, 0))
 			{
 				currentStep++;
+				finished = true;
 			}
 		}
 	}
@@ -83,9 +104,10 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRoughTerrain(false, true, true, 0, 0))
+			if(TankDrive.autoRoughTerrain(false, false, true, true, 0))
 			{
 				currentStep++;
+				finished = true;
 			}
 		}
 	}
@@ -94,9 +116,10 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoMoat(false, true, true, 0, 0))
+			if(TankDrive.autoMoat(false, false, true, true, 0))
 			{
 				currentStep++;
+				finished = true;
 			}
 		}
 	}
@@ -107,9 +130,10 @@ public class AutoRoutinesRunner
 		{
 			Shooter.setArmSetpoint(400);
 			
-			if(TankDrive.autoLowBar(false, true, true, Shooter.armIsAtSetpoint(), 0, 0))
+			if(TankDrive.autoLowBar(false, false, true, true, Shooter.armIsAtSetpoint(), 0))
 			{
 				currentStep++;
+				finished = true;
 			}
 		}
 	}
@@ -118,9 +142,10 @@ public class AutoRoutinesRunner
 	{
 		if(currentStep == 0)
 		{
-			if(TankDrive.autoRockWall(false, true, true, 0, 0))
+			if(TankDrive.autoRockWall(false, false, true, true, 0))
 			{
 				currentStep++;
+				finished = true;
 			}
 		}
 	}
