@@ -10,7 +10,7 @@ public class AutoRoutinesRunner
 	
 	private static boolean errored;
 	private static AutoRoutine lastRoutine;
-	private static int currentStep, numLoops;
+	private static int currentStep;
 	
 	public static void execute(AutoRoutine routine)
 	{
@@ -31,9 +31,6 @@ public class AutoRoutinesRunner
 				break;
 				case LowBar:
 					executeLowBarRoutine();
-				break;
-				case LowBarAndShoot:
-					executeLowBarAndShootRoutine();
 				break;
 				case RockWall:
 					executeRockWallRoutine();
@@ -113,35 +110,6 @@ public class AutoRoutinesRunner
 			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
 			{
 				currentStep++;
-			}
-		}
-	}
-	
-	private static void executeLowBarAndShootRoutine()
-	{
-		if(currentStep == 0)
-		{
-			Shooter.setArmSetpoint(400);
-			
-			if(TankDrive.autoLowBar(true, true, Shooter.armIsAtSetpoint(), 0))
-			{
-				currentStep++;
-			}
-		}
-		else if(currentStep == 1)
-		{
-			Shooter.setShooterMotorsPID(85);
-			Shooter.setArmSetpoint(300);
-			
-			if(Shooter.shooterIsAtSetpoint() && Shooter.armIsAtSetpoint())
-			{
-				Shooter.setBallPusher(true);
-				numLoops++;
-
-				if(numLoops > 10)
-				{
-					currentStep++;
-				}
 			}
 		}
 	}
