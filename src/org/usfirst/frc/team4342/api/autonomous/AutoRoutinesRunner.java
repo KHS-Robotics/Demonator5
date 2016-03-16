@@ -23,7 +23,7 @@ public class AutoRoutinesRunner
 	
 	// When RoutinePosition is 3, things are a little
 	// more complicated, so this variable helps
-	private static boolean positionThreeOnTarget;
+	private static boolean yawInitiallyOnTarget;
 	
 	/**
 	 * 
@@ -259,9 +259,9 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.goToAngle(0);
 						
-						if(Repository.TankDrive.isAtAngleSetpoint() || positionThreeOnTarget)
+						if(Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget)
 						{
-							positionThreeOnTarget = true;
+							yawInitiallyOnTarget = true;
 							Repository.Shooter.setArmSetpoint(0);
 							
 							if(Repository.TankDrive.autoMoveDist(0.5, 6))
@@ -301,8 +301,10 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.goToAngle(180);
 						
-						if(Repository.TankDrive.isAtAngleSetpoint())
+						if(Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget)
 						{
+							yawInitiallyOnTarget = true;
+							
 							if(RoutineDefense == 1)
 							{
 								if(Repository.TankDrive.autoLowBar(true, true, 180))
@@ -343,7 +345,7 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutineFinish == 2) // Secret Passage
 				{
-					
+					abort();
 				}
 			}
 			
@@ -365,7 +367,7 @@ public class AutoRoutinesRunner
 	
 	public static void reset()
 	{
-		positionThreeOnTarget = false;
+		yawInitiallyOnTarget = false;
 		finished = false;
 		errored = false;
 		currentStep = 0;
