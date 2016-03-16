@@ -11,7 +11,6 @@ public class AutoRoutinesRunner
 	private AutoRoutinesRunner() {}
 	
 	private static boolean errored, finished;
-	private static AutoRoutine lastRoutine;
 	private static int currentStep, numLoops;
 	
 	// Current Step Enumeration: Start = 0, Defense = 1, Position = 2, Goal = 3, Finish = 4
@@ -21,6 +20,10 @@ public class AutoRoutinesRunner
 	// RoutineGoal: Nothing = 0, High = 1, Low = 2
 	// RoutineFinish: Nothing(Stop) = 0, Neutral = 1, Secret = 2
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
+	
+	// When RoutinePosition is 3, things are a little
+	// more complicated, so this variable helps
+	private static boolean positionThreeOnTarget;
 	
 	/**
 	 * 
@@ -38,20 +41,20 @@ public class AutoRoutinesRunner
 				return true;
 			}
 			
-			if(currentStep == 0)
+			if(currentStep == 0) // Routine Start
 			{
-				if(RoutineStart == 2 || RoutineStart == 3)
+				if(RoutineStart == 2 || RoutineStart == 3) // Grab ball or Spy
 				{
 					abort();
 				}
-				else if(RoutineStart == 1)
+				else if(RoutineStart == 1) // Start with ball
 				{
 					incrementStep();
 				}
 			}
-			else if(currentStep == 1)
+			else if(currentStep == 1) // Routine Defense
 			{
-				if(RoutineDefense == 1)
+				if(RoutineDefense == 1) // Low Bar
 				{
 					if(Repository.TankDrive.autoLowBar(true, true, 0))
 					{
@@ -60,7 +63,7 @@ public class AutoRoutinesRunner
 						incrementStep();
 					}
 				}
-				else if(RoutineDefense == 2)
+				else if(RoutineDefense == 2) // Moat
 				{
 					if(Repository.TankDrive.autoMoat(true, true, 0))
 					{
@@ -69,7 +72,7 @@ public class AutoRoutinesRunner
 						incrementStep();
 					}
 				}
-				else if(RoutineDefense == 3)
+				else if(RoutineDefense == 3) // Ramp Parts
 				{
 					if(Repository.TankDrive.autoRampParts(true, true, 0))
 					{
@@ -78,7 +81,7 @@ public class AutoRoutinesRunner
 						incrementStep();
 					}
 				}
-				else if(RoutineDefense == 4)
+				else if(RoutineDefense == 4) // Rough Terrain
 				{
 					if(Repository.TankDrive.autoRoughTerrain(true, true, 0))
 					{
@@ -87,7 +90,7 @@ public class AutoRoutinesRunner
 						incrementStep();
 					}
 				}
-				else if(RoutineDefense == 5)
+				else if(RoutineDefense == 5) // Rock Wall
 				{
 					if(Repository.TankDrive.autoRockWall(true, true, 0))
 					{
@@ -97,60 +100,64 @@ public class AutoRoutinesRunner
 					}
 				}
 			}
-			else if(currentStep == 2)
+			else if(currentStep == 2) // Routine Position
 			{
-				if(RoutineDefense == 1 && RoutinePosition != 1)
+				if(RoutineDefense == 1 && RoutinePosition != 1) // Low Bar is always Position 1 and Defense 1. So why wouldn't they equal? Abort...
 				{
 					abort();
 				}
-				else if(RoutineDefense == 1)
+				else if(RoutineDefense == 1) // From Low Bar
 				{
 					if(Repository.TankDrive.autoMoveDist(0.75, TankDrive.LOW_BAR_DIST_INCHES))
 					{
+						Repository.TankDrive.resetAutoMove();
 						incrementStep();
 					}
 				}
-				else if(RoutinePosition == 2)
+				else if(RoutinePosition == 2) // From Position 2
 				{
 					if(Repository.TankDrive.autoMoveDist(0.75, TankDrive.SECOND_DEFENSE_DIST_INCHES))
 					{
+						Repository.TankDrive.resetAutoMove();
 						incrementStep();
 					}
 				}
-				else if(RoutinePosition == 3)
+				else if(RoutinePosition == 3) // From Position 3, but we shoot from the courtyard so let's not move
 				{
 					incrementStep();
 				}
-				else if(RoutinePosition == 4)
+				else if(RoutinePosition == 4) // From Position 4
 				{
 					if(Repository.TankDrive.autoMoveDist(0.75, TankDrive.FOURTH_DEFENSE_DIST_INCHES))
 					{
+						Repository.TankDrive.resetAutoMove();
 						incrementStep();
 					}
 				}
-				else if(RoutinePosition == 5)
+				else if(RoutinePosition == 5) // From Position 5
 				{
 					if(Repository.TankDrive.autoMoveDist(0.75, TankDrive.FIFTH_DEFENSE_DIST_INCHES))
 					{
+						Repository.TankDrive.resetAutoMove();
 						incrementStep();
 					}
 				}
 			}
-			else if(currentStep == 3)
+			else if(currentStep == 3) // Routine Goal
 			{	
-				if(RoutineGoal == 0)
+				if(RoutineGoal == 0) // Do nothing? Abort
 				{
 					abort();
 				}
-				else if(RoutineDefense == 1 || RoutinePosition == 2)
+				else if(RoutineDefense == 1 || RoutinePosition == 2) // Low Bar or Position 2... Shooting angles are the same
 				{
 					Repository.TankDrive.goToAngle(TankDrive.BATTER_YAW);
 					
-					if(RoutineGoal == 1)
+					if(RoutineGoal == 1) // High Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_ANGLE);
 					}
-					else if(RoutineGoal == 2)
+					else if(RoutineGoal == 2) // Low Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.LOW_BATTER_ANGLE);
 					}
@@ -159,18 +166,20 @@ public class AutoRoutinesRunner
 					{
 						Repository.Shooter.setBallPusher(true);
 						
-						incrementStep();
+						if(numLoops > 10)
+							incrementStep();
+						numLoops++;
 					}
 				}
-				else if(RoutinePosition == 3)
+				else if(RoutinePosition == 3) // From courtyard
 				{
 					Repository.TankDrive.goToAngle(TankDrive.THIRD_POSITION_YAW);
 					
-					if(RoutineGoal == 1)
+					if(RoutineGoal == 1) // High Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.THIRD_POSITION_HIGH_ANGLE);
 					}
-					else if(RoutineGoal == 2)
+					else if(RoutineGoal == 2) // Low Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.THIRD_POSITION_LOW_DIST);
 					}
@@ -179,18 +188,20 @@ public class AutoRoutinesRunner
 					{
 						Repository.Shooter.setBallPusher(true);
 						
-						incrementStep();
+						if(numLoops > 10)
+							incrementStep();
+						numLoops++;
 					}
 				}
-				else if(RoutinePosition == 4)
+				else if(RoutinePosition == 4) // From Position 4
 				{
 					Repository.TankDrive.goToAngle(TankDrive.FOURTH_POSITION_YAW);
 					
-					if(RoutineGoal == 1)
+					if(RoutineGoal == 1) // High Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.FOURTH_POSITION_HIGH_DIST);
 					}
-					else if(RoutineGoal == 2)
+					else if(RoutineGoal == 2) // Low Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.FOURTH_POSITION_LOW_DIST);
 					}
@@ -199,18 +210,20 @@ public class AutoRoutinesRunner
 					{
 						Repository.Shooter.setBallPusher(true);
 						
-						incrementStep();
+						if(numLoops > 10)
+							incrementStep();
+						numLoops++;
 					}
 				}
-				else if(RoutinePosition == 5)
+				else if(RoutinePosition == 5) // From Position 5
 				{
-					Repository.TankDrive.goToAngle(-TankDrive.BATTER_YAW);
+					Repository.TankDrive.goToAngle(-TankDrive.BATTER_YAW); // Shooting from the right
 					
-					if(RoutineGoal == 1)
+					if(RoutineGoal == 1) // High Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_ANGLE);
 					}
-					else if(RoutineGoal == 2)
+					else if(RoutineGoal == 2) // Low Goal
 					{
 						Repository.Shooter.setArmSetpoint(Shooter.LOW_BATTER_ANGLE);
 					}
@@ -219,26 +232,116 @@ public class AutoRoutinesRunner
 					{
 						Repository.Shooter.setBallPusher(true);
 						
-						incrementStep();
+						if(numLoops > 10)
+							incrementStep();
+						numLoops++;
 					}
 				}
 				
-				if(RoutineGoal == 1)
+				if(RoutineGoal == 1) // High Goal, larger setpoint
 				{
 					Repository.Shooter.setShooterMotorsPID(85);
 				}
-				else if(RoutineGoal == 2)
+				else if(RoutineGoal == 2) // Low Goal, smaller setpoint
 				{
 					Repository.Shooter.setShooterMotorsPID(60);
 				}
 			}
-			else if(currentStep == 4)
+			else if(currentStep == 4) // Routine Finish
 			{
-				if(RoutineFinish == 0)
+				if(RoutineFinish == 0) // Do nothing? Abort
 				{
 					abort();
 				}
-				else if(RoutineFinish == 1)
+				else if(RoutineFinish == 1) // Neutral zone
+				{
+					if(RoutinePosition == 3) // From courtyard
+					{
+						Repository.TankDrive.goToAngle(0);
+						
+						if(Repository.TankDrive.isAtAngleSetpoint() || positionThreeOnTarget)
+						{
+							positionThreeOnTarget = true;
+							Repository.Shooter.setArmSetpoint(0);
+							
+							if(Repository.TankDrive.autoMoveDist(0.5, 6))
+							{
+								if(RoutineDefense == 2) // Moat
+								{
+									if(Repository.TankDrive.autoMoat(false, true, 180))
+									{
+										incrementStep();
+									}
+								}
+								else if(RoutineDefense == 3) // Ramp Parts
+								{
+									if(Repository.TankDrive.autoRampParts(false, true, 180))
+									{
+										incrementStep();
+									}
+								}
+								else if(RoutineDefense == 4) // Rough Terrain
+								{
+									if(Repository.TankDrive.autoRoughTerrain(false, true, 180))
+									{
+										incrementStep();
+									}
+								}
+								else if(RoutineDefense == 5) // Rock Wall
+								{
+									if(Repository.TankDrive.autoRockWall(false, true, 180))
+									{
+										incrementStep();
+									}
+								}
+							}
+						}
+					}
+					else // Not from courtyard, going to turn around toward drivers and go back over the defense
+					{
+						Repository.TankDrive.goToAngle(180);
+						
+						if(Repository.TankDrive.isAtAngleSetpoint())
+						{
+							if(RoutineDefense == 1)
+							{
+								if(Repository.TankDrive.autoLowBar(true, true, 180))
+								{
+									incrementStep();
+								}
+							}
+							else if(RoutineDefense == 2)
+							{
+								if(Repository.TankDrive.autoMoat(true, true, 180))
+								{
+									incrementStep();
+								}
+							}
+							else if(RoutineDefense == 3)
+							{
+								if(Repository.TankDrive.autoRampParts(true, true, 180))
+								{
+									incrementStep();
+								}
+							}
+							else if(RoutineDefense == 4)
+							{
+								if(Repository.TankDrive.autoRoughTerrain(true, true, 180))
+								{
+									incrementStep();
+								}
+							}
+							else if(RoutineDefense == 5)
+							{
+								if(Repository.TankDrive.autoRockWall(true, true, 180))
+								{
+									incrementStep();
+								}
+							}
+						}
+					}
+				}
+				else if(RoutineFinish == 2) // Secret Passage
 				{
 					
 				}
@@ -262,6 +365,7 @@ public class AutoRoutinesRunner
 	
 	public static void reset()
 	{
+		positionThreeOnTarget = false;
 		finished = false;
 		errored = false;
 		currentStep = 0;
@@ -270,8 +374,18 @@ public class AutoRoutinesRunner
 	
 	public static void abort()
 	{
-		//Repository.Repository.TankDrive.stopAll();
-		//Repository.Repository.Shooter.stopAll();
+		Repository.TankDrive.stopAll();
+		Repository.Shooter.stopAll();
+		
+		Repository.Logs.warning(
+			"Aborted autonomous :: "
+			+ "RS=" + RoutineStart + ", "
+			+ "RD=" + RoutineDefense + ", "
+			+ "RP=" + RoutinePosition + ", "
+			+ "RG=" + RoutineGoal + ", "
+			+ "RF=" + RoutineFinish +", "
+			+ "Time=" + Repository.Timer.get() + "s"
+		);
 		
 		currentStep = 9001;
 		finished = true;
@@ -292,11 +406,6 @@ public class AutoRoutinesRunner
 		RoutinePosition = position;
 		RoutineGoal = goal;
 		RoutineFinish = finish;
-	}
-	
-	public static AutoRoutine getLastAutoRoutine()
-	{
-		return lastRoutine;
 	}
 	
 	public static int getCurrentStep()
@@ -320,125 +429,5 @@ public class AutoRoutinesRunner
 		SmartDashboard.putBoolean("AutoFinished", finished);
 		SmartDashboard.putBoolean("AutoErrored", errored);
 		SmartDashboard.putNumber("AutoTimerSeconds", Repository.Timer.get());
-	}
-	
-	private static void executeRampPartsRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoRampParts(true, true, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
-	}
-	
-	private static void executeRoughTerrainRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoRoughTerrain(true, true, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
-	}
-	
-	private static void executeMoatRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoMoat(true, true, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
-	}
-	
-	private static void executeLowBarRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoLowBar(true, true, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
-	}
-	
-	private static void executeRockWallRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoRockWall(true, true, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
-	}
-	
-	private static void executeLowBarAndShootBatterRoutine()
-	{
-		if(currentStep == 0)
-		{
-			if(Repository.TankDrive.autoLowBar(true, true, 0))
-			{
-				Repository.Shooter.setArmSetpoint(Shooter.LOW_BAR_SHOOT_ANGLE);
-				currentStep++;
-			}
-		}
-		else if(currentStep == 1)
-		{
-			if(Repository.TankDrive.autoMoveDist(0.75, TankDrive.LOW_BAR_DIST_INCHES))
-			{
-				Repository.TankDrive.goToAngle(TankDrive.LOW_BAR_YAW);
-				Repository.Shooter.setShooterMotorsPID(85);
-				currentStep++;
-			}
-		}
-		else if(currentStep == 2)
-		{
-			if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
-			{
-				Repository.Shooter.setBallPusher(true);
-				currentStep++;
-			}
-		}
-		else if(currentStep == 3)
-		{
-			if(numLoops >= 10)
-			{
-				Repository.TankDrive.goToAngle(180);
-				
-				Repository.Shooter.setShooterMotorsPID(0);
-				Repository.Shooter.setBallPusher(false);
-				
-				currentStep++;
-			}
-			
-			numLoops++;
-		}
-		else if(currentStep == 4)
-		{
-			if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint())
-			{
-				Repository.TankDrive.autoMoveDist(0.75, TankDrive.LOW_BAR_DIST_INCHES);
-				Repository.TankDrive.resetLowBarState();
-				currentStep++;
-			}
-		}
-		else if(currentStep == 5)
-		{
-			if(Repository.TankDrive.autoLowBar(true, false, 0))
-			{
-				currentStep++;
-				finished = true;
-			}
-		}
 	}
 }

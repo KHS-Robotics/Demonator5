@@ -21,6 +21,7 @@ public class TankDrive
 {
 	private static double JOYSTICK_SENSITIVITY = 0.25;
 	private static final double DEAD_BAND = 0.08;
+	
 	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0, THIRD_POSITION_YAW = 12.68;
 	public static final double LOW_BAR_DIST_INCHES = 100;
 	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
@@ -864,13 +865,17 @@ public class TankDrive
 		if(getCurrentEncoderDistance() >= targetEncCounts)
 		{
 			stopAll();
-			firstRunAutoMoveDist = true;
 			return true;
 		}
 		
 		goStraight(output, yaw);
 		
 		return false;
+	}
+	
+	public synchronized void resetAutoMove()
+	{
+		firstRunAutoMoveDist = false;
 	}
 	
 	public synchronized double getCurrentEncoderDistance()

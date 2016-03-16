@@ -5,10 +5,12 @@ import org.usfirst.frc.team4342.api.arm.ArmController;
 public class Shooter 
 {
 	public static final double JOYSTICK_DEADBAND = 0.05;
-	public static final double HIGH_BATTER_ANGLE = 63.67, LOW_BATTER_ANGLE = 32, LOW_BAR_SHOOT_ANGLE = 27; //TODO: angle -> encoder distance
+	
+	//TODO: angle -> encoder distance
+	public static final double LOW_BAR_SHOOT_ANGLE = 27, LOW_BAR_ENC_DIST = 400;
+	public static final double HIGH_BATTER_ANGLE = 63.67, LOW_BATTER_ANGLE = 32;
 	public static final double THIRD_POSITION_HIGH_ANGLE = 27, THIRD_POSITION_LOW_DIST = 350;
 	public static final double FOURTH_POSITION_HIGH_DIST = 300, FOURTH_POSITION_LOW_DIST = 400;
-	public static final double LOW_BAR_ENC_DIST = 400;
 
 	private ShooterController shooter;
 	private ArmController arm;
