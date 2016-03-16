@@ -15,14 +15,16 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import java.util.HashMap;
 
 import org.usfirst.frc.team4342.api.drive.DefenseState;
+import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 public class TankDrive
 {
 	private static double JOYSTICK_SENSITIVITY = 0.25;
 	private static final double DEAD_BAND = 0.08;
-	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0;
+	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0, THIRD_POSITION_YAW = 12.68;
 	public static final double LOW_BAR_DIST_INCHES = 100;
 	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
+	public static final double FOURTH_POSITION_YAW = -15.0;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -567,7 +569,7 @@ public class TankDrive
 		return false;
 	}
 	
-	public boolean autoLowBar(boolean forward, boolean armIsAtSetpoint, boolean target, double goalAngle)
+	public boolean autoLowBar(boolean forward, boolean target, double goalAngle)
 	{
 		double startAngle = Math.abs(getYaw()) > 90 ? 180 : 0;
 		double currentPitch = navX.getPitch();
@@ -578,6 +580,8 @@ public class TankDrive
 			if (firstRun)
 			{
 				driveTrain.setBrakeMode();
+				
+				Repository.Shooter.setArmSetpoint(Shooter.LOW_BAR_ENC_DIST);
 				
 				startingPitch = navX.getPitch();
 				minPitch = navX.getPitch();
@@ -591,7 +595,7 @@ public class TankDrive
 			else if(currentPitch > maxPitch)
 				maxPitch = currentPitch;
 			
-			if(isAtAngleSetpoint() && armIsAtSetpoint)
+			if(isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint())
 			{
 				lowBarState = DefenseState.CLIMB;
 				minPitch = currentPitch;
@@ -852,12 +856,12 @@ public class TankDrive
 		if(firstRunAutoMoveDist)
 		{
 			driveTrain.setBrakeMode();
-			targetEncCounts = getCurrentEncoderCounts() + Math.abs(inches);
+			targetEncCounts = getCurrentEncoderDistance() + Math.abs(inches);
 			yaw = getYaw();
 			firstRunAutoMoveDist = false;
 		}
 		
-		if(getCurrentEncoderCounts() >= targetEncCounts)
+		if(getCurrentEncoderDistance() >= targetEncCounts)
 		{
 			stopAll();
 			firstRunAutoMoveDist = true;
@@ -869,7 +873,7 @@ public class TankDrive
 		return false;
 	}
 	
-	public synchronized double getCurrentEncoderCounts()
+	public synchronized double getCurrentEncoderDistance()
 	{
 		return Math.abs(encLeft.getDistance()) + Math.abs(encRight.getDistance());
 	}

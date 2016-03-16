@@ -43,6 +43,8 @@ public class Repository
 	public static RobotConsoleLogger ConsoleLog;
 	public static MultiLogger Logs;
 	
+	public static edu.wpi.first.wpilibj.Timer Timer = new edu.wpi.first.wpilibj.Timer();
+	
 	public static Joystick DriveStick, ShooterStick, SwitchBox;
 	
 	public static CANTalon FrontRight, FrontLeft, MiddleRight,
@@ -258,6 +260,12 @@ public class Repository
 	
 	private static void initializeSmartDashboard()
 	{
+		SmartDashboard.putNumber("RoutineStart", 0);
+		SmartDashboard.putNumber("RoutineDefense", 0);
+		SmartDashboard.putNumber("RoutinePosition", 0);
+		SmartDashboard.putNumber("RoutineGoal", 0);
+		SmartDashboard.putNumber("RoutineFinish", 0);
+		
 		SmartDashboard.putNumber("Goal-Dist", 0.0);
 		SmartDashboard.putNumber("Goal-Ang", 0.0);
 		

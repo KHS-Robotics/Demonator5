@@ -5,8 +5,6 @@ import org.usfirst.frc.team4342.robot.components.Repository;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team4342.api.autonomous.AutoRoutine;
-import org.usfirst.frc.team4342.api.autonomous.AutoRoutineLoader;
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 import org.usfirst.frc.team4342.api.multithreading.ComponentRunner;
@@ -27,8 +25,6 @@ import org.usfirst.frc.team4342.api.multithreading.TankDriveComponent;
  */
 public class Robot extends IterativeRobot 
 {	
-	private AutoRoutine selectedAutoRoutine;
-	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -38,13 +34,9 @@ public class Robot extends IterativeRobot
     {
 		Repository.initializeAll();
 		SmartDashboardUpdater.startUpdating(Repository.Log, Repository.ConsoleLog);
-
-		selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine("/home/lvuser/AutoRoutine.txt");
 		
 		ComponentRunner.startAutomaticMode(new TankDriveComponent(Repository.TankDrive));
     	ComponentRunner.startAutomaticMode(new ShootingComponent(Repository.Shooter));
-		
-		PIDTuner.startUpdating();
     }
 	
 	/**
@@ -55,10 +47,9 @@ public class Robot extends IterativeRobot
     {
     	Repository.DriveTrain.setBrakeMode();
     	Repository.DriveTrain.enable();
-    	
-    	selectedAutoRoutine = AutoRoutineLoader.getAutoRoutine((int)SmartDashboard.getNumber("Auto-Routine"));
-    	
+    	    	
     	AutoRoutinesRunner.reset();
+    	Repository.Timer.start();
     }
 
     /**
@@ -67,7 +58,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void autonomousPeriodic() 
     {
-    	AutoRoutinesRunner.execute(selectedAutoRoutine);
+    	AutoRoutinesRunner.execute();
     }
 	
 	/**
@@ -105,6 +96,14 @@ public class Robot extends IterativeRobot
 	public void disabledPeriodic()
 	{
 		Repository.TankDrive.setYawOffset(SmartDashboard.getNumber("Yaw-Offset"));
+		
+		AutoRoutinesRunner.setRoutineData(
+			(int)SmartDashboard.getNumber("RoutineStart"), 
+			(int)SmartDashboard.getNumber("RoutineDefense"), 
+			(int)SmartDashboard.getNumber("RoutinePosition"),
+			(int)SmartDashboard.getNumber("RoutineGoal"), 
+			(int)SmartDashboard.getNumber("RoutineFinish")
+		);
 	}
 }
 

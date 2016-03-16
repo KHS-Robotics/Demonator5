@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
@@ -114,28 +113,26 @@ public class SmartDashboardUpdater
 		@Override
 		public void run() 
 		{
-			while(true)
+			try
 			{
-				putJoystickData();
-				putTalonData();
-				putLimitSwitchData();
-				putNavXData();
-				putEncoderData();
-				putCounterData();
-				putDefenseStates();
-				
-				SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
-				SmartDashboard.putNumber("Auto-Step", AutoRoutinesRunner.getCurrentStep());
-				SmartDashboard.putString("Auto-Routine", AutoRoutinesRunner.getLastAutoRoutine().toString());
-
-				try
+				while(true)
 				{
+					putJoystickData();
+					putTalonData();
+					putLimitSwitchData();
+					putNavXData();
+					putEncoderData();
+					putCounterData();
+					putDefenseStates();
+					
+					SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
+	
 					Thread.sleep(50);
-				} 
-				catch(Exception ex)
-				{
-					multiLog.error("Unexpected error while putting data to SmartDashboard", ex);
 				}
+			}
+			catch(Exception ex)
+			{
+				Repository.Logs.error("Failed to put data to SmartDashboard", ex);
 			}
 		}
 
