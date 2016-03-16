@@ -82,6 +82,7 @@ public class SmartDashboardUpdater
 	{
 		if(!started) 
 		{
+			SmartDashboard.putBoolean("SDU-Errored", false);
 			new SmartDashboardUpdaterThread(log, consoleLog).start();
 			started = true;
 		}
@@ -92,6 +93,7 @@ public class SmartDashboardUpdater
 	 */
 	private static class SmartDashboardUpdaterThread extends Thread implements Runnable 
 	{	
+		private boolean errored;
 		private boolean loggedJoysticks;
 		private boolean loggedTalons;
 		private boolean loggedDigitalInput;
@@ -132,7 +134,13 @@ public class SmartDashboardUpdater
 			}
 			catch(Exception ex)
 			{
-				Repository.Logs.error("Failed to put data to SmartDashboard", ex);
+				if(!errored)
+				{
+					Repository.Logs.error("Failed to put data to SmartDashboard", ex);
+					SmartDashboard.putBoolean("SDU-Errored", true);
+				}
+				
+				errored = true;
 			}
 		}
 

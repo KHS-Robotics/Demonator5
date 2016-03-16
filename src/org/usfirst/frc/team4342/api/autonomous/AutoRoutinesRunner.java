@@ -21,8 +21,7 @@ public class AutoRoutinesRunner
 	// RoutineFinish: Nothing(Stop) = 0, Neutral = 1, Secret = 2
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
 	
-	// When RoutinePosition is 3, things are a little
-	// more complicated, so this variable helps
+	// Used for RoutineFinish
 	private static boolean yawInitiallyOnTarget;
 	
 	/**
@@ -305,35 +304,35 @@ public class AutoRoutinesRunner
 						{
 							yawInitiallyOnTarget = true;
 							
-							if(RoutineDefense == 1)
+							if(RoutineDefense == 1) // Low Bar
 							{
 								if(Repository.TankDrive.autoLowBar(true, true, 180))
 								{
 									incrementStep();
 								}
 							}
-							else if(RoutineDefense == 2)
+							else if(RoutineDefense == 2) // Moat
 							{
 								if(Repository.TankDrive.autoMoat(true, true, 180))
 								{
 									incrementStep();
 								}
 							}
-							else if(RoutineDefense == 3)
+							else if(RoutineDefense == 3) // Ramp Parts
 							{
 								if(Repository.TankDrive.autoRampParts(true, true, 180))
 								{
 									incrementStep();
 								}
 							}
-							else if(RoutineDefense == 4)
+							else if(RoutineDefense == 4) // Rough Terrain
 							{
 								if(Repository.TankDrive.autoRoughTerrain(true, true, 180))
 								{
 									incrementStep();
 								}
 							}
-							else if(RoutineDefense == 5)
+							else if(RoutineDefense == 5) // Rock Wall
 							{
 								if(Repository.TankDrive.autoRockWall(true, true, 180))
 								{

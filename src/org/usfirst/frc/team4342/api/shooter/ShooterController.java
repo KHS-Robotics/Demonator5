@@ -22,7 +22,6 @@ public class ShooterController
 	private CANTalon rightMotor, leftMotor;
 	private Solenoid ballPusher;
 	private Counter rightMotorCounter, leftMotorCounter;
-	private DigitalInput ballSensor;
 	private ArmController arm;
 	
 	private PIDController rightPID, leftPID;
@@ -43,7 +42,6 @@ public class ShooterController
 		this.ballPusher = ballPusher;
 		this.rightMotorCounter = rightMotorCounter;
 		this.leftMotorCounter = leftMotorCounter;
-		this.ballSensor = ballSensor;
 		this.arm = arm;
 		
 		rightMotorCounter.setPIDSourceType(PIDSourceType.kRate);
@@ -120,7 +118,7 @@ public class ShooterController
 			}
 			else if (state == ShooterState.FIRING)
 			{
-				if(numLoops > 25)//!ballSensor.get())
+				if(numLoops > 10)
 				{
 					setMotorsPID(0);
 					numLoops = 0;
