@@ -25,8 +25,7 @@ public class AutoRoutinesRunner
 	private static boolean yawInitiallyOnTarget;
 	
 	/**
-	 * 
-	 * @param routine the routine to execute
+	 * Executes the autonomous routine based on given auto data above
 	 * @return true if the routine is finished; false otherwise
 	 */
 	public static boolean execute()

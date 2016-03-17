@@ -73,34 +73,36 @@ public class ArmController
 		double encDist = Math.abs(enc.getDistance());
 		double currentOutput = armMotor.get();
 		
-		if(encDist < 8 && (y < 0 || currentOutput < 0))
-		{
-			armMotor.set(0);
-			disablePID();
-			return;
-		}
-		else if(encDist < 125 && (y < 0 || currentOutput < 0))
-		{
-			armMotor.set(0.06);
-			disablePID();
-			return;
-		}
-		else if(encDist > 400 && (y > 0 || currentOutput > 0))
-		{
-			armMotor.set(0);
-			disablePID();
-			return;
-		}
-
 		if(topLS.get() && (y < 0 || currentOutput < 0))
 		{
+			disablePID();
 			enc.reset();
 			armMotor.set(0.0);
 			return;
 		}
 		else if(botLS.get() && (y > 0 || currentOutput > 0))
 		{
+			disablePID();
 			armMotor.set(0.0);
+			return;
+		}
+		
+		if(encDist < 50 && (y < 0 || currentOutput < 0))
+		{
+			disablePID();
+			armMotor.set(0);
+			return;
+		}
+		else if(encDist < 100 && (y < 0 || currentOutput < 0))
+		{
+			disablePID();
+			armMotor.set(0.05);
+			return;
+		}
+		else if(encDist > 400 && (y > 0 || currentOutput > 0))
+		{
+			disablePID();
+			armMotor.set(0);
 			return;
 		}
 		
@@ -126,6 +128,7 @@ public class ArmController
 				}
 				else
 				{
+					disablePID();
 					stopOperatorAutoMove();
 					armMotor.set(0);
 				}
@@ -136,11 +139,11 @@ public class ArmController
 				
 				if(y > 0 && encDist > 190)
 				{
-					armMotor.set(j.getY() / 4.0);
+					armMotor.set(y / 5);
 					return;
 				}
 				
-				armMotor.set(j.getY());
+				armMotor.set(y);
 			}
 		}
 		else
@@ -170,7 +173,7 @@ public class ArmController
 
 	public boolean isAtAutoSetpoint()
 	{
-		return Math.abs(apidc.getError()) < 5;
+		return Math.abs(apidc.getError()) <= 5;
 	}
 
 	public void enablePID()

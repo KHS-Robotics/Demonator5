@@ -31,7 +31,8 @@ public final class ArmPIDController extends PIDController
 	@Override
 	public void calculate()
 	{
-		if(enc.getDistance() > -25 || enc.getDistance() < -460)
+		double encDistance = Math.abs(enc.getDistance());
+		if(encDistance < 190 || encDistance > 400)
 		{
 			super.setPID(0, 0, 0);
 			super.calculate();
@@ -54,7 +55,7 @@ public final class ArmPIDController extends PIDController
 		
 		if(error < 0)
 		{
-			if(enc.getDistance() > -80)
+			if(encDistance < 190)
 			{
 				super.setPID(kP, kI, kD);
 				super.calculate();
@@ -67,7 +68,7 @@ public final class ArmPIDController extends PIDController
 		}
 		else if(error > 0)
 		{
-			if(enc.getDistance() < -80)
+			if(encDistance < 190)
 			{
 				super.setPID(kPd, kId, kDd);
 				super.calculate();
