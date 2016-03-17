@@ -27,7 +27,7 @@ public class ShooterController
 	
 	private PIDController rightPID, leftPID;
 	
-	private ShooterState state;
+	private ShooterState state = ShooterState.LOADED;
 	
 	private int numLoops, driveShootLoops;
 	private boolean driverShooting, userFired;
@@ -76,7 +76,7 @@ public class ShooterController
 			
 			driveShootLoops++;
 			
-			if(driveShootLoops > 5)
+			if(isAtSetpoint())
 			{
 				setBallPusher(true);
 				
