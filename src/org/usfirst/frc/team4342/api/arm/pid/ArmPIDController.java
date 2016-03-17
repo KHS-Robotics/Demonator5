@@ -32,7 +32,7 @@ public final class ArmPIDController extends PIDController
 	public void calculate()
 	{
 		double encDistance = Math.abs(enc.getDistance());
-		if(encDistance < 190 || encDistance > 400)
+		if(encDistance < 190 || encDistance > 450)
 		{
 			super.setPID(0, 0, 0);
 			super.calculate();
