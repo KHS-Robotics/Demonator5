@@ -22,7 +22,7 @@ public class AutoRoutinesRunner
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
 	
 	// Used for RoutineFinish
-	private static boolean yawInitiallyOnTarget, fired;
+	private static boolean yawInitiallyOnTarget, fired, armInitiallyAtSetpoint;
 	
 	/**
 	 * Executes the autonomous routine based on given auto data above
@@ -263,8 +263,10 @@ public class AutoRoutinesRunner
 							yawInitiallyOnTarget = true;
 							Repository.Shooter.setArmSetpoint(0);
 							
-							if(Repository.TankDrive.autoMoveDist(0.5, 6))
+							if(Repository.TankDrive.autoMoveDist(0.5, 6) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
 							{
+								armInitiallyAtSetpoint = true;
+								
 								if(RoutineDefense == 2) // Moat
 								{
 									if(Repository.TankDrive.autoMoat(false, true, 180))
@@ -364,7 +366,10 @@ public class AutoRoutinesRunner
 	
 	public static void reset()
 	{
+		Repository.TankDrive.resetAutoDefense();
+		Repository.TankDrive.resetAutoMove();
 		yawInitiallyOnTarget = false;
+		armInitiallyAtSetpoint = false;
 		fired = false;
 		finished = false;
 		errored = false;
