@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter;
 
 import org.usfirst.frc.team4342.api.shooter.pid.ShooterPID;
+import org.usfirst.frc.team4342.robot.components.Repository;
 import org.usfirst.frc.team4342.api.arm.ArmController;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -62,7 +63,7 @@ public class ShooterController
 		enablePID();
 	}
 	
-	public void checkUser(int driverShootButton, int safetyButton, int fireButton, int accumButton)
+	public void checkUser(int driverShootButton, int safetyButton, int fireButton, int accumInButton, int accumOutButton)
 	{
 		if(driverShooting || (driveStick.getRawButton(driverShootButton) && state == ShooterState.LOADED))
 		{
@@ -105,7 +106,7 @@ public class ShooterController
 						state = ShooterState.FIRING;
 					}
 				}
-				else if(switchBox.getRawButton(accumButton))
+				else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
 				{
 					setMotors(-0.5);
 					setAccumulatorMotor(1);

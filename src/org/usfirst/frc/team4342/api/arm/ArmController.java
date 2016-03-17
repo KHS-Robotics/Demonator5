@@ -61,10 +61,10 @@ public class ArmController
 		disablePID();
 	}
 
-	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumButton)
+	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumInButton, int accumOutButton)
 	{
 		checkUserArm(smartDashboardSetpointButton, brakeButton);
-		checkUserAccumulator(accumButton);
+		checkUserAccumulator(accumInButton, accumOutButton);
 	}
 
 	public void checkUserArm(int smartDashboardSetpointButton, int brakeButton)
@@ -154,11 +154,15 @@ public class ArmController
 		}
 	}
 
-	public void checkUserAccumulator(int accumButton)
+	public void checkUserAccumulator(int accumInButton, int accumOutButton)
 	{
-		if(j.getRawButton(accumButton) || switchBox.getRawButton(accumButton))
+		if(j.getRawButton(accumInButton) || switchBox.getRawButton(accumInButton))
 		{
 			accumMotor.set(1);
+		}
+		else if(j.getRawButton(accumOutButton) || switchBox.getRawButton(accumOutButton))
+		{
+			accumMotor.set(-1);
 		}
 		else
 		{
