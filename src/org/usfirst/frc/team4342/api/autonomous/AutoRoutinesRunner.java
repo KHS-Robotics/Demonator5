@@ -165,7 +165,12 @@ public class AutoRoutinesRunner
 						Repository.Shooter.setBallPusher(true);
 						
 						if(numLoops > 10)
+						{
+							Repository.Shooter.setShooterMotorsPID(0);
+							
 							incrementStep();
+						}
+						
 						numLoops++;
 					}
 				}
@@ -187,7 +192,12 @@ public class AutoRoutinesRunner
 						Repository.Shooter.setBallPusher(true);
 						
 						if(numLoops > 10)
+						{
+							Repository.Shooter.setShooterMotorsPID(0);
+							
 							incrementStep();
+						}
+						
 						numLoops++;
 					}
 				}
@@ -209,7 +219,12 @@ public class AutoRoutinesRunner
 						Repository.Shooter.setBallPusher(true);
 						
 						if(numLoops > 10)
+						{
+							Repository.Shooter.setShooterMotorsPID(0);
+							
 							incrementStep();
+						}
+						
 						numLoops++;
 					}
 				}
@@ -231,7 +246,12 @@ public class AutoRoutinesRunner
 						Repository.Shooter.setBallPusher(true);
 						
 						if(numLoops > 10)
+						{
+							Repository.Shooter.setShooterMotorsPID(0);
+							
 							incrementStep();
+						}
+						
 						numLoops++;
 					}
 				}
