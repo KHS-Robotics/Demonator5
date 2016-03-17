@@ -22,7 +22,7 @@ public class AutoRoutinesRunner
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
 	
 	// Used for RoutineFinish
-	private static boolean yawInitiallyOnTarget;
+	private static boolean yawInitiallyOnTarget, fired;
 	
 	/**
 	 * Executes the autonomous routine based on given auto data above
@@ -38,6 +38,8 @@ public class AutoRoutinesRunner
 				
 				return true;
 			}
+			
+			putSmartDashobardData();
 			
 			if(currentStep == 0) // Routine Start
 			{
@@ -163,15 +165,7 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
 					{
 						Repository.Shooter.setBallPusher(true);
-						
-						if(numLoops > 10)
-						{
-							Repository.Shooter.setShooterMotorsPID(0);
-							
-							incrementStep();
-						}
-						
-						numLoops++;
+						fired = true;
 					}
 				}
 				else if(RoutinePosition == 3) // From courtyard
@@ -190,15 +184,7 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
 					{
 						Repository.Shooter.setBallPusher(true);
-						
-						if(numLoops > 10)
-						{
-							Repository.Shooter.setShooterMotorsPID(0);
-							
-							incrementStep();
-						}
-						
-						numLoops++;
+						fired = true;
 					}
 				}
 				else if(RoutinePosition == 4) // From Position 4
@@ -217,15 +203,7 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
 					{
 						Repository.Shooter.setBallPusher(true);
-						
-						if(numLoops > 10)
-						{
-							Repository.Shooter.setShooterMotorsPID(0);
-							
-							incrementStep();
-						}
-						
-						numLoops++;
+						fired = true;
 					}
 				}
 				else if(RoutinePosition == 5) // From Position 5
@@ -244,19 +222,22 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
 					{
 						Repository.Shooter.setBallPusher(true);
-						
-						if(numLoops > 10)
-						{
-							Repository.Shooter.setShooterMotorsPID(0);
-							
-							incrementStep();
-						}
-						
-						numLoops++;
+						fired = true;
 					}
 				}
 				
-				if(RoutineGoal == 1) // High Goal, larger setpoint
+				if(fired)
+				{
+					if(numLoops > 10)
+					{
+						Repository.Shooter.setShooterMotorsPID(0);
+						
+						incrementStep();
+					}
+					
+					numLoops++;
+				}
+				else if(RoutineGoal == 1) // High Goal, larger setpoint
 				{
 					Repository.Shooter.setShooterMotorsPID(85);
 				}
@@ -367,8 +348,6 @@ public class AutoRoutinesRunner
 				}
 			}
 			
-			putSmartDashobardData();
-			
 			return finished;
 		}
 		catch(Exception ex)
@@ -386,6 +365,7 @@ public class AutoRoutinesRunner
 	public static void reset()
 	{
 		yawInitiallyOnTarget = false;
+		fired = false;
 		finished = false;
 		errored = false;
 		currentStep = 0;
