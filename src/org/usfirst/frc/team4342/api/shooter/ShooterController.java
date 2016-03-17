@@ -30,7 +30,7 @@ public class ShooterController
 	private ShooterState state;
 	
 	private int numLoops, driveShootLoops;
-	private boolean driverShooting;
+	private boolean driverShooting, userFired;
 	
 	public ShooterController(Joystick driveStick, Joystick switchBox, CANTalon rightMotor, CANTalon leftMotor, 
 							Solenoid ballPusher, Counter rightMotorCounter, Counter leftMotorCounter, 
@@ -94,7 +94,7 @@ public class ShooterController
 		{
 			if (state == ShooterState.LOADED)
 			{
-				if (switchBox.getRawButton(safetyButton))
+				if (switchBox.getRawButton(safetyButton) && !userFired)
 				{
 					enablePID();
 					leftPID.setSetpoint(85);
@@ -115,6 +115,7 @@ public class ShooterController
 				{
 					setBallPusher(false);
 					stopAllMotors();
+					userFired = false;
 				}
 			}
 			else if (state == ShooterState.FIRING)
@@ -124,6 +125,8 @@ public class ShooterController
 					setMotorsPID(0);
 					numLoops = 0;
 					setBallPusher(false);
+					
+					userFired = true;
 					
 					state = ShooterState.LOADED;
 				}
