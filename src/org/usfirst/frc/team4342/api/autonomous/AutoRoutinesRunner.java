@@ -230,7 +230,7 @@ public class AutoRoutinesRunner
 				{
 					if(numLoops > 10)
 					{
-						Repository.Shooter.setShooterMotorsPID(0);
+						Repository.Shooter.disableShooterPID();
 						
 						incrementStep();
 					}

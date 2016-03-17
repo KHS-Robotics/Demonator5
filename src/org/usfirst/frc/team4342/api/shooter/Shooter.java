@@ -38,6 +38,11 @@ public class Shooter
 		shooter.setMotorsPID(autoShooterSetpoint);
 		shooter.setBallPusher(ballPushStatus);
 	}
+	
+	public void disableShooterPID()
+	{
+		shooter.disablePID();
+	}
 
 	public void setArmSetpoint(double setpoint)
 	{

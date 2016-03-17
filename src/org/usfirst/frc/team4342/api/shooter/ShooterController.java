@@ -181,8 +181,11 @@ public class ShooterController
 	
 	public void disablePID()
 	{
-		rightPID.disable();
-		leftPID.disable();
+		if(rightPID.isEnabled())
+			rightPID.disable();
+		
+		if(leftPID.isEnabled())
+			leftPID.disable();
 	}
 	
 	public void setPID(double p, double i, double d)
