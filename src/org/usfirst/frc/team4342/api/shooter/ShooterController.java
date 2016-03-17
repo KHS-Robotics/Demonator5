@@ -108,7 +108,7 @@ public class ShooterController
 				}
 				else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
 				{
-					setMotors(-0.5);
+					setMotors(-0.67);
 					setAccumulatorMotor(1);
 				}
 				else

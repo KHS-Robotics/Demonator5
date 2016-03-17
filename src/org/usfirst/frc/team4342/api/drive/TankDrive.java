@@ -94,16 +94,9 @@ public class TankDrive
 		int pov = j.getPOV();
 		if(POVLookupTable.containsKey(pov))
 		{
-			if (firstRunGoStraight)
-			{
-				goToSetpoint(POVLookupTable.get(pov));
-				
-				firstRunGoStraight = false;
-			}
-			else
-			{
-				goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
-			}
+			goToSetpoint(POVLookupTable.get(pov));
+			
+			goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 		}
 		else if(j.getRawButton(angleButton))
 		{

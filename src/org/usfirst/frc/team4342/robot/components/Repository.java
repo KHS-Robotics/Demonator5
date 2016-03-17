@@ -260,6 +260,8 @@ public class Repository
 	
 	private static void initializeSmartDashboard()
 	{
+		SmartDashboard.putNumber("Arm-Setpoint", 0);
+		
 		SmartDashboard.putNumber("RoutineStart", 0);
 		SmartDashboard.putNumber("RoutineDefense", 0);
 		SmartDashboard.putNumber("RoutinePosition", 0);

@@ -1,12 +1,9 @@
 package org.usfirst.frc.team4342.api.arm.pid;
 
-import org.usfirst.frc.team4342.robot.components.Repository;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class ArmPIDController extends PIDController 
 {
@@ -32,12 +29,12 @@ public final class ArmPIDController extends PIDController
 	public void calculate()
 	{
 		double encDistance = Math.abs(enc.getDistance());
-		if(encDistance < 190 || encDistance > 450)
-		{
-			super.setPID(0, 0, 0);
-			super.calculate();
-			return;
-		}
+//		if(encDistance < 20 || encDistance > 450)
+//		{
+//			super.setPID(0, 0, 0);
+//			super.calculate();
+//			return;
+//		}
 		
 		double input;
 		
@@ -48,14 +45,9 @@ public final class ArmPIDController extends PIDController
 		
 		double error = super.getSetpoint() - input;
 		
-		SmartDashboard.putNumber("Arm-Error", error);
-		SmartDashboard.putNumber("Arm-PidGet", input);
-		SmartDashboard.putNumber("Arm-Get", Repository.ArmMotor.get());
-		SmartDashboard.putNumber("Arm-Set", super.getSetpoint());
-		
 		if(error < 0)
 		{
-			if(encDistance < 190)
+			if(encDistance < 145)
 			{
 				super.setPID(kP, kI, kD);
 				super.calculate();
@@ -68,7 +60,7 @@ public final class ArmPIDController extends PIDController
 		}
 		else if(error > 0)
 		{
-			if(encDistance < 190)
+			if(encDistance < 145)
 			{
 				super.setPID(kPd, kId, kDd);
 				super.calculate();

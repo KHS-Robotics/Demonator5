@@ -155,11 +155,11 @@ public class AutoRoutinesRunner
 					
 					if(RoutineGoal == 1) // High Goal
 					{
-						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_ANGLE);
+						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_DIST);
 					}
 					else if(RoutineGoal == 2) // Low Goal
 					{
-						Repository.Shooter.setArmSetpoint(Shooter.LOW_BATTER_ANGLE);
+						Repository.Shooter.setArmSetpoint(Shooter.LOW_GOAL_DIST);
 					}
 					
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
@@ -174,7 +174,7 @@ public class AutoRoutinesRunner
 					
 					if(RoutineGoal == 1) // High Goal
 					{
-						Repository.Shooter.setArmSetpoint(Shooter.THIRD_POSITION_HIGH_ANGLE);
+						Repository.Shooter.setArmSetpoint(Shooter.THIRD_POSITION_HIGH_DIST);
 					}
 					else if(RoutineGoal == 2) // Low Goal
 					{
@@ -212,11 +212,11 @@ public class AutoRoutinesRunner
 					
 					if(RoutineGoal == 1) // High Goal
 					{
-						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_ANGLE);
+						Repository.Shooter.setArmSetpoint(Shooter.HIGH_BATTER_DIST);
 					}
 					else if(RoutineGoal == 2) // Low Goal
 					{
-						Repository.Shooter.setArmSetpoint(Shooter.LOW_BATTER_ANGLE);
+						Repository.Shooter.setArmSetpoint(Shooter.LOW_GOAL_DIST);
 					}
 					
 					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
@@ -357,6 +357,7 @@ public class AutoRoutinesRunner
 			if(!errored)
 			{
 				Repository.Logs.error("Unexpected error while executing auto", ex);
+				abort();
 				errored = true;
 			}
 			
@@ -389,6 +390,17 @@ public class AutoRoutinesRunner
 			+ "RP=" + RoutinePosition + ", "
 			+ "RG=" + RoutineGoal + ", "
 			+ "RF=" + RoutineFinish +", "
+			+ "CS=" + currentStep + ", "
+			+ "YIOT=" + yawInitiallyOnTarget +", "
+			+ "AIOT=" + armInitiallyAtSetpoint + ", "
+			+ "LBS" + Repository.TankDrive.getLowBarState()
+			+ "MS" + Repository.TankDrive.getMoatState()
+			+ "RPS" + Repository.TankDrive.getRampPartsState()
+			+ "RTS" + Repository.TankDrive.getRoughTerrainState()
+			+ "RWS" + Repository.TankDrive.getRockWallState()
+			+ "F=" + fired + ", "
+			+ "NL=" + numLoops + ", "
+			+ "E=" + errored + ", "
 			+ "Time=" + Repository.Timer.get() + "s"
 		);
 		

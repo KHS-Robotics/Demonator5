@@ -25,7 +25,7 @@ public class ArmController
 
 	private ArmPIDController apidc;
 
-	private boolean buttonPressed, autoHold;
+	private boolean buttonPressed, ranFirstAutoHold;
 	private int buttonSelected;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
@@ -87,22 +87,28 @@ public class ArmController
 			return;
 		}
 		
-		if(encDist < 50 && (y < 0 || currentOutput < 0))
+		if(encDist < 25 && (y < 0 || currentOutput < 0))
 		{
 			disablePID();
-			armMotor.set(0);
+			armMotor.set(-0.1);
 			return;
 		}
-		else if(encDist < 100 && (y < 0 || currentOutput < 0))
+		else if(encDist < 190 && (y < 0 || currentOutput < 0))
 		{
 			disablePID();
-			armMotor.set(0.05);
+			armMotor.set(-0.16);
 			return;
 		}
-		else if(encDist > 400 && (y > 0 || currentOutput > 0))
+		else if(encDist > 420 && (y > 0 || currentOutput > 0))
 		{
 			disablePID();
-			armMotor.set(0);
+			armMotor.set(0.16);
+			return;
+		}
+		else if(encDist > 440 && (y > 0 || currentOutput > 0))
+		{
+			disablePID();
+			armMotor.set(0.1);
 			return;
 		}
 		
@@ -117,13 +123,18 @@ public class ArmController
 					setSetpoint(setpoints.getSetpoint(buttonSelected));
 					enablePID();
 				}
+				else if(j.getRawButton(3))
+				{
+					setSetpoint(encDist - 10);
+					enablePID();
+				}
 				else if(!switchBox.getRawButton(brakeButton))
 				{
-					if(!autoHold)
+					if(!ranFirstAutoHold)
 					{
 						setSetpoint(encDist);
 						enablePID();
-						autoHold = true;
+						ranFirstAutoHold = true;
 					}
 				}
 				else
@@ -227,7 +238,7 @@ public class ArmController
 		{
 			if(j.getRawButton(i) && setpoints.containsButton(i)) 
 			{
-				autoHold = false;
+				ranFirstAutoHold = false;
 				buttonPressed = true;
 				buttonSelected = i;
 			}
@@ -241,12 +252,12 @@ public class ArmController
 
 	private void stopOperatorAutoMove() 
 	{
-		if(autoHold || buttonPressed)
+		if(ranFirstAutoHold || buttonPressed)
 		{
 			disablePID();
 		}
 
-		autoHold = false;
+		ranFirstAutoHold = false;
 		buttonPressed = false;
 		buttonSelected = -1;
 	}
