@@ -4,8 +4,6 @@ import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class AutoRoutinesRunner 
 {
 	private AutoRoutinesRunner() {}
@@ -38,8 +36,6 @@ public class AutoRoutinesRunner
 				
 				return true;
 			}
-			
-			putSmartDashobardData();
 			
 			if(currentStep == 0) // Routine Start
 			{
@@ -410,7 +406,7 @@ public class AutoRoutinesRunner
 		Repository.Timer.stop();
 	}
 
-	public static void incrementStep()
+	private static void incrementStep()
 	{
 		Repository.Timer.reset();
 		currentStep++;
@@ -438,13 +434,5 @@ public class AutoRoutinesRunner
 	public static boolean isFinished()
 	{
 		return finished;
-	}
-	
-	private static void putSmartDashobardData()
-	{
-		SmartDashboard.putNumber("AutoStep", currentStep);
-		SmartDashboard.putBoolean("AutoFinished", finished);
-		SmartDashboard.putBoolean("AutoErrored", errored);
-		SmartDashboard.putNumber("AutoTimerSeconds", Repository.Timer.get());
 	}
 }

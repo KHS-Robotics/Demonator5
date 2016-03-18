@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
@@ -126,6 +127,7 @@ public class SmartDashboardUpdater
 					putEncoderData();
 					putCounterData();
 					putDefenseStates();
+					putSmartDashobardData();
 					
 					SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
 	
@@ -142,6 +144,14 @@ public class SmartDashboardUpdater
 				
 				errored = true;
 			}
+		}
+		
+		private static void putSmartDashobardData()
+		{
+			SmartDashboard.putNumber("AutoStep", AutoRoutinesRunner.getCurrentStep());
+			SmartDashboard.putBoolean("AutoFinished", AutoRoutinesRunner.isFinished());
+			SmartDashboard.putBoolean("AutoErrored", AutoRoutinesRunner.hasErrored());
+			SmartDashboard.putNumber("AutoTimerSeconds", Repository.Timer.get());
 		}
 
 

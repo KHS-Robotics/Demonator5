@@ -32,6 +32,8 @@ public class RobotConsoleLogger extends BaseLogger
 			mssg = createMessage(severity, data.getMessage());
 		}
 		
+		// Going to take this out for competitions to reduce
+		// latency on the main thread
 		DriverStation.reportError(mssg, false);
 	}
 	
