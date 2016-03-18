@@ -852,6 +852,13 @@ public class TankDrive
 		if(firstRunAutoMoveDist)
 		{
 			driveTrain.setBrakeMode();
+			
+			// TODO: Find out which direction is positive or negative so
+			// we can make this bidirectional. In addition this code will
+			// not work if encoder directions on left and right are
+			// opposite of each other, so knowing direction values will
+			// allow us to fix that too.
+			
 			targetEncCounts = getCurrentEncoderDistance() + Math.abs(inches);
 			yaw = getYaw();
 			firstRunAutoMoveDist = false;
