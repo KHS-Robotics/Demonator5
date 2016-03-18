@@ -190,16 +190,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (maxPitch >= RampPartsPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
 				{
-					rampPartsState = DefenseState.DESCENT;
+					rampPartsState = DefenseState.PEAK;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
+				if (maxPitch >= RampPartsPitch && currentPitch < lastPitch)
 				{
 					rampPartsState = DefenseState.PEAK;
 					minPitch = currentPitch;
@@ -219,16 +219,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
+				if (maxPitch >= RampPartsPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					rampPartsState = DefenseState.PEAK;
+					rampPartsState = DefenseState.DESCENT;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (maxPitch >= RampPartsPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -RampPartsPitch && currentPitch > minPitch)
 				{
 					rampPartsState = DefenseState.DESCENT;
 					minPitch = currentPitch;
@@ -332,16 +332,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
 				{
-					roughTerrainState = DefenseState.DESCENT;
+					roughTerrainState = DefenseState.PEAK;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
+				if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
 					roughTerrainState = DefenseState.PEAK;
 					minPitch = currentPitch;
@@ -361,16 +361,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
+				if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					roughTerrainState = DefenseState.PEAK;
+					roughTerrainState = DefenseState.DESCENT;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (maxPitch >= RoughTerrainPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -RoughTerrainPitch && currentPitch > minPitch)
 				{
 					roughTerrainState = DefenseState.DESCENT;
 					minPitch = currentPitch;
@@ -417,6 +417,8 @@ public class TankDrive
 					Repository.Logs.warning("Need to reset rough terrain routine");
 				loggedRT = true;
 			}
+			
+			return true;
 		}
 		
 		lastPitch = currentPitch;
@@ -469,16 +471,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -MoatPitch && currentPitch > minPitch)
 				{
-					moatState = DefenseState.DESCENT;
+					moatState = DefenseState.PEAK;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (minPitch <= -MoatPitch && currentPitch > minPitch)
+				if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
 					moatState = DefenseState.PEAK;
 					minPitch = currentPitch;
@@ -498,16 +500,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (minPitch <= -MoatPitch && currentPitch > minPitch)
+				if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					moatState = DefenseState.PEAK;
+					moatState = DefenseState.DESCENT;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (maxPitch >= MoatPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -MoatPitch && currentPitch > minPitch)
 				{
 					moatState = DefenseState.DESCENT;
 					minPitch = currentPitch;
@@ -612,14 +614,14 @@ public class TankDrive
 			{
 				if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					lowBarState = DefenseState.DESCENT;
+					lowBarState = DefenseState.PEAK;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (minPitch <= -LowBarPitch && currentPitch > minPitch)
+				if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
 					lowBarState = DefenseState.PEAK;
 					minPitch = currentPitch;
@@ -639,16 +641,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (minPitch <= -LowBarPitch && currentPitch > minPitch)
+				if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					lowBarState = DefenseState.PEAK;
+					lowBarState = DefenseState.DESCENT;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (maxPitch >= LowBarPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -LowBarPitch && currentPitch > minPitch)
 				{
 					lowBarState = DefenseState.DESCENT;
 					minPitch = currentPitch;
@@ -751,14 +753,14 @@ public class TankDrive
 			{
 				if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					rockWallState = DefenseState.DESCENT;
+					rockWallState = DefenseState.PEAK;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (minPitch <= -RockWallPitch && currentPitch > minPitch)
+				if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
 					rockWallState = DefenseState.PEAK;
 					minPitch = currentPitch;
@@ -778,16 +780,16 @@ public class TankDrive
 			
 			if(!forward)
 			{
-				if (minPitch <= -RockWallPitch && currentPitch > minPitch)
+				if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
 				{
-					rockWallState = DefenseState.PEAK;
+					rockWallState = DefenseState.DESCENT;
 					minPitch = currentPitch;
 					maxPitch = currentPitch;
 				}
 			}
 			else
 			{
-				if (maxPitch >= RockWallPitch && currentPitch < maxPitch && currentPitch < lastPitch)
+				if (minPitch <= -RockWallPitch && currentPitch > minPitch)
 				{
 					rockWallState = DefenseState.DESCENT;
 					minPitch = currentPitch;

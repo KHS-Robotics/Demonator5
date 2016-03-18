@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4342.api.arm.pid;
 
+import org.usfirst.frc.team4342.robot.components.Repository;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -44,6 +46,15 @@ public final class ArmPIDController extends PIDController
 		}
 		
 		double error = super.getSetpoint() - input;
+		
+		if(Repository.TopLimitSwitch.get() && error > 0)
+		{
+			super.setPID(0, 0, 0);
+		}
+		else if(Repository.BottomLimitSwitch.get() && error < 0)
+		{
+			super.setPID(0, 0, 0);
+		}
 		
 		if(error < 0)
 		{
