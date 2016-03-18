@@ -57,7 +57,6 @@ public class TankDrive
 		this.j = j;
 		
 		this.driveTrain = talons;
-		this.driveTrain.setPIDSourceType(PIDSourceType.kRate);
 		fr = driveTrain.getFrontRight();
 		fl = driveTrain.getFrontLeft();
 		mr = driveTrain.getMiddleRight();
