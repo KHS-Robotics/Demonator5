@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4342.robot;
 
-import org.usfirst.frc.team4342.robot.components.Repository;
 import org.usfirst.frc.team4342.robot.multithreading.ComponentRunner;
 import org.usfirst.frc.team4342.robot.multithreading.ShootingComponent;
 import org.usfirst.frc.team4342.robot.multithreading.TankDriveComponent;
@@ -145,17 +144,17 @@ public class Robot extends IterativeRobot
 	{
 		if(!tdc.isRunning() && !attemptedRestartDrive)
 		{
-			Repository.Logs.warning("Shooter has crashed, attempting restart");
+			Repository.Logs.warning("Drive has crashed, attempting restart");
 			ComponentRunner.startAutomaticMode(sc);
 			attemptedRestartDrive = true;
 		}
 		else if(tdc.isRunning() && attemptedRestartDrive)
 		{
-			Repository.Logs.warning("Shooter has been successfully restarted");
+			Repository.Logs.warning("Drive has been successfully restarted");
 		}
 		else if(!tdc.isRunning())
 		{
-			Repository.Logs.warning("Shooter has crashed again, NOT restarting; see logs for details");
+			Repository.Logs.warning("Drive has crashed again, NOT restarting; see logs for details");
 		}
 	}
 }

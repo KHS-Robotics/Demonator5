@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4342.api.drive;
 
-import org.usfirst.frc.team4342.robot.components.Repository;
-
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -14,6 +12,7 @@ import java.util.HashMap;
 
 import org.usfirst.frc.team4342.api.drive.DefenseState;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
+import org.usfirst.frc.team4342.robot.Repository;
 
 public class TankDrive
 {

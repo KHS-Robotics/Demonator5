@@ -1,14 +1,15 @@
 package org.usfirst.frc.team4342.api.logging;
 
+import static org.usfirst.frc.team4342.robot.Repository.Navx;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
 import org.usfirst.frc.team4342.api.drive.DefenseState;
-import org.usfirst.frc.team4342.robot.components.Repository;
+import org.usfirst.frc.team4342.robot.Repository;
 
-import static org.usfirst.frc.team4342.robot.components.Repository.Navx;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;

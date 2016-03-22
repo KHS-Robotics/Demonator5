@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4342.robot.components;
+package org.usfirst.frc.team4342.robot;
 
 import org.usfirst.frc.team4342.api.logging.PdpLogger;
 import org.usfirst.frc.team4342.api.logging.RobotConsoleLogger;

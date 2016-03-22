@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.usfirst.frc.team4342.api.drive.DriveTrain;
-import org.usfirst.frc.team4342.robot.components.Repository;
+import org.usfirst.frc.team4342.robot.Repository;
 
 import com.kauailabs.navx.frc.AHRS;
 

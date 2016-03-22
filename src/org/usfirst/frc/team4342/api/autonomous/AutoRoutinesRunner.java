@@ -2,7 +2,7 @@ package org.usfirst.frc.team4342.api.autonomous;
 
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
-import org.usfirst.frc.team4342.robot.components.Repository;
+import org.usfirst.frc.team4342.robot.Repository;
 
 public class AutoRoutinesRunner 
 {

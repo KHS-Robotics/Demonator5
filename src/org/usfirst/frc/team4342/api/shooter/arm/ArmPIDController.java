@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4342.api.shooter.arm;
 
-import org.usfirst.frc.team4342.robot.components.Repository;
+import org.usfirst.frc.team4342.robot.Repository;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;

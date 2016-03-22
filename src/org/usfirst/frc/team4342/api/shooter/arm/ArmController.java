@@ -21,7 +21,7 @@ public class ArmController
 	private ArmPIDController apidc;
 
 	private boolean buttonPressed, ranFirstAutoHold;
-	private int buttonSelected, selectedSetpoint;
+	private int selectedSetpoint;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 			Encoder armEnc, DigitalInput topLS, DigitalInput botLS)
@@ -104,25 +104,25 @@ public class ArmController
 				else if(encDist < 25)
 				{
 					disablePID();
-					armMotor.set(-0.1);
+					armMotor.set(-0.12);
 					return;
 				}
 				else if(encDist <= 190)
 				{
 					disablePID();
-					armMotor.set(-0.16);
+					armMotor.set(-0.2);
 					return;
 				}
 				else if(encDist > 450)
 				{
 					disablePID();
-					armMotor.set(0.16);
+					armMotor.set(0.2);
 					return;
 				}
 				else if(encDist > 460)
 				{
 					disablePID();
-					armMotor.set(0.1);
+					armMotor.set(0.12);
 					return;
 				}
 			} 
@@ -269,7 +269,6 @@ public class ArmController
 		disablePID();
 		ranFirstAutoHold = false;
 		buttonPressed = false;
-		buttonSelected = -1;
 	}
 	
 	public void stopAll()
@@ -277,10 +276,5 @@ public class ArmController
 		stopOperatorAutoMove();
 		armMotor.set(0);
 		accumMotor.set(0);
-	}
-	
-	private double sensitivityControl(double input)
-	{
-		return (JOYSTICK_SENSITIVITY*Math.pow(input, 3))+((1-JOYSTICK_SENSITIVITY)*input);
 	}
 }

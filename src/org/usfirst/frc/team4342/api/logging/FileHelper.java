@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4342.api.logging;
 import java.io.File;
 
-import org.usfirst.frc.team4342.robot.components.Repository;
+import org.usfirst.frc.team4342.robot.Repository;
 
 /**
  * This class is used to shift and get valid log files
