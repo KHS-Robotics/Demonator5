@@ -13,6 +13,7 @@ import org.usfirst.frc.team4342.api.arm.setpoints.Setpoint;
 import org.usfirst.frc.team4342.api.arm.setpoints.SetpointMapWrapper;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -79,6 +80,17 @@ public class Repository
 			initializeEncoders();
 			initializeComponents();
 			initializeSmartDashboard();
+			
+			try
+			{
+				CameraServer camera = CameraServer.getInstance();
+		    	camera.setQuality(100);
+		    	camera.startAutomaticCapture("cam0");
+			}
+			catch(Exception ex)
+			{
+				Logs.error("Failed to start USB Camera", ex);
+			}
 		}
 		
 		initialized = true;
@@ -178,7 +190,8 @@ public class Repository
 			
 			setpoints = new SetpointMapWrapper(
 				new Setpoint[] {
-					
+					new Setpoint(3, 0),
+					new Setpoint(6, 395)
 				}
 			);
 			
@@ -220,6 +233,8 @@ public class Repository
 			// 7.5 * PI / 128
 			RightDriveEncoder.setDistancePerPulse(0.184);
 			LeftDriveEncoder.setDistancePerPulse(0.184);
+			RightDriveEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
+			LeftDriveEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
 			
 			// 1 / (7*142)
 			ArmEncoder.setDistancePerPulse(1);

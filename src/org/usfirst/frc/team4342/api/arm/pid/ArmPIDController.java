@@ -31,12 +31,6 @@ public final class ArmPIDController extends PIDController
 	public void calculate()
 	{
 		double encDistance = Math.abs(enc.getDistance());
-//		if(encDistance < 20 || encDistance > 450)
-//		{
-//			super.setPID(0, 0, 0);
-//			super.calculate();
-//			return;
-//		}
 		
 		double input;
 		
@@ -50,10 +44,14 @@ public final class ArmPIDController extends PIDController
 		if(Repository.TopLimitSwitch.get() && error > 0)
 		{
 			super.setPID(0, 0, 0);
+			super.calculate();
+			return;
 		}
 		else if(Repository.BottomLimitSwitch.get() && error < 0)
 		{
 			super.setPID(0, 0, 0);
+			super.calculate();
+			return;
 		}
 		
 		if(error < 0)

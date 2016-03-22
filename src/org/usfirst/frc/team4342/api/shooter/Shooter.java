@@ -26,7 +26,7 @@ public class Shooter
 	}
 
 	public void handleTeleop(int driverShootButton, int safetyButton, int fireButton, int smartDashboardButton, 
-							int armBrakeButton, int accumInButton, int accumOutButton, int accumLiftButton)
+							int armBrakeButton, int accumInButton, int accumOutButton)
 	{
 		shooter.checkUser(driverShootButton, safetyButton, fireButton, accumInButton, accumOutButton);
 		arm.checkUser(smartDashboardButton, armBrakeButton, accumInButton, accumOutButton);

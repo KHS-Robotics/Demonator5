@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmController 
 {
-	private static final double JOYSTICK_DEADBAND = 0.1;
+	private static final double JOYSTICK_DEADBAND = 0.05;
 	private static final double JOYSTICK_SENSITIVITY = 0.7;
 	private static final double ARM_ARC_ANGLE = 140;
 	private static final double DISTANCE_PER_PULSE = 1 / 944; // 1 / (7 distance per pulse * 142 gear ratio)
@@ -26,7 +26,7 @@ public class ArmController
 	private ArmPIDController apidc;
 
 	private boolean buttonPressed, ranFirstAutoHold;
-	private int buttonSelected;
+	private int buttonSelected, selectedSetpoint;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 			Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
@@ -55,7 +55,7 @@ public class ArmController
 			0.05
 		);
 		
-		apidc.setInputRange(-500, 0);
+		apidc.setInputRange(-480, 0);
 		apidc.setPercentTolerance(1);
 
 		disablePID();
@@ -69,66 +69,36 @@ public class ArmController
 
 	public void checkUserArm(int smartDashboardSetpointButton, int brakeButton)
 	{
-		double y = -j.getY();
-		double encDist = Math.abs(enc.getDistance());
-		double currentOutput = armMotor.get();
-		
-		if(topLS.get() && (y < 0 || currentOutput < 0))
-		{
-			disablePID();
-			enc.reset();
-			armMotor.set(0.0);
-			return;
-		}
-		else if(botLS.get() && (y > 0 || currentOutput > 0))
-		{
-			disablePID();
-			armMotor.set(0.0);
-			return;
-		}
-		
-		if(encDist < 25 && (y < 0 || currentOutput < 0))
-		{
-			disablePID();
-			armMotor.set(-0.1);
-			return;
-		}
-		else if(encDist < 190 && (y < 0 || currentOutput < 0))
-		{
-			disablePID();
-			armMotor.set(-0.16);
-			return;
-		}
-		else if(encDist > 420 && (y > 0 || currentOutput > 0))
-		{
-			disablePID();
-			armMotor.set(0.16);
-			return;
-		}
-		else if(encDist > 440 && (y > 0 || currentOutput > 0))
-		{
-			disablePID();
-			armMotor.set(0.1);
-			return;
-		}
-		
 		if(!switchBox.getRawButton(smartDashboardSetpointButton))
 		{
-			if(Math.abs(y) < JOYSTICK_DEADBAND) 
-			{
-				checkButtonStatus();
+			checkButtonStatus();
 
-				if(buttonPressed) 
-				{
-					setSetpoint(setpoints.getSetpoint(buttonSelected));
-					enablePID();
-				}
-				else if(j.getRawButton(3))
-				{
-					setSetpoint(encDist - 10);
-					enablePID();
-				}
-				else if(!switchBox.getRawButton(brakeButton))
+			if(buttonPressed) 
+			{
+				setSetpoint(selectedSetpoint);
+				enablePID();
+			}
+			
+			double y = -j.getY();
+			double encDist = Math.abs(enc.getDistance());
+			
+			if(topLS.get() && y < 0)
+			{
+				disablePID();
+				enc.reset();
+				armMotor.set(0.0);
+				return;
+			}
+			else if(botLS.get() && y > 0)
+			{
+				disablePID();
+				armMotor.set(0.0);
+				return;
+			}
+			
+			if(Math.abs(y) < JOYSTICK_DEADBAND && !buttonPressed) 
+			{
+				if(encDist > 190 && encDist < 455)//!switchBox.getRawButton(brakeButton))
 				{
 					if(!ranFirstAutoHold)
 					{
@@ -137,18 +107,61 @@ public class ArmController
 						ranFirstAutoHold = true;
 					}
 				}
-				else
+				else if(encDist < 25)
 				{
 					disablePID();
-					stopOperatorAutoMove();
-					armMotor.set(0);
+					armMotor.set(-0.1);
+					return;
+				}
+				else if(encDist <= 190)
+				{
+					disablePID();
+					armMotor.set(-0.16);
+					return;
+				}
+				else if(encDist > 450)
+				{
+					disablePID();
+					armMotor.set(0.16);
+					return;
+				}
+				else if(encDist > 460)
+				{
+					disablePID();
+					armMotor.set(0.1);
+					return;
 				}
 			} 
-			else 
+			else if(Math.abs(y) >= JOYSTICK_DEADBAND)
 			{
 				stopOperatorAutoMove();
 				
-				if(y > 0 && encDist > 190)
+				if(encDist < 25 && y < 0)
+				{
+					disablePID();
+					armMotor.set(-0.1);
+					return;
+				}
+				else if(encDist <= 190 && y < 0)
+				{
+					disablePID();
+					armMotor.set(-0.16);
+					return;
+				}
+				else if(encDist > 450 && y >= 0)
+				{
+					disablePID();
+					armMotor.set(0.16);
+					return;
+				}
+				else if(encDist > 460 && y >= 0)
+				{
+					disablePID();
+					armMotor.set(0.1);
+					return;
+				}
+				
+				if(y > 0 && encDist >= 190)
 				{
 					armMotor.set(y / 5);
 					return;
@@ -167,15 +180,11 @@ public class ArmController
 
 	public void checkUserAccumulator(int accumInButton, int accumOutButton)
 	{
-		if(j.getRawButton(accumInButton) || switchBox.getRawButton(accumInButton))
-		{
-			accumMotor.set(1);
-		}
-		else if(j.getRawButton(accumOutButton) || switchBox.getRawButton(accumOutButton))
+		if(j.getRawButton(accumOutButton) || switchBox.getRawButton(accumOutButton))
 		{
 			accumMotor.set(-1);
 		}
-		else
+		else if(!switchBox.getRawButton(accumInButton))
 		{
 			accumMotor.set(0);
 		}
@@ -188,7 +197,7 @@ public class ArmController
 
 	public boolean isAtAutoSetpoint()
 	{
-		return Math.abs(apidc.getError()) <= 5;
+		return Math.abs(apidc.getError()) <= 10;
 	}
 
 	public void enablePID()
@@ -234,14 +243,25 @@ public class ArmController
 
 	private void checkButtonStatus()
 	{
-		for(int i = 1; i < j.getButtonCount(); i++) 
+		if(j.getRawButton(4))
 		{
-			if(j.getRawButton(i) && setpoints.containsButton(i)) 
-			{
-				ranFirstAutoHold = false;
-				buttonPressed = true;
-				buttonSelected = i;
-			}
+			buttonPressed = true;
+			selectedSetpoint = 280;
+		}
+		else if(j.getRawButton(6))
+		{
+			buttonPressed = true;
+			selectedSetpoint = 395;
+		}
+		else if(j.getRawButton(3))
+		{
+			buttonPressed = true;
+			selectedSetpoint = 0;
+		}
+		else if(j.getRawButton(5))
+		{
+			buttonPressed = true;
+			selectedSetpoint = 470;
 		}
 	}
 
@@ -252,11 +272,7 @@ public class ArmController
 
 	private void stopOperatorAutoMove() 
 	{
-		if(ranFirstAutoHold || buttonPressed)
-		{
-			disablePID();
-		}
-
+		disablePID();
 		ranFirstAutoHold = false;
 		buttonPressed = false;
 		buttonSelected = -1;

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSourceType;
 
 import java.util.HashMap;
 
@@ -19,13 +18,16 @@ import org.usfirst.frc.team4342.api.shooter.Shooter;
 
 public class TankDrive
 {
-	private static double JOYSTICK_SENSITIVITY = 0.25;
-	private static final double DEAD_BAND = 0.08;
+	private static double JOYSTICK_SENSITIVITY = 0.08;
+	private static final double DEAD_BAND = 0.04;
 	
 	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0, THIRD_POSITION_YAW = 12.68;
-	public static final double LOW_BAR_DIST_INCHES = 100;
-	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
+	//public static final double LOW_BAR_DIST_INCHES = 100;
+	//public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
+	public static final double SECOND_DEFENSE_DIST_INCHES = 900, FOURTH_DEFENSE_DIST_INCHES = 900, FIFTH_DEFENSE_DIST_INCHES = 900;
+	public static final double LOW_BAR_DIST_INCHES = 900;
 	public static final double FOURTH_POSITION_YAW = -15.0;
+	public static final double MOAT_HACK_DIST = 1500;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -39,7 +41,7 @@ public class TankDrive
 	private PIDController angleControl;
 	private boolean firstRunGoStraight = true;
 	
-	private boolean firstRunAutoMoveDist = true;
+	private boolean firstRunAutoMoveDist = true, goingForward;
 	private double targetEncCounts, yaw;
 	
 	private DefenseState rampPartsState = DefenseState.APPROACH, roughTerrainState= DefenseState.APPROACH, moatState= DefenseState.APPROACH, lowBarState= DefenseState.APPROACH, rockWallState= DefenseState.APPROACH;
@@ -87,8 +89,7 @@ public class TankDrive
 		POVLookupTable.put(270, -BATTER_YAW);
 	}
 	
-	public synchronized void drive(int shiftButton, int straightButton, int angleButton, int autoForwardButton,
-								   int autoReverseButton)
+	public synchronized void drive(int shiftButton, int straightButton)
 	{
 		int pov = j.getPOV();
 		if(POVLookupTable.containsKey(pov))
@@ -97,7 +98,7 @@ public class TankDrive
 			
 			goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 		}
-		else if(j.getRawButton(angleButton))
+		else if(j.getRawButton(straightButton))
 		{
 			if (firstRunGoStraight)
 			{
@@ -852,22 +853,38 @@ public class TankDrive
 		{
 			driveTrain.setBrakeMode();
 			
-			// TODO: Find out which direction is positive or negative so
-			// we can make this bidirectional. In addition this code will
-			// not work if encoder directions on left and right are
-			// opposite of each other, so knowing direction values will
-			// allow us to fix that too.
+			if(output > 0)
+			{
+				goingForward = true;
+				targetEncCounts = getCurrentEncoderDistance() + (2*Math.abs(inches));
+			}
+			else
+			{
+				goingForward = false;
+				targetEncCounts = getCurrentEncoderDistance() - (2*Math.abs(inches));
+			}
 			
-			targetEncCounts = getCurrentEncoderDistance() + Math.abs(inches);
 			yaw = getYaw();
 			firstRunAutoMoveDist = false;
 		}
 		
-		if(getCurrentEncoderDistance() >= targetEncCounts)
+		if(goingForward)
 		{
-			stopAll();
-			return true;
+			if(getCurrentEncoderDistance() >= targetEncCounts)
+			{
+				stopAll();
+				return true;
+			}
 		}
+		else
+		{
+			if(getCurrentEncoderDistance() <= targetEncCounts)
+			{
+				stopAll();
+				return true;
+			}
+		}
+		
 		
 		goStraight(output, yaw);
 		
@@ -876,7 +893,7 @@ public class TankDrive
 	
 	public synchronized void resetAutoMove()
 	{
-		firstRunAutoMoveDist = false;
+		firstRunAutoMoveDist = true;
 	}
 	
 	public synchronized double getCurrentEncoderDistance()

@@ -2,6 +2,7 @@ package org.usfirst.frc.team4342.robot;
 
 import org.usfirst.frc.team4342.robot.components.Repository;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -37,6 +38,8 @@ public class Robot extends IterativeRobot
 		
 		ComponentRunner.startAutomaticMode(new TankDriveComponent(Repository.TankDrive));
     	ComponentRunner.startAutomaticMode(new ShootingComponent(Repository.Shooter));
+    	
+    	//PIDTuner.startUpdating();
     }
 	
 	/**
@@ -97,13 +100,39 @@ public class Robot extends IterativeRobot
 	{
 		Repository.TankDrive.setYawOffset(SmartDashboard.getNumber("Yaw-Offset"));
 		
-		AutoRoutinesRunner.setRoutineData(
-			(int)SmartDashboard.getNumber("RoutineStart"), 
-			(int)SmartDashboard.getNumber("RoutineDefense"), 
-			(int)SmartDashboard.getNumber("RoutinePosition"),
-			(int)SmartDashboard.getNumber("RoutineGoal"), 
-			(int)SmartDashboard.getNumber("RoutineFinish")
-		);
+		int def = (int)SmartDashboard.getNumber("RoutineDefense");
+		
+		if(def >= 2 && def <= 5)
+		{
+			AutoRoutinesRunner.setRoutineData(
+				1,//(int)SmartDashboard.getNumber("RoutineStart"), 
+				def,
+				2,//(int)SmartDashboard.getNumber("RoutinePosition"),
+				0,//(int)SmartDashboard.getNumber("RoutineGoal"), 
+				0//(int)SmartDashboard.getNumber("RoutineFinish")
+			);
+		}
+		else if(def == 0)
+		{
+			AutoRoutinesRunner.setRoutineData(
+				1,//(int)SmartDashboard.getNumber("RoutineStart"), 
+				3,
+				2,//(int)SmartDashboard.getNumber("RoutinePosition"),
+				0,//(int)SmartDashboard.getNumber("RoutineGoal"), 
+				0//(int)SmartDashboard.getNumber("RoutineFinish")
+			);
+		}
+		else
+		{
+			AutoRoutinesRunner.setRoutineData(
+				0,//(int)SmartDashboard.getNumber("RoutineStart"), 
+				0,
+				0,//(int)SmartDashboard.getNumber("RoutinePosition"),
+				0,//(int)SmartDashboard.getNumber("RoutineGoal"), 
+				0//(int)SmartDashboard.getNumber("RoutineFinish")
+			);
+		}
+		
 	}
 }
 

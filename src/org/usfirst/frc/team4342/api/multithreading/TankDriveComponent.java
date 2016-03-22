@@ -30,7 +30,7 @@ public class TankDriveComponent extends Component
 			{
 				if(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl())
 				{
-					td.drive(5, 10, 3, 5, 6);
+					td.drive(5, 10);
 				}
 				
 				Thread.sleep(Component.SLEEP_MILLIS);

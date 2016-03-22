@@ -40,12 +40,12 @@ public final class PIDTuner
 					if(Repository.SwitchBox.getRawButton(7))
 					{
 						Repository.ArmController.setPID(
-							SmartDashboard.getNumber("Arm-P-Up") / 100.0,
-							SmartDashboard.getNumber("Arm-I-Up") / 1000.0,
-							SmartDashboard.getNumber("Arm-D-Up") / 100.0,
-							SmartDashboard.getNumber("Arm-P-Down") / 100.0,
-							SmartDashboard.getNumber("Arm-I-Down") / 1000.0,
-							SmartDashboard.getNumber("Arm-D-Down") / 100.0
+							-SmartDashboard.getNumber("Arm-P-Up") / 100.0,
+							-SmartDashboard.getNumber("Arm-I-Up") / 1000.0,
+							-SmartDashboard.getNumber("Arm-D-Up") / 100.0,
+							-SmartDashboard.getNumber("Arm-P-Up") / 100.0,
+							-SmartDashboard.getNumber("Arm-I-Up") / 1000.0,
+							-SmartDashboard.getNumber("Arm-D-Up") / 100.0
 						);
 						
 						SmartDashboard.putBoolean("PID-IsUpdating", true);
