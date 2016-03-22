@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4342.api.drive;
 
-import org.usfirst.frc.team4342.api.drive.pid.DrivePID;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -22,10 +21,16 @@ public class TankDrive
 	private static final double DEAD_BAND = 0.04;
 	
 	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0, THIRD_POSITION_YAW = 12.68;
-	//public static final double LOW_BAR_DIST_INCHES = 100;
-	//public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
-	public static final double SECOND_DEFENSE_DIST_INCHES = 900, FOURTH_DEFENSE_DIST_INCHES = 900, FIFTH_DEFENSE_DIST_INCHES = 900;
-	public static final double LOW_BAR_DIST_INCHES = 900;
+	
+	// TODO: Distance per pulse on the right and left drive might be at fault, but the robot definitely
+	// did not move to these inch numbers
+	public static final double LOW_BAR_DIST_INCHES = 100;
+	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
+	
+	// Used at SCH, figured keep them here until todo above is cleared. These are just used for ensuring a crossing
+	//public static final double SECOND_DEFENSE_DIST_INCHES = 900, FOURTH_DEFENSE_DIST_INCHES = 900, FIFTH_DEFENSE_DIST_INCHES = 900;
+	//public static final double LOW_BAR_DIST_INCHES = 900;
+	
 	public static final double FOURTH_POSITION_YAW = -15.0;
 	public static final double MOAT_HACK_DIST = 1500;
 	

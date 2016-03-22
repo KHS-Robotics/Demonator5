@@ -1,8 +1,4 @@
-package org.usfirst.frc.team4342.api.arm;
-
-import org.usfirst.frc.team4342.api.arm.pid.ArmPID;
-import org.usfirst.frc.team4342.api.arm.pid.ArmPIDController;
-import org.usfirst.frc.team4342.api.arm.setpoints.SetpointMapWrapper;
+package org.usfirst.frc.team4342.api.shooter.arm;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,7 +17,6 @@ public class ArmController
 	private CANTalon armMotor, accumMotor;
 	private Encoder enc;
 	private DigitalInput topLS, botLS;
-	private SetpointMapWrapper setpoints;
 
 	private ArmPIDController apidc;
 
@@ -29,7 +24,7 @@ public class ArmController
 	private int buttonSelected, selectedSetpoint;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
-			Encoder armEnc, DigitalInput topLS, DigitalInput botLS, SetpointMapWrapper setpoints)
+			Encoder armEnc, DigitalInput topLS, DigitalInput botLS)
 	{
 		this.j = j;
 		this.switchBox = switchBox;
@@ -38,7 +33,6 @@ public class ArmController
 		this.enc = armEnc;
 		this.topLS = topLS;
 		this.botLS = botLS;
-		this.setpoints = setpoints;
 		
 		SmartDashboard.putNumber("Arm-Setpoint", 0.0);
 

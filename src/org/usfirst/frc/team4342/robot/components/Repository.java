@@ -8,9 +8,7 @@ import org.usfirst.frc.team4342.api.drive.DriveTrain;
 import org.usfirst.frc.team4342.api.drive.TankDrive;
 import org.usfirst.frc.team4342.api.shooter.Shooter;
 import org.usfirst.frc.team4342.api.shooter.ShooterController;
-import org.usfirst.frc.team4342.api.arm.ArmController;
-import org.usfirst.frc.team4342.api.arm.setpoints.Setpoint;
-import org.usfirst.frc.team4342.api.arm.setpoints.SetpointMapWrapper;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -61,7 +59,6 @@ public class Repository
 	public static Encoder ArmEncoder;
 	public static Counter RightMotorCounter, LeftMotorCounter;
 	public static DigitalInput BallSensor, TopLimitSwitch, BottomLimitSwitch;
-	public static SetpointMapWrapper setpoints;
 	
 	public static ArmController ArmController;
 	public static ShooterController ShooterController;
@@ -188,14 +185,6 @@ public class Repository
 			ArmMotor.enable();
 			Accumulator.enable();
 			
-			setpoints = new SetpointMapWrapper(
-				new Setpoint[] {
-					new Setpoint(3, 0),
-					new Setpoint(6, 395)
-				}
-			);
-			
-			//BallSensor = new DigitalInput(9);
 			TopLimitSwitch = new DigitalInput(8);
 			BottomLimitSwitch = new DigitalInput(9);
 		}
@@ -262,7 +251,7 @@ public class Repository
 				RightDriveEncoder
 			);
 			
-			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, ArmEncoder, TopLimitSwitch, BottomLimitSwitch, setpoints);
+			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, ArmEncoder, TopLimitSwitch, BottomLimitSwitch);
 			ShooterController = new ShooterController(DriveStick, SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
 			
 			Shooter = new Shooter(ShooterController, ArmController);
@@ -311,7 +300,6 @@ public class Repository
 		SmartDashboardUpdater.addEncoder("Drive-L", LeftDriveEncoder);
 		SmartDashboardUpdater.addEncoder("Arm", ArmEncoder);
 		
-		//SmartDashboardUpdater.addDigitalInput("BallSensor", BallSensor);
 		SmartDashboardUpdater.addDigitalInput("Arm-Top", TopLimitSwitch);
 		SmartDashboardUpdater.addDigitalInput("Arm-Bot", BottomLimitSwitch);
 		

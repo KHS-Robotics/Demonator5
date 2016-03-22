@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4342.robot;
 
-import org.usfirst.frc.team4342.api.arm.pid.ArmPID;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmPID;
 import org.usfirst.frc.team4342.robot.components.Repository;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

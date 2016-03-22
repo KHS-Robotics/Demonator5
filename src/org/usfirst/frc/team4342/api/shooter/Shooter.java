@@ -1,14 +1,13 @@
 package org.usfirst.frc.team4342.api.shooter;
 
-import org.usfirst.frc.team4342.api.arm.ArmController;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
 
 public class Shooter 
 {
 	public static final double JOYSTICK_DEADBAND = 0.05;
 	
-	//TODO: angle -> encoder distance
 	public static final double LOW_BAR_SHOOT_ANGLE = 27, LOW_BAR_ENC_DIST = 450;
-	public static final double HIGH_BATTER_DIST = 267.5, LOW_GOAL_DIST = 324;
+	public static final double HIGH_BATTER_DIST = 280, LOW_GOAL_DIST = 395;
 	public static final double THIRD_POSITION_HIGH_DIST = 347.75, THIRD_POSITION_LOW_DIST = 350;
 	public static final double FOURTH_POSITION_HIGH_DIST = 325, FOURTH_POSITION_LOW_DIST = 375;
 

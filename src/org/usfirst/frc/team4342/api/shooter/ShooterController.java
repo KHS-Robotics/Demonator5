@@ -1,8 +1,7 @@
 package org.usfirst.frc.team4342.api.shooter;
 
-import org.usfirst.frc.team4342.api.shooter.pid.ShooterPID;
+import org.usfirst.frc.team4342.api.shooter.arm.ArmController;
 import org.usfirst.frc.team4342.robot.components.Repository;
-import org.usfirst.frc.team4342.api.arm.ArmController;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Counter;

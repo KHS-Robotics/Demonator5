@@ -1,4 +1,5 @@
 package org.usfirst.frc.team4342.api.logging;
+
 import java.io.IOException;
 
 import org.usfirst.frc.team4342.api.logging.FileHelper;

@@ -33,8 +33,6 @@ public class AutoRoutinesRunner
 			if(Repository.Timer.hasPeriodPassed(4) || RoutineStart == 0 || RoutineDefense == 0 || RoutinePosition == 0)
 			{
 				abort();
-				
-				return true;
 			}
 			
 			if(currentStep == 0) // Routine Start
@@ -128,12 +126,7 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutinePosition == 3) // From Position 3, but we shoot from the courtyard so let's not move
 				{
-					// HACK, WE USUALLY INCREMENT STEP HERE ONLY TO SHOOT FROM COURTYARD
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.SECOND_DEFENSE_DIST_INCHES))
-					{
-						Repository.TankDrive.resetAutoMove();
-						incrementStep();
-					}
+					incrementStep();
 				}
 				else if(RoutinePosition == 4) // From Position 4
 				{
@@ -358,185 +351,13 @@ public class AutoRoutinesRunner
 					abort();
 				}
 			}
-			
-			return finished;
-		}
-		catch(Exception ex)
-		{
-			if(!errored)
+			else if(currentStep == 5)
 			{
-				Repository.Logs.error("Unexpected error while executing auto", ex);
-				abort();
-				errored = true;
-			}
-			
-			return false;
-		}
-	}
-	
-	public static boolean executeSCHHack()
-	{
-		try
-		{
-			if(Repository.Timer.hasPeriodPassed(4) || RoutineStart == 0 || RoutineDefense == 0 || RoutinePosition == 0)
-			{
-				abort();
-				
+				finished = true;
 				return true;
 			}
 			
-			if(currentStep == 0) // Routine Start
-			{
-				if(RoutineStart == 2 || RoutineStart == 3) // Grab ball or Spy
-				{
-					abort();
-				}
-				else if(RoutineStart == 1) // Start with ball
-				{
-					incrementStep();
-				}
-			}
-			else if(currentStep == 1) // Routine Defense
-			{
-				if(RoutineDefense == 1) // Low Bar
-				{
-					if(Repository.TankDrive.autoLowBar(true, true, 0))
-					{
-						Repository.TankDrive.resetLowBarState();
-						
-						incrementStep();
-					}
-				}
-				else if(RoutineDefense == 2) // Moat
-				{
-					if(Repository.TankDrive.autoMoat(true, true, 0))
-					{
-						Repository.TankDrive.resetMoatState();
-						Repository.ArmController.setSetpoint(445);
-
-						incrementStep();
-					}
-				}
-				else if(RoutineDefense == 3) // Ramp Parts
-				{
-					if(Repository.TankDrive.autoRampParts(true, true, 0))
-					{
-						Repository.TankDrive.resetRampPartsState();
-						
-						incrementStep();
-					}
-				}
-				else if(RoutineDefense == 4) // Rough Terrain
-				{
-					if(Repository.TankDrive.autoRoughTerrain(true, true, 0))
-					{
-						Repository.TankDrive.resetRoughTerrainState();
-						
-						incrementStep();
-					}
-				}
-				else if(RoutineDefense == 5) // Rock Wall
-				{
-					if(Repository.TankDrive.autoRockWall(true, true, 0))
-					{
-						Repository.TankDrive.resetRockWallState();
-						
-						incrementStep();
-					}
-				}
-			}
-			else if(currentStep == 2) // Routine Position
-			{
-				if(RoutineDefense == 1 && RoutinePosition != 1) // Low Bar is always Position 1 and Defense 1. So why wouldn't they equal? Abort...
-				{
-					abort();
-				}
-				else if(RoutineDefense == 2)
-				{
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.MOAT_HACK_DIST))
-					{
-						Repository.TankDrive.resetAutoMove();
-						Repository.Shooter.setArmSetpoint(450);
-						incrementStep();
-					}
-				}
-				else if(RoutineDefense == 1) // From Low Bar
-				{
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.LOW_BAR_DIST_INCHES))
-					{
-						Repository.TankDrive.resetAutoMove();
-						Repository.Shooter.setArmSetpoint(450);
-						incrementStep();
-					}
-				}
-				else if(RoutinePosition == 3) // From Position 3, but we shoot from the courtyard so let's not move
-				{
-					// HACK, WE USUALLY INCREMENT STEP HERE ONLY TO SHOOT FROM COURTYARD
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.SECOND_DEFENSE_DIST_INCHES))
-					{
-						Repository.TankDrive.resetAutoMove();
-						Repository.Shooter.setArmSetpoint(450);
-						incrementStep();
-					}
-				}
-				else if(RoutinePosition == 4) // From Position 4
-				{
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.FOURTH_DEFENSE_DIST_INCHES))
-					{
-						Repository.TankDrive.resetAutoMove();
-						Repository.Shooter.setArmSetpoint(450);
-						incrementStep();
-					}
-				}
-				else if(RoutinePosition == 5) // From Position 5
-				{
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.FIFTH_DEFENSE_DIST_INCHES))
-					{
-						Repository.TankDrive.resetAutoMove();
-						Repository.Shooter.setArmSetpoint(450);
-						incrementStep();
-					}
-				}
-			}
-			else if(currentStep == 3) // Routine Goal
-			{	
-				if(RoutineGoal == 0) // Do nothing? Abort
-				{
-					abort();
-				}
-				else if(Repository.Shooter.shooterIsAtSetpoint())
-				{
-					Repository.Shooter.setBallPusher(true);
-					fired = true;
-				}
-				
-				if(fired)
-				{
-					if(numLoops > 10)
-					{
-						Repository.Shooter.disableShooterPID();
-						
-						Repository.Shooter.setArmSetpoint(20);
-						
-						incrementStep();
-					}
-					
-					numLoops++;
-				}
-				else
-				{
-					Repository.Shooter.setShooterMotorsPID(50);
-				}
-			}
-			else if(currentStep == 4)
-			{
-				if(Repository.Shooter.armIsAtSetpoint())
-				{
-					Repository.ArmController.disablePID();
-				}
-			}
-			
-			return finished;
+			return false;
 		}
 		catch(Exception ex)
 		{
@@ -547,7 +368,7 @@ public class AutoRoutinesRunner
 				errored = true;
 			}
 			
-			return false;
+			return true;
 		}
 	}
 	
@@ -579,11 +400,11 @@ public class AutoRoutinesRunner
 			+ "CS=" + currentStep + ", "
 			+ "YIOT=" + yawInitiallyOnTarget +", "
 			+ "AIOT=" + armInitiallyAtSetpoint + ", "
-			+ "LBS" + Repository.TankDrive.getLowBarState()
-			+ "MS" + Repository.TankDrive.getMoatState()
-			+ "RPS" + Repository.TankDrive.getRampPartsState()
-			+ "RTS" + Repository.TankDrive.getRoughTerrainState()
-			+ "RWS" + Repository.TankDrive.getRockWallState()
+			+ "LBS=" + Repository.TankDrive.getLowBarState() + ", "
+			+ "MS=" + Repository.TankDrive.getMoatState() + ", "
+			+ "RPS=" + Repository.TankDrive.getRampPartsState() + ", "
+			+ "RTS=" + Repository.TankDrive.getRoughTerrainState() + ", "
+			+ "RWS=" + Repository.TankDrive.getRockWallState() + ", "
 			+ "F=" + fired + ", "
 			+ "NL=" + numLoops + ", "
 			+ "E=" + errored + ", "

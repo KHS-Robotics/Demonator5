@@ -58,6 +58,14 @@ public class DriveTrain implements PIDOutput
 		return direction;
 	}
 	
+	public void setVoltageRampRate(double rampRate)
+	{
+		for(CANTalon talon : getDriveTrain())
+		{
+			talon.setVoltageRampRate(rampRate);
+		}
+	}
+	
 	public void setBrakeMode()
 	{
 		for(CANTalon talon : getDriveTrain())
