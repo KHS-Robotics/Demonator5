@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmController 
 {
 	private static final double JOYSTICK_DEADBAND = 0.05;
-	private static final double JOYSTICK_SENSITIVITY = 0.7;
 	private static final double ARM_ARC_ANGLE = 140;
 	private static final double DISTANCE_PER_PULSE = 1 / 944; // 1 / (7 distance per pulse * 142 gear ratio)
 	

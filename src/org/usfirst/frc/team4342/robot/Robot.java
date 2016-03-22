@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4342.api.autonomous.AutoRoutinesRunner;
+import org.usfirst.frc.team4342.api.autonomous.AutoValuesDeserializer;
+import org.usfirst.frc.team4342.api.autonomous.AutoValuesSerializer;
+import org.usfirst.frc.team4342.api.autonomous.RoutineData;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
 
 /**
@@ -58,6 +61,25 @@ public class Robot extends IterativeRobot
     	
     	Repository.ArmController.enablePID();
     	Repository.ShooterController.enablePID();
+    	
+    	int start = (int)SmartDashboard.getNumber("RoutineStart");
+		int defense = (int)SmartDashboard.getNumber("RoutineDefense");
+		int position = (int)SmartDashboard.getNumber("RoutinePosition");
+		int goal = (int)SmartDashboard.getNumber("RoutineGoal");
+		int finish = (int)SmartDashboard.getNumber("RoutineFinish");
+		
+		if(start == 0 && defense == 0 && position == 0 && goal == 0 && finish == 0)
+		{
+			RoutineData d = AutoValuesDeserializer.load();
+			
+			AutoRoutinesRunner.setRoutineData(
+				d.getStart(),
+				d.getDefense(),
+				d.getPosition(),
+				d.getGoal(),
+				d.getFinish()
+			);
+		}
     	    	
     	AutoRoutinesRunner.reset();
     	Repository.Timer.start();
@@ -113,13 +135,30 @@ public class Robot extends IterativeRobot
 	{
 		Repository.TankDrive.setYawOffset(SmartDashboard.getNumber("Yaw-Offset"));
 		
+		int start = (int)SmartDashboard.getNumber("RoutineStart");
+		int defense = (int)SmartDashboard.getNumber("RoutineDefense");
+		int position = (int)SmartDashboard.getNumber("RoutinePosition");
+		int goal = (int)SmartDashboard.getNumber("RoutineGoal");
+		int finish = (int)SmartDashboard.getNumber("RoutineFinish");
+		
 		AutoRoutinesRunner.setRoutineData(
-			(int)SmartDashboard.getNumber("RoutineStart"), 
-			(int)SmartDashboard.getNumber("RoutineDefense"),
-			(int)SmartDashboard.getNumber("RoutinePosition"),
-			(int)SmartDashboard.getNumber("RoutineGoal"), 
-			(int)SmartDashboard.getNumber("RoutineFinish")
+			start, 
+			defense,
+			position,
+			goal, 
+			finish
 		);
+		
+		if(Repository.SwitchBox.getRawButton(9))
+		{
+			AutoValuesSerializer.save(
+				start, 
+				defense,
+				position,
+				goal, 
+				finish
+			);
+		}
 	}
 	
 	private void checkShooter()
