@@ -57,6 +57,7 @@ public class Robot extends IterativeRobot
     public void autonomousInit() 
     {
     	Repository.DriveTrain.setBrakeMode();
+    	Repository.DriveTrain.setVoltageRampRate(0);
     	Repository.DriveTrain.enable();
     	
     	Repository.ArmController.enablePID();
@@ -70,6 +71,7 @@ public class Robot extends IterativeRobot
 		
 		if(start == 0 && defense == 0 && position == 0 && goal == 0 && finish == 0)
 		{
+			Repository.Logs.warning("No auto values set, loading defaults...");
 			RoutineData d = AutoValuesDeserializer.load();
 			
 			AutoRoutinesRunner.setRoutineData(
@@ -79,10 +81,28 @@ public class Robot extends IterativeRobot
 				d.getGoal(),
 				d.getFinish()
 			);
+			
+			if(d != null)
+				Repository.Logs.info("Successfully loaded default auto; see log for more info");
 		}
-    	    	
-    	AutoRoutinesRunner.reset();
-    	Repository.Timer.start();
+		else
+		{
+			RoutineData d = new RoutineData(start, defense, position, goal, finish);
+			
+			AutoRoutinesRunner.setRoutineData(
+				d.getStart(),
+				d.getDefense(),
+				d.getPosition(),
+				d.getGoal(),
+				d.getFinish()
+			);
+		}
+    	
+		if(AutoRoutinesRunner.getRoutineData() != null)
+		{
+			AutoRoutinesRunner.reset();
+	    	Repository.Timer.start();
+		}
     }
 
     /**
@@ -91,7 +111,8 @@ public class Robot extends IterativeRobot
 	@Override
     public void autonomousPeriodic() 
     {
-    	AutoRoutinesRunner.execute();
+		if(AutoRoutinesRunner.getRoutineData() != null)
+			AutoRoutinesRunner.execute();
     }
 	
 	/**

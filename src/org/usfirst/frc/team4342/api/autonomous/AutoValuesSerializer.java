@@ -67,6 +67,8 @@ public class AutoValuesSerializer
 		        out.close();
 		        fileOut.close();
 		        
+		        Repository.Log.info("Serialized auto routine data: " + data.toString());
+		        
 		        done = true;
 			}
 			catch(Exception ex)

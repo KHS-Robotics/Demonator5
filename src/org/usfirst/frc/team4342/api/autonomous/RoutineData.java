@@ -15,6 +15,12 @@ public class RoutineData implements Serializable
 		this.finish = finish;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "Start=" + start + ", Defense=" + defense + ", Position=" + position + ", Goal=" + goal + ", Finish=" + finish;
+	}
+	
 	public int getStart()
 	{
 		return start;

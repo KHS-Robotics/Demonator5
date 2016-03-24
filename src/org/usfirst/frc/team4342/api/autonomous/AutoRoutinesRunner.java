@@ -18,6 +18,7 @@ public class AutoRoutinesRunner
 	// RoutineGoal: Nothing = 0, High = 1, Low = 2
 	// RoutineFinish: Nothing(Stop) = 0, Neutral = 1, Secret = 2
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
+	private static RoutineData data;
 	
 	// Used for RoutineFinish
 	private static boolean yawInitiallyOnTarget, fired, armInitiallyAtSetpoint;
@@ -430,6 +431,13 @@ public class AutoRoutinesRunner
 		RoutinePosition = position;
 		RoutineGoal = goal;
 		RoutineFinish = finish;
+		
+		data = new RoutineData(start, defense, position, goal, finish);
+	}
+	
+	public static RoutineData getRoutineData()
+	{
+		return data;
 	}
 	
 	public static int getCurrentStep()

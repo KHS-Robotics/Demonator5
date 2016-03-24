@@ -61,11 +61,14 @@ public class AutoValuesDeserializer
 
 		        data = d;
 		        
+		        Repository.Log.info("Deserialized auto routine data: " + data.toString());
+		        
 		        done = true;
 			}
 			catch(Exception ex)
 			{
-				Repository.Logs.error("Failed to serialize auto routine data", ex);
+				Repository.Logs.error("Failed to deserialize auto routine data", ex);
+				data = null;
 				done = true;
 			}
 		}
