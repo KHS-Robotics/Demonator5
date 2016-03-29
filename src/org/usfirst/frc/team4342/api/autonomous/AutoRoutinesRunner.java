@@ -322,10 +322,19 @@ public class AutoRoutinesRunner
 							}
 						}
 					}
-					else // Not from courtyard, going to turn around toward drivers and go back over the defense
+					else // Not from courtyard, going to go backwards towards drivers and back over the defense
 					{
 						Repository.TankDrive.goToAngle(0);
-						Repository.Shooter.setArmSetpoint(0);
+						 
+						if(RoutineDefense == 1)
+						{
+							Repository.Shooter.setArmSetpoint(Shooter.LOW_BAR_ENC_DIST);
+						}
+						else
+						{
+							Repository.Shooter.setArmSetpoint(0);
+						}
+						
 						
 						if((Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
 						{
