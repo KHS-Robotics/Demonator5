@@ -31,20 +31,24 @@ public class AutoRoutinesRunner
 	{
 		try
 		{
-			if(Repository.Timer.hasPeriodPassed(4) || RoutineStart == 0 || RoutineDefense == 0 || RoutinePosition == 0)
-			{
-				abort();
-			}
+			if(Repository.Timer.hasPeriodPassed(4))
+				abort("Timer has expired");
+			if(RoutineStart <= 0)
+				abort("RoutineStart cannot be less than or equal 0");
+			if(RoutineDefense <= 0)
+				abort("RoutineDefense cannot be less than or equal 0");
+			if(RoutinePosition <= 0)
+				abort("RoutinePosition cannot be less than or equal 0");
 			
 			if(currentStep == 0) // Routine Start
 			{
 				if(RoutineStart == 2 || RoutineStart == 3) // Grab ball or Spy
 				{
-					abort();
+					abort("RoutineStart cannot equal 2 or 3. These numbers have yet to be implemented!");
 				}
 				else if(RoutineStart == 1) // Start with ball
 				{
-					incrementStep();
+					incrementStep("Starting with a ball");
 				}
 			}
 			else if(currentStep == 1) // Routine Defense
@@ -55,7 +59,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetLowBarState();
 						
-						incrementStep();
+						incrementStep("Done going thru low bar");
 					}
 				}
 				else if(RoutineDefense == 2) // Moat
@@ -64,7 +68,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetMoatState();
 
-						incrementStep();
+						incrementStep("Done going over moat");
 					}
 				}
 				else if(RoutineDefense == 3) // Ramp Parts
@@ -73,7 +77,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetRampPartsState();
 						
-						incrementStep();
+						incrementStep("Done going over ramp parts");
 					}
 				}
 				else if(RoutineDefense == 4) // Rough Terrain
@@ -82,7 +86,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetRoughTerrainState();
 						
-						incrementStep();
+						incrementStep("Done going over rough terrain");
 					}
 				}
 				else if(RoutineDefense == 5) // Rock Wall
@@ -91,7 +95,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetRockWallState();
 						
-						incrementStep();
+						incrementStep("Done going rock wall");
 					}
 				}
 			}
@@ -99,26 +103,26 @@ public class AutoRoutinesRunner
 			{
 				if(RoutineDefense == 1 && RoutinePosition != 1) // Low Bar is always Position 1 and Defense 1. So why wouldn't they equal? Abort...
 				{
-					abort();
+					abort("RoutineDefense and RoutinePosition must be equal!");
 				}
 				else if(RoutineDefense == 2) // Hack for now, but Moat is definitely a problem for pitch state machine
 				{
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.MOAT_HACK_DIST))
 					{
 						Repository.TankDrive.resetAutoMove();
-						incrementStep();
+						incrementStep("Moat is bad pls dont");
 					}
 				}
 				else if(RoutineGoal == 3) // Don't move farther if we are just spitting the ball out
 				{
-					incrementStep();
+					incrementStep("Planning on spitting ball out. Not moving forward");
 				}
 				else if(RoutineDefense == 1) // From Low Bar
 				{
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.LOW_BAR_DIST_INCHES))
 					{
 						Repository.TankDrive.resetAutoMove();
-						incrementStep();
+						incrementStep("Done moving forward from low bar");
 					}
 				}
 				else if(RoutinePosition == 2) // From Position 2
@@ -126,19 +130,19 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.SECOND_DEFENSE_DIST_INCHES))
 					{
 						Repository.TankDrive.resetAutoMove();
-						incrementStep();
+						incrementStep("Done moving forward from second position");
 					}
 				}
 				else if(RoutinePosition == 3) // From Position 3, but we shoot from the courtyard so let's not move
 				{
-					incrementStep();
+					incrementStep("Not moving forward, staying in courtyard for fourth position");
 				}
 				else if(RoutinePosition == 4) // From Position 4
 				{
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.FOURTH_DEFENSE_DIST_INCHES))
 					{
 						Repository.TankDrive.resetAutoMove();
-						incrementStep();
+						incrementStep("Done moving forward from fourth position");
 					}
 				}
 				else if(RoutinePosition == 5) // From Position 5
@@ -146,7 +150,7 @@ public class AutoRoutinesRunner
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.FIFTH_DEFENSE_DIST_INCHES))
 					{
 						Repository.TankDrive.resetAutoMove();
-						incrementStep();
+						incrementStep("Done moving forward from fifth position");
 					}
 				}
 			}
@@ -154,7 +158,7 @@ public class AutoRoutinesRunner
 			{	
 				if(RoutineGoal == 0) // Do nothing? Abort
 				{
-					abort();
+					abort("No value set for shooting a goal");
 				}
 				else if(RoutineGoal == 3) // Spit Ball Out
 				{
@@ -249,7 +253,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.Shooter.disableShooterPID();
 						
-						incrementStep();
+						incrementStep("Done firing the ball");
 					}
 					
 					numLoops++;
@@ -271,7 +275,7 @@ public class AutoRoutinesRunner
 			{
 				if(RoutineFinish == 0) // Do nothing? Abort
 				{
-					abort();
+					abort("No value set for finish");
 				}
 				else if(RoutineFinish == 1) // Neutral zone
 				{
@@ -291,28 +295,28 @@ public class AutoRoutinesRunner
 								{
 									if(Repository.TankDrive.autoMoat(false, true, 180))
 									{
-										incrementStep();
+										incrementStep("Done going back over moat");
 									}
 								}
 								else if(RoutineDefense == 3) // Ramp Parts
 								{
 									if(Repository.TankDrive.autoRampParts(false, true, 180))
 									{
-										incrementStep();
+										incrementStep("Done going back over ramp parts");
 									}
 								}
 								else if(RoutineDefense == 4) // Rough Terrain
 								{
 									if(Repository.TankDrive.autoRoughTerrain(false, true, 180))
 									{
-										incrementStep();
+										incrementStep("Done going back over rough terrain");
 									}
 								}
 								else if(RoutineDefense == 5) // Rock Wall
 								{
 									if(Repository.TankDrive.autoRockWall(false, true, 180))
 									{
-										incrementStep();
+										incrementStep("Done going back over rock wall");
 									}
 								}
 							}
@@ -320,7 +324,7 @@ public class AutoRoutinesRunner
 					}
 					else // Not from courtyard, going to turn around toward drivers and go back over the defense
 					{
-						Repository.TankDrive.goToAngle(180);
+						Repository.TankDrive.goToAngle(0);
 						Repository.Shooter.setArmSetpoint(0);
 						
 						if((Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
@@ -330,37 +334,37 @@ public class AutoRoutinesRunner
 							
 							if(RoutineDefense == 1) // Low Bar
 							{
-								if(Repository.TankDrive.autoLowBar(true, true, 180))
+								if(Repository.TankDrive.autoLowBar(false, true, 0))
 								{
-									incrementStep();
+									incrementStep("Done going back thru low bar");
 								}
 							}
 							else if(RoutineDefense == 2) // Moat
 							{
-								if(Repository.TankDrive.autoMoat(true, true, 180))
+								if(Repository.TankDrive.autoMoat(false, true, 0))
 								{
-									incrementStep();
+									incrementStep("Done going back over moat");
 								}
 							}
 							else if(RoutineDefense == 3) // Ramp Parts
 							{
-								if(Repository.TankDrive.autoRampParts(true, true, 180))
+								if(Repository.TankDrive.autoRampParts(false, true, 0))
 								{
-									incrementStep();
+									incrementStep("Done going back over ramp parts");
 								}
 							}
 							else if(RoutineDefense == 4) // Rough Terrain
 							{
-								if(Repository.TankDrive.autoRoughTerrain(true, true, 180))
+								if(Repository.TankDrive.autoRoughTerrain(false, true, 0))
 								{
-									incrementStep();
+									incrementStep("Done going back over rough terrain");
 								}
 							}
 							else if(RoutineDefense == 5) // Rock Wall
 							{
-								if(Repository.TankDrive.autoRockWall(true, true, 180))
+								if(Repository.TankDrive.autoRockWall(false, true, 0))
 								{
-									incrementStep();
+									incrementStep("Done going back over rock wall");
 								}
 							}
 						}
@@ -368,7 +372,7 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutineFinish == 2) // Secret Passage
 				{
-					abort();
+					abort("Secret passage auto not yet implemented!");
 				}
 			}
 			else if(currentStep == 5)
@@ -405,6 +409,12 @@ public class AutoRoutinesRunner
 		numLoops = 0;
 	}
 	
+	public static void abort(String driverStationMessage)
+	{
+		abort();
+		Repository.Logs.warning("Reason for abort: " + driverStationMessage);
+	}
+	
 	public static void abort()
 	{
 		Repository.TankDrive.stopAll();
@@ -435,6 +445,12 @@ public class AutoRoutinesRunner
 		finished = true;
 		
 		Repository.Timer.stop();
+	}
+	
+	private static void incrementStep(String driverStationMessage)
+	{
+		incrementStep();
+		Repository.Logs.debug("Incremented Step (" + (currentStep-1) + " ->" + currentStep +": " + driverStationMessage);
 	}
 
 	private static void incrementStep()

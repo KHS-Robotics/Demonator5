@@ -219,9 +219,9 @@ public class Repository
 			RightMotorCounter = new Counter(6);
 			LeftMotorCounter = new Counter(7);
 			
-			// 7.5 * PI / 128
-			RightDriveEncoder.setDistancePerPulse(0.184);
-			LeftDriveEncoder.setDistancePerPulse(0.184);
+			// (7.5" * PI * 20 Input Teeth) / (128 DPP of Encoder * 3 Encoder Gear Ratio * 64 Output Teeth)
+			RightDriveEncoder.setDistancePerPulse((7.5*Math.PI*20)/(128*3*64));
+			LeftDriveEncoder.setDistancePerPulse((7.5*Math.PI*20)/(128*3*64));
 			RightDriveEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
 			LeftDriveEncoder.setPIDSourceType(PIDSourceType.kDisplacement);
 			
