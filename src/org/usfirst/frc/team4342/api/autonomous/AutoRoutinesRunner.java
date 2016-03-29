@@ -15,7 +15,7 @@ public class AutoRoutinesRunner
 	// RoutineStart: Nothing = 0, Load = 1, Grab = 2, Spy = 3
 	// RoutineDefense: Nothing = 0, LowBar = 1, Moat = 2, Ramp = 3, RoughTerrain = 4, RockWall = 5
 	// RoutinePosition: LowBar = 1, rest is 2-5
-	// RoutineGoal: Nothing = 0, High = 1, Low = 2
+	// RoutineGoal: Nothing = 0, High = 1, Low = 2, Spit = 3
 	// RoutineFinish: Nothing(Stop) = 0, Neutral = 1, Secret = 2
 	private static int RoutineStart, RoutineDefense, RoutinePosition, RoutineGoal, RoutineFinish;
 	private static RoutineData data;
@@ -101,13 +101,17 @@ public class AutoRoutinesRunner
 				{
 					abort();
 				}
-				else if(RoutineDefense == 2)
+				else if(RoutineDefense == 2) // Hack for now, but Moat is definitely a problem for pitch state machine
 				{
 					if(Repository.TankDrive.autoMoveDist(1, TankDrive.MOAT_HACK_DIST))
 					{
 						Repository.TankDrive.resetAutoMove();
 						incrementStep();
 					}
+				}
+				else if(RoutineGoal == 3) // Don't move farther if we are just spitting the ball out
+				{
+					incrementStep();
 				}
 				else if(RoutineDefense == 1) // From Low Bar
 				{
@@ -151,6 +155,16 @@ public class AutoRoutinesRunner
 				if(RoutineGoal == 0) // Do nothing? Abort
 				{
 					abort();
+				}
+				else if(RoutineGoal == 3) // Spit Ball Out
+				{
+					Repository.TankDrive.goToAngle(180);
+					
+					if(Repository.TankDrive.isAtAngleSetpoint() && Repository.Shooter.shooterIsAtSetpoint())
+					{
+						Repository.Shooter.setBallPusher(true);
+						fired = true;
+					}
 				}
 				else if(RoutineDefense == 1 || RoutinePosition == 2) // Low Bar or Position 2... Shooting angles are the same
 				{
@@ -248,6 +262,10 @@ public class AutoRoutinesRunner
 				{
 					Repository.Shooter.setShooterMotorsPID(60);
 				}
+				else if(RoutineGoal == 3) // Spit Ball out
+				{
+					Repository.Shooter.setShooterMotorsPID(50);
+				}
 			}
 			else if(currentStep == 4) // Routine Finish
 			{
@@ -260,16 +278,15 @@ public class AutoRoutinesRunner
 					if(RoutinePosition == 3) // From courtyard
 					{
 						Repository.TankDrive.goToAngle(0);
+						Repository.Shooter.setArmSetpoint(0);
 						
-						if(Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget)
+						if((Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
 						{
 							yawInitiallyOnTarget = true;
-							Repository.Shooter.setArmSetpoint(0);
+							armInitiallyAtSetpoint = true;
 							
-							if(Repository.TankDrive.autoMoveDist(0.5, 6) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
+							if(Repository.TankDrive.autoMoveDist(0.5, 6))
 							{
-								armInitiallyAtSetpoint = true;
-								
 								if(RoutineDefense == 2) // Moat
 								{
 									if(Repository.TankDrive.autoMoat(false, true, 180))
@@ -304,10 +321,12 @@ public class AutoRoutinesRunner
 					else // Not from courtyard, going to turn around toward drivers and go back over the defense
 					{
 						Repository.TankDrive.goToAngle(180);
+						Repository.Shooter.setArmSetpoint(0);
 						
-						if(Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget)
+						if((Repository.TankDrive.isAtAngleSetpoint() || yawInitiallyOnTarget) && (Repository.Shooter.armIsAtSetpoint() || armInitiallyAtSetpoint))
 						{
 							yawInitiallyOnTarget = true;
+							armInitiallyAtSetpoint = true;
 							
 							if(RoutineDefense == 1) // Low Bar
 							{

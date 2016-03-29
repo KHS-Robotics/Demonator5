@@ -85,18 +85,6 @@ public class Robot extends IterativeRobot
 			if(d != null)
 				Repository.Logs.info("Successfully loaded default auto; see log for more info");
 		}
-		else
-		{
-			RoutineData d = new RoutineData(start, defense, position, goal, finish);
-			
-			AutoRoutinesRunner.setRoutineData(
-				d.getStart(),
-				d.getDefense(),
-				d.getPosition(),
-				d.getGoal(),
-				d.getFinish()
-			);
-		}
     	
 		if(AutoRoutinesRunner.getRoutineData() != null)
 		{

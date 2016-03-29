@@ -158,8 +158,8 @@ public class ShooterController
 	
 	public void setMotorsPID(double setpoint)
 	{
-		rightMotor.set(setpoint);
-		leftMotor.set(setpoint);
+		rightPID.setSetpoint(setpoint);
+		leftPID.setSetpoint(setpoint);
 	}
 	
 	public void setAccumulatorMotor(double output)
