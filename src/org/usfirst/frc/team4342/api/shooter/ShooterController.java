@@ -18,7 +18,7 @@ public class ShooterController
 		LOADED, FIRING
 	}
 	
-	private Joystick driveStick, switchBox;
+	private Joystick switchBox;
 	private CANTalon rightMotor, leftMotor;
 	private Solenoid ballPusher;
 	private Counter rightMotorCounter, leftMotorCounter;
@@ -28,14 +28,13 @@ public class ShooterController
 	
 	private ShooterState state = ShooterState.LOADED;
 	
-	private int numLoops, driveShootLoops;
-	private boolean driverShooting, userFired;
+	private int numLoops;
+	private boolean userFired;
 	
-	public ShooterController(Joystick driveStick, Joystick switchBox, CANTalon rightMotor, CANTalon leftMotor, 
+	public ShooterController(Joystick switchBox, CANTalon rightMotor, CANTalon leftMotor, 
 							Solenoid ballPusher, Counter rightMotorCounter, Counter leftMotorCounter, 
 							DigitalInput ballSensor, ArmController arm)
 	{
-		this.driveStick = driveStick;
 		this.switchBox = switchBox;
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
@@ -62,91 +61,58 @@ public class ShooterController
 		enablePID();
 	}
 	
-	public void checkUser(int driverShootButton, int safetyButton, int fireButton, int accumInButton, int accumOutButton)
+	public void checkUser(int highGoalSafety, int lowGoalSafety, int fireButton, int accumInButton, int accumOutButton)
 	{
-		if(driverShooting || (driveStick.getRawButton(driverShootButton) && state == ShooterState.LOADED))
+		if (state == ShooterState.LOADED)
 		{
-			driverShooting = true;
-			
-			enablePID();
-			
-			leftPID.setSetpoint(75);
-			rightPID.setSetpoint(75);
-			
-			driveShootLoops++;
-			
-			if(isAtSetpoint())
+			if(switchBox.getRawButton(highGoalSafety) && !userFired)
 			{
-				setBallPusher(true);
+				enablePID();
+				setSetpoint(85);
 				
-				if(driveShootLoops > 20)
+				if (switchBox.getRawButton(fireButton) && isAtSetpoint())
 				{
-					setMotorsPID(0);
-					setBallPusher(false);
-					
-					driveShootLoops = 0;
-					driverShooting = false;
+					setBallPusher(true);
+					state = ShooterState.FIRING;
 				}
+			}
+			else if(switchBox.getRawButton(lowGoalSafety) && !userFired)
+			{
+				enablePID();
+				setSetpoint(50);
+				
+				if (switchBox.getRawButton(fireButton) && isAtSetpoint())
+				{
+					setBallPusher(true);
+					state = ShooterState.FIRING;
+				}
+			}
+			else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
+			{
+				setMotors(-0.67);
+				setAccumulatorMotor(1);
+			}
+			else
+			{
+				setBallPusher(false);
+				stopAllMotors();
+				userFired = false;
 			}
 		}
-		else if(!driverShooting)
+		else if (state == ShooterState.FIRING)
 		{
-			if (state == ShooterState.LOADED)
+			if(numLoops > 10)
 			{
-				if (switchBox.getRawButton(safetyButton) && !userFired)
-				{
-					enablePID();
-					leftPID.setSetpoint(85);
-					rightPID.setSetpoint(85);
-					
-					if (switchBox.getRawButton(fireButton) && isAtSetpoint())
-					{
-						setBallPusher(true);
-						state = ShooterState.FIRING;
-					}
-				}
-				else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
-				{
-					setMotors(-0.67);
-					setAccumulatorMotor(1);
-				}
-				else
-				{
-					setBallPusher(false);
-					stopAllMotors();
-					userFired = false;
-				}
-			}
-			else if (state == ShooterState.FIRING)
-			{
-				if(numLoops > 10)
-				{
-					setMotorsPID(0);
-					numLoops = 0;
-					setBallPusher(false);
-					
-					userFired = true;
-					
-					state = ShooterState.LOADED;
-				}
+				setSetpoint(0);
+				numLoops = 0;
+				setBallPusher(false);
 				
-				numLoops++;
-			}
-		}
-	}
-	
-	public void fire()
-	{
-		if(state == ShooterState.LOADED && !driverShooting)
-		{
-			enablePID();
-			setMotorsPID(85);
-			
-			while(!isAtSetpoint()) {
-				// Chillin' like a villain
+				userFired = true;
+				
+				state = ShooterState.LOADED;
 			}
 			
-			setBallPusher(true);
+			numLoops++;
 		}
 	}
 	
@@ -156,7 +122,7 @@ public class ShooterController
 		leftMotor.set(output);
 	}
 	
-	public void setMotorsPID(double setpoint)
+	public void setSetpoint(double setpoint)
 	{
 		rightPID.setSetpoint(setpoint);
 		leftPID.setSetpoint(setpoint);

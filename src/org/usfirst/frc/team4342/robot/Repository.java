@@ -252,7 +252,7 @@ public class Repository
 			);
 			
 			ArmController = new ArmController(ShooterStick, SwitchBox, ArmMotor, Accumulator, ArmEncoder, TopLimitSwitch, BottomLimitSwitch);
-			ShooterController = new ShooterController(DriveStick, SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
+			ShooterController = new ShooterController(SwitchBox, RightShooter, LeftShooter, BallPusher, RightMotorCounter, LeftMotorCounter, BallSensor, ArmController);
 			
 			Shooter = new Shooter(ShooterController, ArmController);
 		}

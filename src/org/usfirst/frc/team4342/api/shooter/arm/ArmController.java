@@ -54,13 +54,13 @@ public class ArmController
 		disablePID();
 	}
 
-	public void checkUser(int smartDashboardSetpointButton, int brakeButton, int accumInButton, int accumOutButton)
+	public void checkUser(int smartDashboardSetpointButton, int accumInButton, int accumOutButton)
 	{
-		checkUserArm(smartDashboardSetpointButton, brakeButton);
+		checkUserArm(smartDashboardSetpointButton);
 		checkUserAccumulator(accumInButton, accumOutButton);
 	}
 
-	public void checkUserArm(int smartDashboardSetpointButton, int brakeButton)
+	public void checkUserArm(int smartDashboardSetpointButton)
 	{
 		if(!switchBox.getRawButton(smartDashboardSetpointButton))
 		{
@@ -91,7 +91,7 @@ public class ArmController
 			
 			if(Math.abs(y) < JOYSTICK_DEADBAND && !buttonPressed) 
 			{
-				if(encDist > 190 && encDist < 455)//!switchBox.getRawButton(brakeButton))
+				if(encDist > 190 && encDist < 455)
 				{
 					if(!ranFirstAutoHold)
 					{

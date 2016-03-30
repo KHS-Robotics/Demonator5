@@ -135,7 +135,7 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutinePosition == 3) // From Position 3, but we shoot from the courtyard so let's not move
 				{
-					incrementStep("Not moving forward, staying in courtyard for fourth position");
+					incrementStep("Not moving forward, staying in courtyard for third position");
 				}
 				else if(RoutinePosition == 4) // From Position 4
 				{
@@ -264,11 +264,11 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutineGoal == 2) // Low Goal, smaller setpoint
 				{
-					Repository.Shooter.setShooterMotorsPID(60);
+					Repository.Shooter.setShooterMotorsPID(50);
 				}
 				else if(RoutineGoal == 3) // Spit Ball out
 				{
-					Repository.Shooter.setShooterMotorsPID(50);
+					Repository.Shooter.setShooterMotorsPID(33);
 				}
 			}
 			else if(currentStep == 4) // Routine Finish
@@ -293,28 +293,28 @@ public class AutoRoutinesRunner
 							{
 								if(RoutineDefense == 2) // Moat
 								{
-									if(Repository.TankDrive.autoMoat(false, true, 180))
+									if(Repository.TankDrive.autoMoat(false, true, 0))
 									{
 										incrementStep("Done going back over moat");
 									}
 								}
 								else if(RoutineDefense == 3) // Ramp Parts
 								{
-									if(Repository.TankDrive.autoRampParts(false, true, 180))
+									if(Repository.TankDrive.autoRampParts(false, true, 0))
 									{
 										incrementStep("Done going back over ramp parts");
 									}
 								}
 								else if(RoutineDefense == 4) // Rough Terrain
 								{
-									if(Repository.TankDrive.autoRoughTerrain(false, true, 180))
+									if(Repository.TankDrive.autoRoughTerrain(false, true, 0))
 									{
 										incrementStep("Done going back over rough terrain");
 									}
 								}
 								else if(RoutineDefense == 5) // Rock Wall
 								{
-									if(Repository.TankDrive.autoRockWall(false, true, 180))
+									if(Repository.TankDrive.autoRockWall(false, true, 0))
 									{
 										incrementStep("Done going back over rock wall");
 									}

@@ -47,7 +47,8 @@ public class Robot extends IterativeRobot
 		ComponentRunner.startAutomaticMode(tdc);
     	ComponentRunner.startAutomaticMode(sc);
     	
-    	//PIDTuner.startUpdating();
+    	// Used for "on the spot" tuning of the arm PID
+    	//PIDTuner.startUpdating(4);
     }
 	
 	/**
@@ -109,7 +110,7 @@ public class Robot extends IterativeRobot
 	@Override
     public void teleopInit()
     {
-		Repository.DriveTrain.setVoltageRampRate(24);
+		Repository.DriveTrain.setVoltageRampRate(64);
 		Repository.DriveTrain.setCoastMode();
 		Repository.DriveTrain.enable();
     }

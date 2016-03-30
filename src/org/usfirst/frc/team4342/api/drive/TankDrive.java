@@ -57,6 +57,8 @@ public class TankDrive
 	
 	private HashMap<Integer, Double> POVLookupTable;
 	
+	private boolean setHighGearRampRate, setLowGearRampRate;
+	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
 					Encoder encLeft, Encoder encRight)
 	{
@@ -597,6 +599,7 @@ public class TankDrive
 			
 			if(isAtAngleSetpoint() && Repository.Shooter.armIsAtSetpoint())
 			{
+				Repository.ArmController.disablePID();
 				lowBarState = DefenseState.CLIMB;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
@@ -923,12 +926,12 @@ public class TankDrive
 	
 	public void setYawOffset(double offset)
 	{
+		this.offset = normalizeYaw(offset);
+		
 		if(this.offset == offset)
 			return;
 		
 		POVLookupTable.clear();
-		
-		this.offset = normalizeYaw(offset);
 		
 		POVLookupTable.put(0, normalizeYaw(0.0 + offset));
 		POVLookupTable.put(90, normalizeYaw(BATTER_YAW + offset));
@@ -1082,9 +1085,27 @@ public class TankDrive
 	private synchronized void checkUserShift(int button)
 	{
 		if(j.getRawButton(button))
+		{
+			if(!setHighGearRampRate)
+			{
+				driveTrain.setVoltageRampRate(16);
+				setHighGearRampRate = true;
+				setLowGearRampRate = false;
+			}
+			
 			shifter.set(DoubleSolenoid.Value.kReverse);
+		}
 		else
+		{
+			if(!setLowGearRampRate)
+			{
+				driveTrain.setVoltageRampRate(64);
+				setLowGearRampRate = true;
+				setHighGearRampRate = false;
+			}
+			
 			shifter.set(DoubleSolenoid.Value.kForward);	
+		}
 	}
 	
 	private double sensitivityControl(double input)

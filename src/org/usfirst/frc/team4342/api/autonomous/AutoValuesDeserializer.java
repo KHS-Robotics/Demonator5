@@ -52,6 +52,13 @@ public class AutoValuesDeserializer
 				final String PATH = "/home/lvuser/AutoRoutineData.ser";
 				File file = new File(PATH);
 				
+				if(!file.exists())
+				{
+					Repository.Logs.warning("No default auto values set!");
+					done = true;
+					return;
+				}
+				
 				RoutineData d = null;
 		        FileInputStream fileIn = new FileInputStream(file);
 		        ObjectInputStream in = new ObjectInputStream(fileIn);

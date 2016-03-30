@@ -24,17 +24,16 @@ public class Shooter
 		this.arm = arm;
 	}
 
-	public void handleTeleop(int driverShootButton, int safetyButton, int fireButton, int smartDashboardButton, 
-							int armBrakeButton, int accumInButton, int accumOutButton)
+	public void handleTeleop(int highGoalSafetyButton, int lowGoalSafetyButton, int fireButton, int smartDashboardButton, int accumInButton, int accumOutButton)
 	{
-		shooter.checkUser(driverShootButton, safetyButton, fireButton, accumInButton, accumOutButton);
-		arm.checkUser(smartDashboardButton, armBrakeButton, accumInButton, accumOutButton);
+		shooter.checkUser(highGoalSafetyButton, lowGoalSafetyButton, fireButton, accumInButton, accumOutButton);
+		arm.checkUser(smartDashboardButton, accumInButton, accumOutButton);
 	}
 
 	public void handleAuto()
 	{
 		arm.setSetpoint(autoArmSetpoint);
-		shooter.setMotorsPID(autoShooterSetpoint);
+		shooter.setSetpoint(autoShooterSetpoint);
 		shooter.setBallPusher(ballPushStatus);
 	}
 	

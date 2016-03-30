@@ -128,7 +128,7 @@ public class SmartDashboardUpdater
 					putEncoderData();
 					putCounterData();
 					putDefenseStates();
-					putSmartDashobardData();
+					putAutonomousData();
 					
 					SmartDashboard.putString("Shooter-State", Repository.ShooterController.getState().toString());
 	
@@ -147,7 +147,7 @@ public class SmartDashboardUpdater
 			}
 		}
 		
-		private static void putSmartDashobardData()
+		private static void putAutonomousData()
 		{
 			SmartDashboard.putNumber("AutoStep", AutoRoutinesRunner.getCurrentStep());
 			SmartDashboard.putBoolean("AutoFinished", AutoRoutinesRunner.isFinished());

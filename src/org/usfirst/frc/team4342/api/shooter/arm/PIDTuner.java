@@ -12,13 +12,16 @@ public final class PIDTuner
 	private PIDTuner() {}
 	
 	private static boolean run;
+	private static int setPIDButton;
 	
-	public static void startUpdating()
+	public static void startUpdating(int setPIDButton)
 	{
 		if(run)
 			return;
 		
 		run = true;
+		
+		PIDTuner.setPIDButton = setPIDButton;
 		new PIDUpdater().start();
 	}
 	
@@ -36,7 +39,7 @@ public final class PIDTuner
 			{
 				try
 				{
-					if(Repository.SwitchBox.getRawButton(7))
+					if(Repository.SwitchBox.getRawButton(setPIDButton))
 					{
 						Repository.ArmController.setPID(
 							-SmartDashboard.getNumber("Arm-P-Up") / 100.0,
