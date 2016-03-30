@@ -696,6 +696,7 @@ public class TankDrive
 			if(!firstRun)
 			{
 				stopAll();
+				Repository.ArmController.enablePID();
 				firstRun = true;
 			}
 			else
