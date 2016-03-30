@@ -260,15 +260,15 @@ public class AutoRoutinesRunner
 				}
 				else if(RoutineGoal == 1) // High Goal, larger setpoint
 				{
-					Repository.Shooter.setShooterMotorsPID(85);
+					Repository.Shooter.setShooterSetpoint(85);
 				}
 				else if(RoutineGoal == 2) // Low Goal, smaller setpoint
 				{
-					Repository.Shooter.setShooterMotorsPID(50);
+					Repository.Shooter.setShooterSetpoint(50);
 				}
 				else if(RoutineGoal == 3) // Spit Ball out
 				{
-					Repository.Shooter.setShooterMotorsPID(33);
+					Repository.Shooter.setShooterSetpoint(33);
 				}
 			}
 			else if(currentStep == 4) // Routine Finish

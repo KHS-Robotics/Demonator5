@@ -47,7 +47,7 @@ public class Shooter
 		this.autoArmSetpoint = setpoint;
 	}
 	
-	public void setShooterMotorsPID(double setpoint)
+	public void setShooterSetpoint(double setpoint)
 	{
 		this.autoShooterSetpoint = setpoint;
 	}

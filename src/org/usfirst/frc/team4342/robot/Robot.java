@@ -12,6 +12,7 @@ import org.usfirst.frc.team4342.api.autonomous.AutoValuesDeserializer;
 import org.usfirst.frc.team4342.api.autonomous.AutoValuesSerializer;
 import org.usfirst.frc.team4342.api.autonomous.RoutineData;
 import org.usfirst.frc.team4342.api.logging.SmartDashboardUpdater;
+import org.usfirst.frc.team4342.api.shooter.arm.PIDTuner;
 
 /**
  * FRC Team 4342 (Kennett High School Demon Robotics) Robot Code for Stronghold.
@@ -48,7 +49,7 @@ public class Robot extends IterativeRobot
     	ComponentRunner.startAutomaticMode(sc);
     	
     	// Used for "on the spot" tuning of the arm PID
-    	//PIDTuner.startUpdating(4);
+    	PIDTuner.startUpdating(4);
     }
 	
 	/**
@@ -171,6 +172,9 @@ public class Robot extends IterativeRobot
 		}
 	}
 	
+	// This probably wont do much considering if the thread does crash,
+	// then the "zero" spot is erroneous. But if the arm is all the way
+	// down then maybe we can low bar and shoot low
 	private void checkShooter()
 	{
 		if(!sc.isRunning() && !attemptedRestartShooter)
@@ -185,7 +189,7 @@ public class Robot extends IterativeRobot
 		}
 		else if(!sc.isRunning())
 		{
-			Repository.Logs.warning("Shooter has crashed again; see logs for details");
+			Repository.Logs.warning("Shooter has crashed again, NOT restarting; see logs for details");
 		}
 	}
 	
