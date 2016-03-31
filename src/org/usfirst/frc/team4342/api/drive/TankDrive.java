@@ -107,6 +107,11 @@ public class TankDrive
 				holdDPadYaw = true;
 			}
 			
+			if(Math.abs(j.getRawAxis(0)) > 0.05)
+			{
+				holdDPadYaw = false;
+			}
+			
 			goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 		}
 		else if(j.getRawButton(straightButton))
