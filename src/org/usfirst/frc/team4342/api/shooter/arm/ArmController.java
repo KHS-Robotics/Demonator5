@@ -21,6 +21,7 @@ public class ArmController
 
 	private boolean buttonPressed, ranFirstAutoHold;
 	private int selectedSetpoint;
+	private double currentHoldSetpoint;
 
 	public ArmController(Joystick j, Joystick switchBox, CANTalon armMotor, CANTalon accumMotor, 
 			Encoder armEnc, DigitalInput topLS, DigitalInput botLS)
@@ -185,6 +186,7 @@ public class ArmController
 	
 	public void setSetpoint(double setpoint)
 	{
+		currentHoldSetpoint = setpoint;
 		apidc.setSetpoint(-setpoint);
 	}
 
@@ -255,6 +257,14 @@ public class ArmController
 		{
 			buttonPressed = true;
 			selectedSetpoint = 470;
+		}
+		else if(ranFirstAutoHold && j.getRawButton(2)) 
+		{
+			setSetpoint(currentHoldSetpoint+10);
+		}
+		else if(ranFirstAutoHold && j.getRawButton(7))
+		{
+			setSetpoint(currentHoldSetpoint-10);
 		}
 	}
 
