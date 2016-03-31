@@ -57,6 +57,8 @@ public class TankDrive
 	
 	private HashMap<Integer, Double> POVLookupTable;
 	
+	private double currentSetpoint;
+	
 	private boolean setHighGearRampRate, setLowGearRampRate;
 	
 	public TankDrive(Joystick j, DriveTrain talons, AHRS navX, DoubleSolenoid shifter, 
@@ -116,6 +118,14 @@ public class TankDrive
 			{
 				goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 			}
+		}
+		else if(j.getRawButton(2))
+		{
+			goToSetpoint(currentSetpoint + 1);
+		}
+		else if(j.getRawButton(3))
+		{
+			goToSetpoint(currentSetpoint - 1);
 		}
 		else
 		{
@@ -1064,6 +1074,7 @@ public class TankDrive
 	
 	public synchronized void goToSetpoint(double setpointAngle)
 	{
+		currentSetpoint = setpointAngle;
 		angleControl.setSetpoint(normalizeYaw(setpointAngle + offset));
 		turnPIDOn();
 	}
