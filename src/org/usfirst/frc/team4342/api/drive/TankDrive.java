@@ -56,8 +56,7 @@ public class TankDrive
 	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 8;
 	
 	private HashMap<Integer, Double> POVLookupTable;
-	
-	private double currentSetpoint;
+	private boolean holdDPadYaw;
 	
 	private boolean setHighGearRampRate, setLowGearRampRate;
 	
@@ -100,9 +99,13 @@ public class TankDrive
 	public synchronized void drive(int shiftButton, int straightButton)
 	{
 		int pov = j.getPOV();
-		if(POVLookupTable.containsKey(pov))
+		if(POVLookupTable.containsKey(pov) || holdDPadYaw)
 		{
-			goToSetpoint(POVLookupTable.get(pov));
+			if(!holdDPadYaw)
+			{
+				goToSetpoint(POVLookupTable.get(pov));
+				holdDPadYaw = true;
+			}
 			
 			goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 		}
@@ -130,6 +133,7 @@ public class TankDrive
 		else
 		{
 			turnPIDOff();
+			holdDPadYaw = false;
 			joystickDrive(shiftButton);
 			
 			firstRunGoStraight = true;
@@ -1083,7 +1087,6 @@ public class TankDrive
 	
 	public synchronized void goToSetpoint(double setpointAngle)
 	{
-		currentSetpoint = setpointAngle;
 		angleControl.setSetpoint(normalizeYaw(setpointAngle + offset));
 		turnPIDOn();
 	}
