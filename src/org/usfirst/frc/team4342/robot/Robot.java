@@ -59,7 +59,7 @@ public class Robot extends IterativeRobot
     public void autonomousInit() 
     {
     	Repository.DriveTrain.setBrakeMode();
-    	Repository.DriveTrain.setVoltageRampRate(0);
+    	Repository.DriveTrain.setVoltageRampRate(1023);
     	Repository.DriveTrain.enable();
     	
     	Repository.ArmController.enablePID();

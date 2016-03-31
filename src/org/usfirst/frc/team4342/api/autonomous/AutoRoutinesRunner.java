@@ -23,6 +23,8 @@ public class AutoRoutinesRunner
 	// Used for RoutineFinish
 	private static boolean yawInitiallyOnTarget, fired, armInitiallyAtSetpoint;
 	
+	private static int timeoutSeconds = 5; // 5 by default
+	
 	/**
 	 * Executes the autonomous routine based on given auto data above
 	 * @return true if the routine is finished; false otherwise
@@ -31,7 +33,7 @@ public class AutoRoutinesRunner
 	{
 		try
 		{
-			if(Repository.Timer.hasPeriodPassed(4))
+			if(Repository.Timer.hasPeriodPassed(timeoutSeconds))
 				abort("Timer has expired");
 			if(RoutineStart <= 0)
 				abort("RoutineStart cannot be less than or equal 0");
@@ -95,7 +97,7 @@ public class AutoRoutinesRunner
 					{
 						Repository.TankDrive.resetRockWallState();
 						
-						incrementStep("Done going rock wall");
+						incrementStep("Done going over rock wall");
 					}
 				}
 			}
@@ -103,15 +105,7 @@ public class AutoRoutinesRunner
 			{
 				if(RoutineDefense == 1 && RoutinePosition != 1) // Low Bar is always Position 1 and Defense 1. So why wouldn't they equal? Abort...
 				{
-					abort("RoutineDefense and RoutinePosition must be equal!");
-				}
-				else if(RoutineDefense == 2) // Hack for now, but Moat is definitely a problem for pitch state machine
-				{
-					if(Repository.TankDrive.autoMoveDist(1, TankDrive.MOAT_HACK_DIST))
-					{
-						Repository.TankDrive.resetAutoMove();
-						incrementStep("Moat is bad pls dont");
-					}
+					abort("RoutineDefense and RoutinePosition must be equal if low bar!");
 				}
 				else if(RoutineGoal == 3) // Don't move farther if we are just spitting the ball out
 				{
@@ -252,6 +246,9 @@ public class AutoRoutinesRunner
 					if(numLoops > 10)
 					{
 						Repository.Shooter.disableShooterPID();
+						
+						if(RoutinePosition != 3)
+							timeoutSeconds = 8;
 						
 						incrementStep("Done firing the ball");
 					}
@@ -416,6 +413,7 @@ public class AutoRoutinesRunner
 		errored = false;
 		currentStep = 0;
 		numLoops = 0;
+		timeoutSeconds = 5;
 	}
 	
 	public static void abort(String driverStationMessage)

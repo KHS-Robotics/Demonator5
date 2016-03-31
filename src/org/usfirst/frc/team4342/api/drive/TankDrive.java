@@ -984,6 +984,7 @@ public class TankDrive
 		moatState = DefenseState.APPROACH;
 		lowBarState = DefenseState.APPROACH;
 		rockWallState = DefenseState.APPROACH;
+		moatFirstRun = true;
 	}
 	
 	public void resetRampPartsState()
