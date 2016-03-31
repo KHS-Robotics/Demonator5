@@ -43,7 +43,7 @@ public class TankDrive
 	private double offset;
 	
 	private PIDController angleControl;
-	private boolean firstRunGoStraight = true;
+	private boolean firstRunGoStraight = true, moatFirstRun = true;
 	
 	private boolean firstRunAutoMoveDist = true, goingForward;
 	private double targetEncCounts, yaw;
@@ -545,6 +545,14 @@ public class TankDrive
 				moatState = DefenseState.FINISHING;
 				minPitch = currentPitch;
 				maxPitch = currentPitch;
+			}
+			else if(Math.abs((currentPitch - startingPitch)) < 10 && Math.abs(currentPitch - lastPitch) <= 4
+					&& moatFirstRun)
+			{
+				moatState = DefenseState.PEAK;
+				minPitch = currentPitch;
+				maxPitch = currentPitch;
+				moatFirstRun = false;
 			}
 		}
 		else if (moatState == DefenseState.FINISHING)
