@@ -53,7 +53,7 @@ public class TankDrive
 	private boolean loggedRP, loggedRT, loggedM, loggedLB, loggedRW;
 	private boolean firstRun = true;
 	
-	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 12;
+	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 8;
 	
 	private HashMap<Integer, Double> POVLookupTable;
 	
