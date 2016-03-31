@@ -79,7 +79,7 @@ public class ShooterController
 			else if(switchBox.getRawButton(lowGoalSafety) && !userFired)
 			{
 				enablePID();
-				setSetpoint(50);
+				setSetpoint(60);
 				
 				if (switchBox.getRawButton(fireButton) && isAtSetpoint())
 				{

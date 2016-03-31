@@ -241,7 +241,7 @@ public class ArmController
 		if(j.getRawButton(4))
 		{
 			buttonPressed = true;
-			selectedSetpoint = 280;
+			selectedSetpoint = 210;
 		}
 		else if(j.getRawButton(6))
 		{

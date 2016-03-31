@@ -121,11 +121,11 @@ public class TankDrive
 		}
 		else if(j.getRawButton(2))
 		{
-			goToSetpoint(currentSetpoint + 1);
+			goToSetpoint(navX.getYaw() + 1);
 		}
 		else if(j.getRawButton(3))
 		{
-			goToSetpoint(currentSetpoint - 1);
+			goToSetpoint(navX.getYaw() - 1);
 		}
 		else
 		{
