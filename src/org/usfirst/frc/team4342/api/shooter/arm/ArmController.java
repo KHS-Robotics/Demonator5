@@ -166,7 +166,8 @@ public class ArmController
 		}
 		else
 		{
-			stopOperatorAutoMove();
+			ranFirstAutoHold = false;
+			buttonPressed = false;
 			enablePID();
 			setSetpoint(SmartDashboard.getNumber("Arm-Setpoint"));
 		}
