@@ -21,14 +21,8 @@ public class TankDrive
 	
 	public static final double BATTER_YAW = 60.0, LOW_BAR_YAW = 40.0, THIRD_POSITION_YAW = 12.68;
 	
-	// TODO: Distance per pulse on the right and left drive might be at fault, but the robot definitely
-	// did not move to these inch numbers
 	public static final double LOW_BAR_DIST_INCHES = 100;
 	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
-	
-	// Used at SCH, figured keep them here until todo above is cleared. These are just used for ensuring a crossing
-	//public static final double SECOND_DEFENSE_DIST_INCHES = 900, FOURTH_DEFENSE_DIST_INCHES = 900, FIFTH_DEFENSE_DIST_INCHES = 900;
-	//public static final double LOW_BAR_DIST_INCHES = 900;
 	
 	public static final double FOURTH_POSITION_YAW = -15.0;
 	public static final double MOAT_HACK_DIST = 1500;
@@ -57,6 +51,7 @@ public class TankDrive
 	
 	private HashMap<Integer, Double> POVLookupTable;
 	private boolean holdDPadYaw;
+	private double currentSetpoint;
 	
 	private boolean setHighGearRampRate, setLowGearRampRate;
 	
@@ -104,19 +99,26 @@ public class TankDrive
 			if(!holdDPadYaw)
 			{
 				goToSetpoint(POVLookupTable.get(pov));
+				currentSetpoint = POVLookupTable.get(pov);
 				holdDPadYaw = true;
 			}
 			
-			if(Math.abs(j.getRawAxis(0)) > 0.05)
+			if(currentSetpoint != POVLookupTable.get(pov))
+			{
+				goToSetpoint(POVLookupTable.get(pov));
+				currentSetpoint = POVLookupTable.get(pov);
+			}
+			else if(Math.abs(j.getRawAxis(0)) > 0.05)
 			{
 				holdDPadYaw = false;
+				turnPIDOff();
 			}
 			
 			goStraight(sensitivityControl(j.getRawAxis(3)-j.getRawAxis(2)));
 		}
 		else if(j.getRawButton(straightButton))
 		{
-			if (firstRunGoStraight)
+			if(firstRunGoStraight)
 			{
 				goToSetpoint(navX.getYaw());
 				
@@ -129,19 +131,19 @@ public class TankDrive
 		}
 		else if(j.getRawButton(2))
 		{
-			goToSetpoint(navX.getYaw() + 1);
+			goToAngle(navX.getYaw() + 1);
 		}
 		else if(j.getRawButton(3))
 		{
-			goToSetpoint(navX.getYaw() - 1);
+			goToAngle(navX.getYaw() - 1);
 		}
 		else
 		{
 			turnPIDOff();
 			holdDPadYaw = false;
-			joystickDrive(shiftButton);
-			
 			firstRunGoStraight = true;
+			
+			joystickDrive(shiftButton);
 		}
 	}
 	

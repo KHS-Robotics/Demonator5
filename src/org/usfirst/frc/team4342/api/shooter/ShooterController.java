@@ -89,6 +89,7 @@ public class ShooterController
 			}
 			else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
 			{
+				disablePID();
 				setMotors(-0.67);
 				setAccumulatorMotor(1);
 			}
@@ -172,9 +173,7 @@ public class ShooterController
 	
 	public void stopAllMotors()
 	{
-		if(rightPID.isEnabled() || leftPID.isEnabled())
-			disablePID();
-		
+		disablePID();
 		rightMotor.set(0);
 		leftMotor.set(0);
 		arm.getAccumMotor().set(0);
