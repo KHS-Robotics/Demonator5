@@ -108,6 +108,14 @@ public class TankDrive
 				goToSetpoint(POVLookupTable.get(pov));
 				currentSetpoint = POVLookupTable.get(pov);
 			}
+			else if(j.getRawButton(2))
+			{
+				goToAngle(normalizeYaw(navX.getYaw() + 1));
+			}
+			else if(j.getRawButton(3))
+			{
+				goToAngle(normalizeYaw(navX.getYaw() + 1));
+			}
 			else if(Math.abs(j.getRawAxis(0)) > 0.05)
 			{
 				holdDPadYaw = false;
@@ -131,11 +139,11 @@ public class TankDrive
 		}
 		else if(j.getRawButton(2))
 		{
-			goToAngle(navX.getYaw() + 1);
+			goToAngle(normalizeYaw(navX.getYaw() + 1));
 		}
 		else if(j.getRawButton(3))
 		{
-			goToAngle(navX.getYaw() - 1);
+			goToAngle(normalizeYaw(navX.getYaw() + 1));
 		}
 		else
 		{
