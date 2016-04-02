@@ -25,7 +25,6 @@ public class TankDrive
 	public static final double SECOND_DEFENSE_DIST_INCHES = 120, FOURTH_DEFENSE_DIST_INCHES = 80, FIFTH_DEFENSE_DIST_INCHES = 140;
 	
 	public static final double FOURTH_POSITION_YAW = -15.0;
-	public static final double MOAT_HACK_DIST = 1500;
 	
 	private Joystick j;
 	private DriveTrain driveTrain;
@@ -47,7 +46,7 @@ public class TankDrive
 	private boolean loggedRP, loggedRT, loggedM, loggedLB, loggedRW;
 	private boolean firstRun = true;
 	
-	public static final double RampPartsPitch = 17, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 8;
+	public static final double RampPartsPitch = 8, RoughTerrainPitch = 8, MoatPitch = 8, LowBarPitch = 5, RockWallPitch = 8;
 	
 	private HashMap<Integer, Double> POVLookupTable;
 	private boolean holdDPadYaw;
