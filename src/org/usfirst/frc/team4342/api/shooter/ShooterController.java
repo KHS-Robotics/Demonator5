@@ -90,7 +90,7 @@ public class ShooterController
 			else if(switchBox.getRawButton(accumInButton) && (!Repository.DriveStick.getRawButton(accumOutButton) || !switchBox.getRawButton(accumOutButton)))
 			{
 				disablePID();
-				setMotors(-0.67);
+				setMotors(-0.40);
 				setAccumulatorMotor(1);
 			}
 			else
