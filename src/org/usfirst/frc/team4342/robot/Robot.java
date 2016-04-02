@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot
     	ComponentRunner.startAutomaticMode(sc);
     	
     	// Used for "on the spot" tuning of the arm PID
-    	PIDTuner.startUpdating(4);
+    	//PIDTuner.startUpdating(4);
     }
 	
 	/**

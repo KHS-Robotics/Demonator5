@@ -193,7 +193,7 @@ public class ArmController
 
 	public boolean isAtAutoSetpoint()
 	{
-		return Math.abs(apidc.getError()) <= 10;
+		return Math.abs(apidc.getError()) <= 15;
 	}
 
 	public void enablePID()

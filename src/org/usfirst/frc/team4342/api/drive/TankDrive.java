@@ -114,7 +114,7 @@ public class TankDrive
 			}
 			else if(j.getRawButton(3))
 			{
-				goToAngle(normalizeYaw(navX.getYaw() + 1));
+				goToAngle(normalizeYaw(navX.getYaw() - 1));
 			}
 			else if(Math.abs(j.getRawAxis(0)) > 0.05)
 			{
@@ -143,7 +143,7 @@ public class TankDrive
 		}
 		else if(j.getRawButton(3))
 		{
-			goToAngle(normalizeYaw(navX.getYaw() + 1));
+			goToAngle(normalizeYaw(navX.getYaw() - 1));
 		}
 		else
 		{
